@@ -1,11 +1,11 @@
 {
-  "name": "Араб • Слова Корана",
+  "name": "Араб • Корень и Слово",
   "short_name": "Араб",
-  "description": "50 частотных слов из Корана с локальным сохранением прогресса",
+  "description": "SRS-карточки для изучения частотных слов Корана",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#1e293b",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
   "orientation": "portrait",
   "icons": [
     { "src": "https://cdn-icons-png.flaticon.com/512/10361/10361454.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
