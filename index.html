@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b1220">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Араб • SRS</title>
 <link rel="manifest" href="manifest.json">
 <style>
@@ -13,6 +14,8 @@
 body{height:100vh;overflow:hidden;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;display:flex;flex-direction:column;padding:16px}
 header{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
 h1{font-size:16px;font-weight:700;color:var(--accent)}
+.meta-row{display:flex;gap:8px;align-items:center}
+.version{font-size:11px;color:var(--text2);background:var(--card);padding:3px 8px;border-radius:12px;border:1px solid var(--border)}
 .session-count{font-size:13px;color:var(--text2);background:var(--card);padding:4px 10px;border-radius:20px;border:1px solid var(--border)}
 main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .card{width:100%;max-width:380px;aspect-ratio:4/3;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;user-select:none;transition:transform .15s,box-shadow .2s;box-shadow:0 6px 24px rgba(0,0,0,.4);position:relative;overflow:hidden}
@@ -33,25 +36,31 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .footer{display:flex;justify-content:space-between;align-items:center;padding:10px 0;font-size:12px;color:var(--text2)}
 .streak{display:flex;gap:6px;align-items:center;background:var(--card);padding:6px 12px;border-radius:20px;border:1px solid var(--border)}
 .reset{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer}
+#updateBanner{display:none;position:fixed;top:0;left:0;right:0;background:var(--warn);color:#0b1220;text-align:center;padding:12px 16px;font-size:14px;font-weight:700;z-index:9999;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.3)}
 @keyframes slide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .show{animation:slide .25s ease both}
 </style>
 </head>
 <body>
+<div id="updateBanner" onclick="forceUpdate()">🔄 Доступна новая версия. Нажмите для обновления.</div>
+
 <header>
   <h1>📖 Араб • Корень</h1>
-  <div class="session-count" id="session">0 / 0</div>
+  <div class="meta-row">
+    <span class="version" id="appVersion">v1.2</span>    <span class="session-count" id="session">0 / 0</span>
+  </div>
 </header>
 
 <main>
   <div class="card" id="card" onclick="flip()">
     <div class="ar-word" id="ar">كِتَاب</div>
     <div class="context" id="ctx">ذَٰلِكَ الْكِتَابُ...</div>
-    <div class="hint" id="hint">Нажми для перевода</div>    <div class="back" id="back">
+    <div class="hint" id="hint">Нажми для перевода</div>
+    <div class="back" id="back">
       <button class="audio-btn" onclick="speak(event)">🔊</button>
       <div class="translit" id="tl">кита́б</div>
       <div class="trans" id="tr">книга</div>
-      <div class="root" id="rt">🌳 ك-ت-б • فِعَال</div>
+      <div class="root" id="rt">🌳 ك-ت-ب • فِعَال</div>
     </div>
   </div>
 
@@ -69,6 +78,9 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 </div>
 
 <script>
+const APP_VERSION = 'v1.2';
+document.getElementById('appVersion').textContent = APP_VERSION;
+
 // 📦 БАЗА СЛОВ (50 частотных, с корнями и контекстом)
 const WORDS=[
   {id:"w1",ar:"كِتَاب",rt:"ك-ت-ب",p:"فِعَال",tl:"кита́б",tr:"книга, писание",ctx:"ذَٰلِكَ الْكِتَابُ لَا رَيْبَ ۛ فِيهِ"},
@@ -84,8 +96,7 @@ const WORDS=[
   {id:"w11",ar:"قَوْم",rt:"ق-و-م",p:"فَعْل",tl:"ка́ум",tr:"народ, община",ctx:"قَوْمِ نُوحٍ"},
   {id:"w12",ar:"أُمَّة",rt:"أ-م-م",p:"فُعْلَة",tl:"у́мма",tr:"община, нация",ctx:"أُمَّةً وَاحِدَةً"},
   {id:"w13",ar:"حَقّ",rt:"ح-ق-ق",p:"فَعْل",tl:"хакк",tr:"истина, должное",ctx:"بِالْحَقِّ خَلَقَهُمَا"},
-  {id:"w14",ar:"بَاطِل",rt:"ب-ط-ل",p:"فَاعِل",tl:"ба́тиль",tr:"ложь, тщета",ctx:"لَا بَاطِلًا"},
-  {id:"w15",ar:"صَبْر",rt:"ص-ب-ر",p:"فَعْل",tl:"сабр",tr:"терпение",ctx:"إِنَّ اللَّهَ مَعَ الصَّابِرِينَ"},
+  {id:"w14",ar:"بَاطِل",rt:"ب-ط-ل",p:"فَاعِل",tl:"ба́тиль",tr:"ложь, тщета",ctx:"لَا بَاطِلًا"},  {id:"w15",ar:"صَبْر",rt:"ص-ب-ر",p:"فَعْل",tl:"сабр",tr:"терпение",ctx:"إِنَّ اللَّهَ مَعَ الصَّابِرِينَ"},
   {id:"w16",ar:"شُكْر",rt:"ش-ك-ر",p:"فُعْل",tl:"шукр",tr:"благодарность",ctx:"لَئِن شَكَرْتُمْ"},
   {id:"w17",ar:"تَقْوَىٰ",rt:"و-ق-ي",p:"تَفْعِيل",tl:"таква́",tr:"богобоязненность",ctx:"وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ"},
   {id:"w18",ar:"إِيمَان",rt:"أ-م-ن",p:"إِفْعَال",tl:"и́ман",tr:"вера",ctx:"آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ"},
@@ -96,7 +107,8 @@ const WORDS=[
   {id:"w23",ar:"مَاء",rt:"م-و-ه",p:"فَعْل",tl:"ма'",tr:"вода",ctx:"وَجَعَلْنَا مِنَ الْمَاءِ كُلَّ شَيْءٍ حَيٍّ"},
   {id:"w24",ar:"شَجَر",rt:"ش-ج-ر",p:"فَعَل",tl:"ша́джар",tr:"дерево",ctx:"شَجَرَةٍ طَيِّبَةٍ"},
   {id:"w25",ar:"جَبَل",rt:"ج-ب-ل",p:"فَعَل",tl:"джа́баль",tr:"гора",ctx:"وَالْجِبَالَ أَوْتَادًا"},
-  {id:"w26",ar:"بَحْر",rt:"ب-ح-ر",p:"فَعْل",tl:"бахр",tr:"море",ctx:"وَالْبَحْرِ الْمَسْجُورِ"},  {id:"w27",ar:"شَمْس",rt:"ش-م-س",p:"فَعْل",tl:"шамс",tr:"солнце",ctx:"وَالشَّمْسِ وَضُحَاهَا"},
+  {id:"w26",ar:"بَحْر",rt:"ب-ح-ر",p:"فَعْل",tl:"бахр",tr:"море",ctx:"وَالْبَحْرِ الْمَسْجُورِ"},
+  {id:"w27",ar:"شَمْس",rt:"ش-م-س",p:"فَعْل",tl:"шамс",tr:"солнце",ctx:"وَالشَّمْسِ وَضُحَاهَا"},
   {id:"w28",ar:"قَمَر",rt:"ق-م-ر",p:"فَعَل",tl:"ка́мар",tr:"луна",ctx:"وَالْقَمَرِ إِذَا تَلَاهَا"},
   {id:"w29",ar:"لَيْل",rt:"ل-ي-ل",p:"فَعْل",tl:"ляйль",tr:"ночь",ctx:"وَاللَّيْلِ إِذَا يَغْشَىٰ"},
   {id:"w30",ar:"نَهَار",rt:"ن-ه-ر",p:"فَعَال",tl:"наха́р",tr:"день, свет",ctx:"وَالنَّهَارِ إِذَا جَلَّاهَا"},
@@ -118,25 +130,24 @@ const WORDS=[
   {id:"w46",ar:"دُعَاء",rt:"د-ع-و",p:"فُعَال",tl:"ду'а́",tr:"мольба",ctx:"ادْعُونِي أَسْتَجِبْ لَكُمْ"},
   {id:"w47",ar:"صَلَاة",rt:"ص-ل-و",p:"فَعَالَة",tl:"саля́т",tr:"намаз, молитва",ctx:"إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ"},
   {id:"w48",ar:"زَكَاة",rt:"ز-ك-و",p:"فَعَالَة",tl:"зака́т",tr:"очистительный налог",ctx:"وَآتُوا الزَّكَاةَ"},
-  {id:"w49",ar:"صِيَام",rt:"ص-و-م",p:"فِعَال",tl:"сыя́м",tr:"саум, fasting",ctx:"كُتِبَ عَلَيْكُمُ الصِّيَامُ"},
+  {id:"w49",ar:"صِيَام",rt:"ص-و-م",p:"فِعَال",tl:"сыя́м",tr:"саум",ctx:"كُتِبَ عَلَيْكُمُ الصِّيَامُ"},
   {id:"w50",ar:"حَجّ",rt:"ح-ج-ج",p:"فَعْل",tl:"хадж",tr:"паломничество",ctx:"وَلِلَّهِ عَلَى النَّاسِ حِجُّ الْبَيْتِ"}
 ];
 
-// 🗄️ IndexedDB + State
+// 🗄️ IndexedDB
 const DB_NAME='arab_srs'; const STORE='progress'; let db, sessionQueue=[], idx=0, streak=0;
 const openDB = () => new Promise(r=>{const o=indexedDB.open(DB_NAME,1);o.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});};o.onsuccess=e=>{db=e.target.result;r(db);};});
-const getProg = id => new Promise(r=>{const tx=db.transaction(STORE,'readonly');const s=tx.objectStore(STORE);const req=s.get(id);req.onsuccess=()=>r(req.result||{id,srs:{interval:0,rep:0,ease:2.5,lapses:0,next:Date.now()}});});
+const getProg = id => new Promise(r=>{const tx=db.transaction(STORE,'readonly');const req=tx.objectStore(STORE).get(id);req.onsuccess=()=>r(req.result||{id,srs:{interval:0,rep:0,ease:2.5,lapses:0,next:Date.now()}});});
 const saveProg = p => new Promise(r=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(p);tx.oncomplete=()=>r();});
 
 // 🧠 SRS (SM-2)
 function calcSRS(card, q) {
   let { interval=0, rep=0, ease=2.5, lapses=0 } = card.srs || {};
-  const now = Date.now();
   if (q===0) { interval=0; rep=0; ease=Math.max(1.3,ease-0.2); lapses++; }
   else {
-    if(rep===0) interval=1; else if(rep===1) interval=3; else interval=Math.round(interval*ease);
-    rep++; ease += (q===1?0.05:q===2?0.1:0.15) - (3-q)*0.05; ease=Math.min(3,Math.max(1.3,ease));
+    if(rep===0) interval=1; else if(rep===1) interval=3; else interval=Math.round(interval*ease);    rep++; ease += (q===1?0.05:q===2?0.1:0.15) - (3-q)*0.05; ease=Math.min(3,Math.max(1.3,ease));
   }
+  const now = Date.now();
   card.srs = {interval, rep, ease, lapses, next: now + (interval===0?0:interval*86400000)};
   return card;
 }
@@ -145,28 +156,26 @@ function calcSRS(card, q) {
 const $=id=>document.getElementById(id);
 async function init() {
   await openDB();
-  // Load streak  streak = parseInt(localStorage.getItem('ar_streak')||'0');
+  streak = parseInt(localStorage.getItem('ar_streak')||'0');
   const last = parseInt(localStorage.getItem('ar_last')||'0');
-  const today = new Date().toDateString();
-  if (last && last !== today && Date.now()-last > 172800000) streak=0;
-  if (last !== today) localStorage.setItem('ar_last', Date.now());
+  const today = Date.now();
+  if (last && today - last > 172800000) streak=0;
+  if (!last || today - last > 86400000) localStorage.setItem('ar_last', today);
   $('streak').textContent = streak;
 
-  // Build session queue (due words)
   const now = Date.now();
   for(const w of WORDS){
     const p = await getProg(w.id);
-    if(p.srs.next <= now || !p.srs.next) sessionQueue.push({...w, ...p});
+    if(p.srs.next <= now) sessionQueue.push({...w, ...p});
   }
   if(sessionQueue.length===0) sessionQueue = WORDS.map(w=>({...w, srs:{interval:0,rep:0,ease:2.5,lapses:0,next:now}}));
-  
   idx=0; render();
 }
 
 function render() {
   if(idx>=sessionQueue.length) {
     $('ar').textContent='🎉'; $('ctx').textContent='Сессия завершена! Закрой и открой завтра.'; $('hint').textContent=''; $('back').style.display='none'; $('ctrl').classList.remove('active'); $('session').textContent=`${idx}/${idx}`;
-    if(streak===0||Date.now()-parseInt(localStorage.getItem('ar_last')||'0')>86400000) { streak++; localStorage.setItem('ar_streak',streak); $('streak').textContent=streak; }
+    if(streak===0 || Date.now()-parseInt(localStorage.getItem('ar_last')||'0')>86400000) { streak++; localStorage.setItem('ar_streak',streak); $('streak').textContent=streak; }
     return;
   }
   const w = sessionQueue[idx];
@@ -182,19 +191,17 @@ function flip() {
 
 async function grade(q) {
   const w = sessionQueue[idx];
-  const updated = calcSRS(w, q);
+  const updated = calcSRS({...w, srs:w.srs}, q);
   await saveProg(updated);
-  // Move again/hard to end of session if needed, or keep order for simplicity
-  if(q===0) sessionQueue.push({...updated});
-  idx++;
-  render();
-}
+  if(q===0) sessionQueue.push(updated);
+  idx++; render();}
 
 function speak(e) {
   e.stopPropagation();
   if(!window.speechSynthesis) return;
   const u = new SpeechSynthesisUtterance(sessionQueue[idx].ar);
-  u.lang='ar-SA'; u.rate=0.85; speechSynthesis.speak(u);}
+  u.lang='ar-SA'; u.rate=0.85; speechSynthesis.speak(u);
+}
 
 function resetAll() {
   if(!confirm('Сбросить весь прогресс и статистику?')) return;
@@ -204,8 +211,27 @@ function resetAll() {
   tx.oncomplete = ()=>location.reload();
 }
 
+// 🔄 PWA ОБНОВЛЕНИЕ
+function forceUpdate() {
+  navigator.serviceWorker.controller?.postMessage('SKIP_WAITING');
+  location.reload();
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    reg.addEventListener('updatefound', () => {
+      const nw = reg.installing;
+      nw.addEventListener('statechange', () => {
+        if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+          $('updateBanner').style.display = 'flex';
+        }
+      });
+    });
+  });
+  navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
+}
+
 window.addEventListener('DOMContentLoaded', init);
-if('serviceWorker'in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
 </body>
 </html>
