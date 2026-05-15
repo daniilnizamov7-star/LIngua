@@ -1,4 +1,4 @@
-const VERSION = 'v1.2'; // ⬅️ МЕНЯЙ ЭТУ СТРОКУ ПРИ КАЖДОМ ДЕПЛОЕ
+const VERSION = 'v1.3'; // ⬅️ МЕНЯЙ ЭТУ СТРОКУ ПРИ КАЖДОМ ДЕПЛОЕ
 const CACHE_NAME = `arab-srs-${VERSION}`;
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
