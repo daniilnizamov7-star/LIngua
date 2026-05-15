@@ -1,18 +1,37 @@
-const CACHE = 'arab-srs-v1';
+const VERSION = 'v1.2'; // ⬅️ МЕНЯЙ ЭТУ СТРОКУ ПРИ КАЖДОМ ДЕПЛОЕ
+const CACHE_NAME = `arab-srs-${VERSION}`;
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
   self.skipWaiting();
 });
+
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x)))));
-  self.clients.claim();
+  e.waitUntil(
+    caches.keys().then(keys => 
+      Promise.all(keys.filter(k => !k.startsWith('arab-srs-')).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
 });
+
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  // Для index.html всегда пробуем сеть, чтобы ловить обновления
+  if (e.request.url.endsWith('/index.html') || e.request.url === location.origin + '/') {
+    e.respondWith(fetch(e.request).then(net => {
+      caches.open(CACHE_NAME).then(c => c.put(e.request, net.clone()));
+      return net;
+    }).catch(() => caches.match(e.request)));
+    return;
+  }
+  // Остальное: кэш → сеть
   e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(n => {
-    caches.open(CACHE).then(c => c.put(e.request, n.clone()));
+    caches.open(CACHE_NAME).then(c => c.put(e.request, n.clone()));
     return n;
-  }).catch(() => caches.match('/index.html'))));
+  })));
+});
+
+self.addEventListener('message', e => {
+  if (e.data === 'SKIP_WAITING') self.skipWaiting();
 });
