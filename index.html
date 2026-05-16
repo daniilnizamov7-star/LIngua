@@ -30,6 +30,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .audio-btn{background:none;border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;margin-top:8px}
 .audio-btn:active{transform:scale(.95)}
 .controls{display:none;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;max-width:380px;margin-top:8px}
+.controls.active{display:grid} /* 🔥 ИСПРАВЛЕНО */
 .btn{padding:14px 6px;border:none;border-radius:14px;font-weight:700;font-size:14px;cursor:pointer;transition:transform .1s;color:#0b1220}
 .btn:active{transform:scale(.95)}
 .b0{background:var(--err)}.b1{background:var(--warn)}.b2{background:var(--ok)}.b3{background:var(--accent)}
@@ -46,8 +47,8 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 <div id="updateBanner" onclick="forceUpdate()">🔄 Доступна новая версия. Нажмите для обновления.</div>
 
 <header>
-  <h1>📖 Араб • Корень</h1>
-  <div class="meta-row">    <span class="version" id="appVersion">v2.0</span>
+  <h1>📖 Араб • Корень</h1>  <div class="meta-row">
+    <span class="version" id="appVersion">v2.0</span>
     <span class="session-count" id="session">0 / 0</span>
   </div>
 </header>
@@ -82,7 +83,6 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 const APP_VERSION = 'v2.0';
 document.getElementById('appVersion').textContent = APP_VERSION;
 
-// 📦 БАЗА СЛОВ (50 частотных, с корнями и контекстом)
 const WORDS=[
   {id:"w1",ar:"كِتَاب",rt:"ك-ت-ب",p:"فِعَال",tl:"кита́б",tr:"книга, писание",ctx:"ذَٰلِكَ الْكِتَابُ لَا رَيْبَ ۛ فِيهِ"},
   {id:"w2",ar:"عِلْم",rt:"ع-ل-م",p:"فِعْل",tl:"и́льм",tr:"знание",ctx:"اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ"},
@@ -125,7 +125,7 @@ const WORDS=[
   {id:"w40",ar:"طَعَام",rt:"т-а-м",p:"فَعَال",tl:"та'а́м",tr:"пища",ctx:"وَيُطْعِمُونَ الطَّعَامَ عَلَىٰ حُبِّهِ"},
   {id:"w41",ar:"سَمْع",rt:"с-м-а",p:"فَعْل",tl:"самъ",tr:"слух",ctx:"وَإِنَّ السَّمْعَ وَالْبَصَرَ"},
   {id:"w42",ar:"بَصَر",rt:"б-с-р",p:"فَعَل",tl:"ба́сар",tr:"зрение",ctx:"وَالْبَصَرَ وَالْفُؤَادَ"},
-  {id:"w43",ar:"فُؤَاد",rt:"ф-أ-д",p:"فُعَال",tl:"фу'а́д",tr:"сердце (внутреннее)",ctx:"مَا كَذَبَ الْفُؤَادُ مَا رَأَىٰ"},
+  {id:"w43",ar:"فُؤَاد",rt:"ф-أ-د",p:"فُعَال",tl:"фу'а́д",tr:"сердце (внутреннее)",ctx:"مَا كَذَبَ الْفُؤَادُ مَا رَأَىٰ"},
   {id:"w44",ar:"رَحْمَٰن",rt:"р-х-м",p:"فَعْلَان",tl:"рахма́н",tr:"Милостивый",ctx:"الرَّحْمَٰنِ الرَّحِيمِ"},
   {id:"w45",ar:"رَبّ",rt:"р-б-б",p:"فَعْل",tl:"рабб",tr:"Господь",ctx:"رَبِّ اشْرَحْ لِي صَدْرِي"},
   {id:"w46",ar:"دُعَاء",rt:"д-а-в",p:"فُعَال",tl:"ду'а́",tr:"мольба",ctx:"ادْعُونِي أَسْتَجِبْ لَكُمْ"},
@@ -135,25 +135,22 @@ const WORDS=[
   {id:"w50",ar:"حَجّ",rt:"х-дж-дж",p:"فَعْل",tl:"хадж",tr:"паломничество",ctx:"وَلِلَّهِ عَلَى النَّاسِ حِجُّ الْبَيْتِ"}
 ];
 
-// 🗄️ IndexedDB
 const DB_NAME='arab_srs'; const STORE='progress'; let db, sessionQueue=[], idx=0, streak=0;
 const openDB = () => new Promise(r=>{const o=indexedDB.open(DB_NAME,1);o.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});};o.onsuccess=e=>{db=e.target.result;r(db);};});
 const getProg = id => new Promise(r=>{const tx=db.transaction(STORE,'readonly');const req=tx.objectStore(STORE).get(id);req.onsuccess=()=>r(req.result||{id,srs:{interval:0,rep:0,ease:2.5,lapses:0,next:Date.now()}});});
 const saveProg = p => new Promise(r=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(p);tx.oncomplete=()=>r();});
 
-// 🧠 SRS (SM-2)
 function calcSRS(card, q) {
   let { interval=0, rep=0, ease=2.5, lapses=0 } = card.srs || {};
   if (q===0) { interval=0; rep=0; ease=Math.max(1.3,ease-0.2); lapses++; }
-  else {    if(rep===0) interval=1; else if(rep===1) interval=3; else interval=Math.round(interval*ease);
-    rep++; ease += (q===1?0.05:q===2?0.1:0.15) - (3-q)*0.05; ease=Math.min(3,Math.max(1.3,ease));
-  }
+  else {
+    if(rep===0) interval=1; else if(rep===1) interval=3; else interval=Math.round(interval*ease);
+    rep++; ease += (q===1?0.05:q===2?0.1:0.15) - (3-q)*0.05; ease=Math.min(3,Math.max(1.3,ease));  }
   const now = Date.now();
   card.srs = {interval, rep, ease, lapses, next: now + (interval===0?0:interval*86400000)};
   return card;
 }
 
-// 🖥️ UI Logic
 const $=id=>document.getElementById(id);
 async function init() {
   await openDB();
@@ -165,7 +162,6 @@ async function init() {
   $('streak').textContent = streak;
 
   const now = Date.now();
-  // 🔥 Загружаем ВСЕ слова для первого прохода. SRS работает "под капотом" для завтра.
   for(const w of WORDS){
     const p = await getProg(w.id);
     sessionQueue.push({...w, srs: p.srs || {interval:0,rep:0,ease:2.5,lapses:0,next:now}});
@@ -194,11 +190,11 @@ async function grade(q) {
   const w = sessionQueue[idx];
   const updated = calcSRS({...w, srs:w.srs}, q);
   await saveProg(updated);
-  if(q===0) sessionQueue.push(updated); // Забыл → вернётся в конец  idx++; render();
+  if(q===0) sessionQueue.push(updated);
+  idx++; render();
 }
 
-function speak(e) {
-  e.stopPropagation();
+function speak(e) {  e.stopPropagation();
   if(!window.speechSynthesis) return;
   const u = new SpeechSynthesisUtterance(sessionQueue[idx].ar);
   u.lang='ar-SA'; u.rate=0.85; speechSynthesis.speak(u);
@@ -212,10 +208,8 @@ function resetAll() {
   tx.oncomplete = ()=>location.reload();
 }
 
-// 🔄 PWA ОБНОВЛЕНИЕ (Надёжная версия)
 let refreshing = false;
 function forceUpdate() {
-  // Отправляем команду активному ожидающему воркеру
   navigator.serviceWorker.getRegistrations().then(regs => {
     regs.forEach(reg => {
       if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
@@ -229,7 +223,6 @@ if ('serviceWorker' in navigator) {
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;
       newWorker.addEventListener('statechange', () => {
-        // Новая версия готова, но старая ещё активна → показываем баннер
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
           $('updateBanner').style.display = 'flex';
         }
@@ -240,9 +233,10 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (refreshing) return;
     refreshing = true;
-    location.reload(); // Новая версия активна → перезагружаем страницу
+    location.reload();
   });
 }
+
 window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
