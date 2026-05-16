@@ -1,18 +1,1062 @@
-const VERSION = 'arabic-v10';
-const ASSETS = ['/', '/index.html', '/manifest.json'];
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0c0e14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="قرآني">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.svg">
+<title>قرآني — Путь к Корану</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0c0e14;--bg2:#10131b;--sf:#161c28;--sf2:#1e2535;--sf3:#252d3f;
+  --bd:#2a3349;--bd2:#3a4560;--tx:#eef0f6;--tx2:#c5cad8;--mu:#7a859e;
+  --gold:#d4a843;--gold2:#f0c46a;--gdim:#5a420f;
+  --green:#3dba7e;--green2:#52d494;--gdim2:#1a4a35;
+  --blue:#4a90d9;--red:#e05555;--rdim:#4a1515;
+  --pur:#8b5cf6;--pur2:#a78bfa;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;overflow:hidden}
+.app{height:100%;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative}
+#upd{display:none;background:var(--gold);color:#000;font-size:13px;font-weight:600;padding:10px;text-align:center;cursor:pointer;flex-shrink:0}
+/* Header */
+.hdr{padding:calc(var(--st)+14px) 20px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-bottom:1px solid var(--bd)}
+.logo{font-family:'Scheherazade New',serif;font-size:26px;color:var(--gold);line-height:1}
+.logo-sub{font-size:10px;color:var(--mu);margin-top:2px;letter-spacing:.8px;text-transform:uppercase}
+.pills{display:flex;gap:7px}
+.pill{display:flex;align-items:center;gap:4px;background:var(--sf2);border:1px solid var(--bd2);border-radius:20px;padding:5px 10px;font-size:12px;font-weight:500}
+.pill.g{color:var(--gold2)}.pill.gr{color:var(--green2)}
+/* Screens */
+.screens{flex:1;overflow:hidden;position:relative}
+.sc{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;padding-bottom:calc(var(--sb)+90px);-webkit-overflow-scrolling:touch}
+.sc::-webkit-scrollbar{display:none}
+.sc.active{display:block}
+/* Bottom nav */
+.bnav{position:absolute;bottom:0;left:0;right:0;background:var(--sf);border-top:1px solid var(--bd);display:flex;padding-bottom:var(--sb)}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px;cursor:pointer;color:var(--mu);font-size:9px;font-weight:500;letter-spacing:.3px;text-transform:uppercase;border:none;background:none;font-family:'DM Sans',sans-serif;transition:color .2s}
+.bn.active{color:var(--gold)}
+.bni{font-size:19px;line-height:1.1}
+/* ── Shared ── */
+.stitle{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:10px}
+.hidden{display:none!important}
+@keyframes swL{to{transform:translateX(-130%);opacity:0}}
+@keyframes swR{to{transform:translateX(130%);opacity:0}}
+@keyframes fdIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.95);opacity:0}100%{transform:scale(1);opacity:1}}
+.sl{animation:swL .22s ease forwards}
+.sr{animation:swR .22s ease forwards}
+.fi{animation:fdIn .28s ease}
+.pp{animation:pop .2s ease}
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
-});
+/* ══ HOME ══ */
+.hero{margin:18px 20px 0;background:linear-gradient(135deg,#1a2240,#0f1624);border:1px solid var(--bd2);border-radius:20px;padding:22px;position:relative;overflow:hidden}
+.hero::before{content:'بِسْمِ اللَّهِ';position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-family:'Scheherazade New',serif;font-size:78px;color:rgba(212,168,67,.05);pointer-events:none;line-height:1}
+.hgreet{font-size:13px;color:var(--mu);margin-bottom:4px}
+.htitle{font-size:20px;font-weight:600;margin-bottom:14px;line-height:1.35}
+.pbar-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--mu);margin-bottom:5px}
+.pbar{height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.pbar-f{height:100%;background:linear-gradient(90deg,var(--gdim),var(--gold2));border-radius:3px;transition:width .6s ease}
+.hstats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:12px 20px 0}
+.hs{background:var(--sf);border:1px solid var(--bd);border-radius:13px;padding:11px 6px;text-align:center}
+.hsn{font-size:22px;font-weight:600;line-height:1;margin-bottom:3px}
+.hsl{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.4px}
+.tasks{margin:12px 20px 0;padding-bottom:4px}
+.task{background:var(--sf);border:1px solid var(--bd);border-radius:15px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:8px;transition:border-color .15s}
+.task:active{background:var(--sf2)}
+.ticon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.ticon.g{background:rgba(212,168,67,.12);border:1px solid rgba(212,168,67,.18)}
+.ticon.gr{background:rgba(61,186,126,.1);border:1px solid rgba(61,186,126,.17)}
+.ticon.bl{background:rgba(74,144,217,.1);border:1px solid rgba(74,144,217,.17)}
+.ticon.pu{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.17)}
+.ttl{font-size:14px;font-weight:500;margin-bottom:2px}
+.tsb{font-size:12px;color:var(--mu)}
+.aod{margin:12px 20px 20px;background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:17px}
+.aod-lbl{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.7px;margin-bottom:9px}
+.aod-ar{font-family:'Scheherazade New',serif;font-size:24px;direction:rtl;line-height:1.9;margin-bottom:7px;text-align:right}
+.aod-ru{font-size:13px;color:var(--mu);line-height:1.6;font-style:italic}
+.aod-ref{font-size:11px;color:var(--gdim);margin-top:5px}
 
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
-});
+/* ══ ЗВУК ══ */
+.sound-wrap{padding:14px 20px 20px}
+.hk-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
+.hk{background:var(--sf);border:1px solid var(--bd);border-radius:15px;padding:15px 11px;cursor:pointer;text-align:center;transition:border-color .2s,transform .1s;position:relative;overflow:hidden}
+.hk:active{transform:scale(.97)}
+.hk.done{border-color:var(--gdim2)}
+.hk.done::after{content:'✓';position:absolute;top:8px;right:9px;font-size:11px;color:var(--green2)}
+.hk-ar{font-family:'Scheherazade New',serif;font-size:44px;color:var(--gold2);line-height:1;margin-bottom:5px}
+.hk-name{font-size:13px;font-weight:500;margin-bottom:1px}
+.hk-snd{font-size:11px;color:var(--mu);font-style:italic}
+.hk-ex{font-size:10px;color:var(--mu);margin-top:5px;background:var(--sf2);border-radius:6px;padding:3px 7px;display:inline-block}
+/* Tajweed */
+.tj-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:18px}
+.tj{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:14px 15px;cursor:pointer;transition:border-color .15s}
+.tj:active{background:var(--sf2)}
+.tj.done{border-color:var(--gdim2)}
+.tj-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.tj-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.tj-name{font-size:14px;font-weight:500}
+.tj-ar{font-family:'Scheherazade New',serif;font-size:18px;direction:rtl;color:var(--gold2);margin-left:auto}
+.tj-desc{font-size:12px;color:var(--mu);line-height:1.6}
+.tj-ex{font-family:'Scheherazade New',serif;font-size:16px;direction:rtl;color:var(--tx2);margin-top:6px}
+/* Sound exercise */
+.sex-wrap{margin-bottom:4px}
+.sex-lbl{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px}
+.sex-card{background:var(--sf);border:1px solid var(--bd);border-radius:17px;padding:26px 18px;text-align:center;margin-bottom:10px}
+.sex-q{font-size:11px;color:var(--mu);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
+.sex-big{font-family:'Scheherazade New',serif;font-size:70px;color:var(--tx);direction:rtl;line-height:1.2}
+.sex-choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+.sex-btn{padding:12px 7px;border-radius:11px;border:1px solid var(--bd2);background:var(--sf2);color:var(--tx);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.sex-btn.ok{background:rgba(61,186,126,.14);border-color:var(--green2);color:var(--green2)}
+.sex-btn.no{background:rgba(224,85,85,.1);border-color:var(--red);color:var(--red)}
+.sex-res{font-size:13px;margin-top:9px;padding:9px;border-radius:9px;text-align:center}
+.sex-res.ok{background:rgba(61,186,126,.09);color:var(--green2)}
+.sex-res.no{background:rgba(224,85,85,.09);color:var(--red)}
+.next-btn{width:100%;padding:13px;background:var(--gold);border:none;border-radius:13px;color:#0c0e14;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
 
-self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(cached => cached || fetch(e.request).then(r => {
-    const clone = r.clone();
-    caches.open(VERSION).then(c => c.put(e.request, clone));
-    return r;
-  }).catch(() => cached)));
+/* ══ СЛОВА ══ */
+.words-top{padding:14px 20px 0}
+.quota{display:flex;gap:7px;margin-bottom:10px}
+.qt{flex:1;background:var(--sf);border:1px solid var(--bd);border-radius:11px;padding:9px 6px;text-align:center}
+.qtn{font-size:19px;font-weight:600;line-height:1;margin-bottom:2px}
+.qtl{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.4px}
+/* ══ СЛОВА — layout fix ══ */
+.words-screen{display:flex;flex-direction:column;height:100%}
+.words-top{padding:14px 20px 0;flex-shrink:0}
+.card-wrap{padding:0 20px;flex-shrink:0}
+.fc{background:var(--sf);border:1px solid var(--bd);border-radius:21px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:44px 20px 20px;cursor:pointer;position:relative;overflow:hidden;transition:border-color .15s}
+.fc::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(212,168,67,.05),transparent 60%);pointer-events:none}
+.fc-tag{position:absolute;top:12px;left:12px;font-size:10px;color:var(--mu);background:var(--sf2);border-radius:7px;padding:3px 8px;font-weight:500}
+.fc-type{position:absolute;top:12px;right:12px;font-size:10px;border-radius:7px;padding:3px 8px;font-weight:600}
+.fc-type.nt{background:rgba(212,168,67,.14);color:var(--gold2)}
+.fc-type.rt{background:rgba(74,144,217,.11);color:var(--blue)}
+.fc-front{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;min-height:180px;justify-content:center;padding:10px 0 30px}
+.fc-back{display:none;flex-direction:column;align-items:center;gap:9px;width:100%}
+.fc.flipped .fc-front{display:none}
+.fc.flipped .fc-back{display:flex}
+.w-ar{font-family:'Scheherazade New',serif;font-size:64px;color:var(--tx);direction:rtl;line-height:1.15;text-align:center}
+.w-tr{font-size:14px;color:var(--mu);font-style:italic;letter-spacing:.3px}
+.tap-h{font-size:11px;color:var(--bd2);margin-top:4px}
+.w-ru{font-size:22px;font-weight:500}
+.w-root{font-size:11px;color:var(--gdim);font-family:'Scheherazade New',serif;direction:rtl}
+.w-cat{font-size:10px;color:var(--mu);background:var(--sf2);border-radius:6px;padding:2px 7px;text-transform:uppercase;letter-spacing:.3px}
+.qs{background:var(--sf2);border:1px solid var(--bd);border-radius:11px;padding:9px 12px;width:100%;text-align:center}
+.qs-lbl{font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.qs-ar{font-family:'Scheherazade New',serif;font-size:16px;direction:rtl;line-height:1.75;color:var(--tx)}
+.qs-tr{font-size:10px;color:var(--mu);font-style:italic;margin-top:2px}
+.qs-ru{font-size:11px;color:var(--mu);margin-top:4px;line-height:1.4;font-style:italic;border-top:1px solid var(--bd);padding-top:4px}
+.hl-word{color:var(--gold2);font-weight:700;background:rgba(212,168,67,.12);border-radius:4px;padding:0 2px}
+.audio-btn{background:none;border:1px solid var(--bd2);border-radius:20px;padding:5px 12px;color:var(--mu);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;margin-top:2px;transition:border-color .2s,color .2s}
+.audio-btn:active{border-color:var(--gold);color:var(--gold2)}
+.sw-hint{display:flex;justify-content:space-between;padding:7px 20px 0;font-size:11px;color:var(--bd2)}
+.ans-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;padding:9px 20px 0}
+.ans{border:none;border-radius:13px;padding:13px 5px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;line-height:1.3;transition:transform .12s}
+.ans:active{transform:scale(.96)}
+.ans-a{background:rgba(224,85,85,.09);color:#f08080;border:1px solid rgba(224,85,85,.2)}
+.ans-h{background:rgba(212,168,67,.08);color:var(--gold2);border:1px solid rgba(212,168,67,.17)}
+.ans-g{background:rgba(61,186,126,.08);color:var(--green2);border:1px solid rgba(61,186,126,.17)}
+.done-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px}
+.done-icon{font-size:52px;margin-bottom:12px}
+.done-tl{font-size:20px;font-weight:600;color:var(--green2);margin-bottom:7px}
+.done-sb{font-size:13px;color:var(--mu);line-height:1.6}
+.done-dua{font-family:'Scheherazade New',serif;font-size:19px;color:var(--gdim);direction:rtl;margin-top:12px}
+
+/* ══ КОРАН ══ */
+.qr-wrap{padding:14px 20px 20px}
+.stabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none;padding-bottom:2px}
+.stabs::-webkit-scrollbar{display:none}
+.stab{flex:none;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--bd2);background:transparent;color:var(--mu);transition:all .2s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.stab.active{background:var(--gold);color:#0c0e14;border-color:var(--gold);font-weight:600}
+.ayah-block{background:var(--sf);border:1px solid var(--bd);border-radius:17px;padding:17px;margin-bottom:9px}
+.ayah-num-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ayah-badge{width:26px;height:26px;border-radius:50%;background:rgba(212,168,67,.09);border:1px solid rgba(212,168,67,.18);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--gold2);flex-shrink:0}
+.ayah-ref{font-size:11px;color:var(--mu)}
+.ayah-full{font-family:'Scheherazade New',serif;font-size:24px;direction:rtl;line-height:1.95;text-align:right;margin-bottom:11px;cursor:pointer}
+.wchips{display:flex;flex-wrap:wrap;gap:5px;direction:rtl;margin-bottom:11px}
+.wchip{background:var(--sf2);border:1px solid var(--bd);border-radius:9px;padding:6px 9px;cursor:pointer;transition:all .18s;text-align:center}
+.wchip:active,.wchip.on{background:rgba(212,168,67,.09);border-color:rgba(212,168,67,.28)}
+.wchip.kn{background:rgba(61,186,126,.06);border-color:rgba(61,186,126,.17)}
+.wc-ar{font-family:'Scheherazade New',serif;font-size:18px;direction:rtl;display:block;line-height:1.3}
+.wc-ru{font-size:10px;color:var(--mu);display:block;margin-top:2px}
+.wchip.on .wc-ru{color:var(--gold2)}
+.wchip.kn .wc-ru{color:var(--green2)}
+.ayah-ru{font-size:13px;color:var(--mu);line-height:1.7;font-style:italic;border-top:1px solid var(--bd);padding-top:10px}
+.wpop{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0c0e14;border-radius:11px;padding:8px 16px;font-size:13px;font-weight:600;z-index:100;pointer-events:none;transition:opacity .22s;white-space:nowrap}
+
+/* ══ ПРОГРЕСС ══ */
+.pr-wrap{padding:14px 20px 20px}
+.pr-hero{background:var(--sf);border:1px solid var(--bd);border-radius:17px;padding:18px;margin-bottom:10px}
+.prh-lbl{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
+.prh-pct{font-size:40px;font-weight:600;color:var(--gold2);line-height:1;margin-bottom:3px}
+.prh-sub{font-size:12px;color:var(--mu)}
+.prh-bar{height:5px;background:var(--sf2);border-radius:3px;overflow:hidden;margin-top:10px}
+.prh-fill{height:100%;background:linear-gradient(90deg,var(--gdim),var(--gold2));border-radius:3px;transition:width .6s}
+.week-box{background:var(--sf);border:1px solid var(--bd);border-radius:15px;padding:15px;margin-bottom:10px}
+.wb-tl{font-size:11px;color:var(--mu);margin-bottom:11px}
+.bars{display:flex;align-items:flex-end;gap:5px;height:56px}
+.bc{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bar{width:100%;border-radius:4px 4px 0 0;background:var(--sf2);min-height:4px;transition:height .4s}
+.bar.td{background:linear-gradient(180deg,var(--gold2),var(--gdim))}
+.bd-lbl{font-size:9px;color:var(--mu)}
+.kn-box{background:var(--sf);border:1px solid var(--bd);border-radius:15px;padding:15px;margin-bottom:10px}
+.kn-tl{font-size:11px;color:var(--mu);margin-bottom:9px}
+.kchips{display:flex;flex-wrap:wrap;gap:5px}
+.kchip{background:var(--sf2);border:1px solid var(--bd2);border-radius:18px;padding:4px 10px;font-size:12px;display:inline-flex;align-items:center;gap:4px}
+.kc-ar{font-family:'Scheherazade New',serif;font-size:15px;direction:rtl}
+.kc-ru{color:var(--mu);font-size:10px}
+.achiev-box{background:var(--sf);border:1px solid var(--bd);border-radius:15px;padding:15px;margin-bottom:10px}
+.ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.ach{background:var(--sf2);border:1px solid var(--bd);border-radius:12px;padding:12px 8px;text-align:center;transition:border-color .2s}
+.ach.unlocked{border-color:var(--gold)}
+.ach-icon{font-size:24px;margin-bottom:4px;filter:grayscale(1);opacity:.3}
+.ach.unlocked .ach-icon{filter:none;opacity:1}
+.ach-name{font-size:10px;color:var(--mu);font-weight:500}
+.ach.unlocked .ach-name{color:var(--gold2)}
+
+/* ══ Modal ══ */
+.mov{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(5px)}
+.msh{background:var(--bg2);border-radius:22px 22px 0 0;padding:20px 20px calc(var(--sb)+20px);width:100%;max-width:430px;animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mh{width:34px;height:4px;background:var(--bd2);border-radius:2px;margin:0 auto 16px}
+.mtl{font-size:17px;font-weight:600;margin-bottom:3px}
+.mdc{font-size:13px;color:var(--mu);margin-bottom:16px;line-height:1.6}
+.mar{font-family:'Scheherazade New',serif;font-size:72px;direction:rtl;color:var(--gold2);text-align:center;margin-bottom:14px;line-height:1.2}
+.mexs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.mex{background:var(--sf);border:1px solid var(--bd);border-radius:11px;padding:10px 7px;text-align:center}
+.mex-ar{font-family:'Scheherazade New',serif;font-size:22px;direction:rtl;margin-bottom:3px}
+.mex-tr{font-size:10px;color:var(--mu);font-style:italic}
+.mcl{width:100%;margin-top:13px;padding:13px;background:var(--sf2);border:1px solid var(--bd2);border-radius:13px;color:var(--tx);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="upd" onclick="location.reload()">🔄 Обновление — нажми</div>
+  <div class="hdr">
+    <div>
+      <div class="logo">قرآني</div>
+      <div class="logo-sub">Путь к Корану</div>
+    </div>
+    <div class="pills">
+      <div class="pill g">🔥<span id="sv">1</span></div>
+      <div class="pill gr">⭐<span id="xv">0</span></div>
+    </div>
+  </div>
+
+  <div class="screens">
+
+    <!-- HOME -->
+    <div class="sc active" id="sc-home">
+      <div class="hero">
+        <div class="hgreet">Ассаляму алейкум</div>
+        <div class="htitle">Твой путь к<br>пониманию Корана</div>
+        <div class="pbar-lbl"><span>Слова Корана</span><span id="h-pl">0 / 300</span></div>
+        <div class="pbar"><div class="pbar-f" id="h-pf" style="width:0%"></div></div>
+      </div>
+      <div class="hstats">
+        <div class="hs"><div class="hsn" style="color:var(--gold2)" id="h-w">0</div><div class="hsl">слов</div></div>
+        <div class="hs"><div class="hsn" style="color:var(--green2)" id="h-s">0</div><div class="hsl">знаков</div></div>
+        <div class="hs"><div class="hsn" style="color:var(--blue)" id="h-a">0</div><div class="hsl">аятов</div></div>
+        <div class="hs"><div class="hsn" style="color:var(--pur2)" id="h-d">0</div><div class="hsl">дней</div></div>
+      </div>
+      <div class="tasks">
+        <div class="stitle">Задания дня</div>
+        <div class="task" onclick="goTab('sound',1)">
+          <div class="ticon g">🔊</div>
+          <div><div class="ttl">Огласовки и таджвид</div><div class="tsb">Правила правильного чтения Корана</div></div>
+        </div>
+        <div class="task" onclick="goTab('words',2)">
+          <div class="ticon gr">📖</div>
+          <div><div class="ttl">Слова Корана</div><div class="tsb" id="h-ws">10 новых + повторения по SRS</div></div>
+        </div>
+        <div class="task" onclick="goTab('quran',3)">
+          <div class="ticon bl">🕌</div>
+          <div><div class="ttl">Разбор аятов</div><div class="tsb">Аль-Фатиха, Ихлас, Фалак, Ан-Нас, Ясин</div></div>
+        </div>
+        <div class="task" onclick="goTab('progress',4)">
+          <div class="ticon pu">📊</div>
+          <div><div class="ttl">Прогресс</div><div class="tsb">Достижения, статистика, стрик</div></div>
+        </div>
+      </div>
+      <div class="aod">
+        <div class="aod-lbl">Аят дня</div>
+        <div class="aod-ar" id="aodAr">إِنَّ مَعَ الْعُسْرِ يُسْرًا</div>
+        <div class="aod-ru" id="aodRu">«Поистине, вместе с трудностью — лёгкость»</div>
+        <div class="aod-ref" id="aodRef">Аш-Шарх, 94:6</div>
+      </div>
+    </div>
+
+    <!-- ЗВУК -->
+    <div class="sc" id="sc-sound">
+      <div class="sound-wrap">
+        <div class="stitle">Огласовки — харакат</div>
+        <div class="hk-grid" id="hkGrid"></div>
+        <div class="stitle">Таджвид — правила чтения</div>
+        <div class="tj-grid" id="tjGrid"></div>
+        <div class="sex-wrap">
+          <div class="sex-lbl">Тренажёр распознавания</div>
+          <div class="sex-card">
+            <div class="sex-q">Что за знак?</div>
+            <div class="sex-big" id="sexAr">بَ</div>
+            <div class="sex-choices" id="sexCh"></div>
+            <div class="sex-res hidden" id="sexRes"></div>
+          </div>
+          <button class="next-btn hidden" id="sexNext" onclick="nextSex()">Следующий →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛОВА -->
+    <div class="sc" id="sc-words">
+      <div class="words-top">
+        <div class="quota">
+          <div class="qt"><div class="qtn" style="color:var(--gold2)" id="qN">10</div><div class="qtl">Новых</div></div>
+          <div class="qt"><div class="qtn" style="color:var(--blue)" id="qR">0</div><div class="qtl">Повтор</div></div>
+          <div class="qt"><div class="qtn" style="color:var(--green2)" id="qD">0</div><div class="qtl">Готово</div></div>
+        </div>
+      </div>
+      <div class="card-wrap">
+        <div class="fc" id="fc" onclick="flipCard()">
+          <div class="fc-tag" id="fcTag">1/10</div>
+          <div class="fc-type nt" id="fcType">🆕 новое</div>
+          <div class="fc-front">
+            <div class="w-ar" id="wAr">بِسْمِ</div>
+            <div class="w-tr" id="wTr">bismi</div>
+            <div class="tap-h">нажми — открыть</div>
+          </div>
+          <div class="fc-back">
+            <div class="w-ru" id="wRu">именем</div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center">
+              <div class="w-cat" id="wCat">предлог</div>
+              <div class="w-root" id="wRoot">корень: س م و</div>
+            </div>
+            <div class="qs">
+              <div class="qs-lbl">Из Корана</div>
+              <div class="qs-ar" id="wEx">بِسْمِ اللَّهِ</div>
+              <div class="qs-tr" id="wExTr">Bismillāh</div>
+              <div class="qs-ru" id="wExRu"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sw-hint hidden" id="swHint"><span>← снова</span><span>знаю →</span></div>
+      <div class="ans-row hidden" id="ansRow">
+        <button class="ans ans-a" onclick="answer(1)">Снова<br><small style="font-size:9px;opacity:.7">завтра</small></button>
+        <button class="ans ans-h" onclick="answer(2)">Трудно<br><small style="font-size:9px;opacity:.7">3 дня</small></button>
+        <button class="ans ans-g" onclick="answer(4)">Знаю ✓<br><small style="font-size:9px;opacity:.7">7 дней</small></button>
+      </div>
+    </div>
+
+    <!-- КОРАН -->
+    <div class="sc" id="sc-quran">
+      <div class="qr-wrap">
+        <div class="stabs" id="surahTabs"></div>
+        <div id="surahContent"></div>
+      </div>
+      <div class="wpop hidden" id="wpop"></div>
+    </div>
+
+    <!-- ПРОГРЕСС -->
+    <div class="sc" id="sc-progress">
+      <div class="pr-wrap">
+        <div class="pr-hero">
+          <div class="prh-lbl">Слова Корана</div>
+          <div class="prh-pct" id="pPct">0%</div>
+          <div class="prh-sub" id="pSub">из 300 ключевых слов</div>
+          <div class="prh-bar"><div class="prh-fill" id="pBar" style="width:0%"></div></div>
+        </div>
+        <div class="week-box">
+          <div class="wb-tl">Активность за неделю</div>
+          <div class="bars" id="wBars"></div>
+          <div style="display:flex;gap:5px;margin-top:5px" id="wDays"></div>
+        </div>
+        <div class="kn-box">
+          <div class="kn-tl">Изученные слова (<span id="kCnt">0</span>)</div>
+          <div class="kchips" id="kChips"><span style="font-size:12px;color:var(--bd2)">Начни учить слова!</span></div>
+        </div>
+        <div class="achiev-box">
+          <div class="stitle">Достижения</div>
+          <div class="ach-grid" id="achGrid"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bnav">
+    <button class="bn active" onclick="goTab('home',0)"><span class="bni">🏠</span>Главная</button>
+    <button class="bn" onclick="goTab('sound',1)"><span class="bni">🔊</span>Звук</button>
+    <button class="bn" onclick="goTab('words',2)"><span class="bni">📖</span>Слова</button>
+    <button class="bn" onclick="goTab('quran',3)"><span class="bni">🕌</span>Коран</button>
+    <button class="bn" onclick="goTab('progress',4)"><span class="bni">📊</span>Итоги</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="mov hidden" id="modal" onclick="closeMov(event)">
+  <div class="msh">
+    <div class="mh"></div>
+    <div class="mtl" id="mTl"></div>
+    <div class="mdc" id="mDc"></div>
+    <div class="mar" id="mAr"></div>
+    <div class="mexs" id="mEx"></div>
+    <button class="mcl" onclick="closeModal()">Понятно ✓</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// ДАННЫЕ — 100 слов (топ Корана по частоте встречаемости)
+// ═══════════════════════════════════════════════════════
+const WORDS=[
+// Предлоги и частицы (самые частые в Коране)
+{ar:'بِسْمِ',tr:'bismi',ru:'именем',cat:'предлог',root:'س م و',ex:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',exTr:'Bismillāhi r-raḥmāni r-raḥīm',exRu:'Именем Аллаха, Милостивого, Милосердного'},
+{ar:'مِنْ',tr:'min',ru:'от / из',cat:'предлог',root:'م ن',ex:'مِن شَرِّ مَا خَلَقَ',exTr:'min sharri mā khalaqa',exRu:'от зла того, что Он сотворил'},
+{ar:'فِي',tr:'fī',ru:'в / во',cat:'предлог',root:'ف ي',ex:'فِي سَبِيلِ اللَّهِ',exTr:'fī sabīli llāh',exRu:'на пути Аллаха'},
+{ar:'عَلَى',tr:'ʿalā',ru:'на / над',cat:'предлог',root:'ع ل و',ex:'وَعَلَى اللَّهِ فَتَوَكَّلُوا',exTr:'wa ʿalā llāhi fa-tawakkalū',exRu:'и на Аллаха полагайтесь'},
+{ar:'إِلَى',tr:'ilā',ru:'к / до',cat:'предлог',root:'أ ل و',ex:'إِلَى اللَّهِ الْمَصِيرُ',exTr:'ilā llāhi l-maṣīr',exRu:'к Аллаху — конечное возвращение'},
+{ar:'عَنْ',tr:'ʿan',ru:'о / от',cat:'предлог',root:'ع ن',ex:'يَعْلَمُ مَا تُخْفُونَ وَمَا تُعْلِنُونَ',exTr:'yaʿlamu mā tukhfūna',exRu:'Он знает то, что вы скрываете'},
+{ar:'مَا',tr:'mā',ru:'что / то что',cat:'частица',root:'م ا',ex:'مَا شَاءَ اللَّهُ',exTr:'mā shāʾa llāh',exRu:'Что пожелал Аллах — то и будет'},
+{ar:'لَا',tr:'lā',ru:'нет / не',cat:'частица',root:'ل ا',ex:'لَا إِلَٰهَ إِلَّا اللَّهُ',exTr:'lā ilāha illā llāh',exRu:'нет бога, кроме Аллаха'},
+{ar:'وَ',tr:'wa',ru:'и / а',cat:'союз',root:'و',ex:'وَاللَّهُ غَفُورٌ رَّحِيمٌ',exTr:'wa llāhu ghafūrun raḥīm',exRu:'Аллах — Прощающий, Милосердный'},
+{ar:'أَنَّ',tr:'anna',ru:'что (союз)',cat:'союз',root:'أ ن',ex:'وَأَنَّ اللَّهَ لَا يُضِيعُ',exTr:'wa anna llāha lā yuḍīʿ',exRu:'и что Аллах не допускает пропасть'},
+{ar:'إِنَّ',tr:'inna',ru:'поистине',cat:'частица',root:'أ ن',ex:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',exTr:'inna llāha maʿa ṣ-ṣābirīn',exRu:'поистине, Аллах — с терпеливыми'},
+{ar:'هُوَ',tr:'huwa',ru:'он',cat:'местоим.',root:'ه و',ex:'قُلْ هُوَ اللَّهُ أَحَدٌ',exTr:'qul huwa llāhu aḥad',exRu:'Скажи: «Он — Аллах Единый»'},
+{ar:'هُمْ',tr:'hum',ru:'они',cat:'местоим.',root:'ه م',ex:'هُمُ الْمُفْلِحُونَ',exTr:'humu l-mufliḥūn',exRu:'они — преуспевшие'},
+{ar:'لَهُ',tr:'lahu',ru:'ему / для него',cat:'местоим.',root:'ل ه',ex:'لَهُ مَا فِي السَّمَاوَاتِ',exTr:'lahu mā fi s-samāwāt',exRu:'Ему принадлежит то, что на небесах'},
+{ar:'لَمْ',tr:'lam',ru:'не (прош. вр.)',cat:'частица',root:'ل م',ex:'لَمْ يَلِدْ وَلَمْ يُولَدْ',exTr:'lam yalid wa lam yūlad',exRu:'Он не родил и не был рождён'},
+// Имена Аллаха и атрибуты
+{ar:'اللَّهُ',tr:'allāhu',ru:'Аллах',cat:'имя',root:'أ ل ه',ex:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',exTr:'Bismillāhi r-raḥmāni r-raḥīm'},
+{ar:'الرَّحْمَٰنُ',tr:'ar-raḥmān',ru:'Милостивый',cat:'имя Аллаха',root:'ر ح م',ex:'الرَّحْمَٰنُ عَلَّمَ الْقُرْآنَ',exTr:'ar-raḥmānu ʿallama l-qurʾān',exRu:'Милостивый научил Корану'},
+{ar:'الرَّحِيمُ',tr:'ar-raḥīm',ru:'Милосердный',cat:'имя Аллаха',root:'ر ح م',ex:'وَكَانَ اللَّهُ غَفُورًا رَّحِيمًا',exTr:'wa kāna llāhu ghafūran raḥīmā',exRu:'Аллах — Прощающий, Милосердный'},
+{ar:'الْغَفُورُ',tr:'al-ghafūr',ru:'Прощающий',cat:'имя Аллаха',root:'غ ف ر',ex:'إِنَّ اللَّهَ غَفُورٌ رَّحِيمٌ',exTr:'inna llāha ghafūrun raḥīm',exRu:'поистине, Аллах — Прощающий, Милосердный'},
+{ar:'الْعَلِيمُ',tr:'al-ʿalīm',ru:'Всезнающий',cat:'имя Аллаха',root:'ع ل م',ex:'وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ',exTr:'wa llāhu bi-kulli shayʾin ʿalīm',exRu:'Аллах знает обо всём'},
+{ar:'الْقَدِيرُ',tr:'al-qadīr',ru:'Всемогущий',cat:'имя Аллаха',root:'ق د ر',ex:'إِنَّ اللَّهَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',exTr:'inna llāha ʿalā kulli shayʾin qadīr',exRu:'поистине, Аллах над всем властен'},
+{ar:'الْحَكِيمُ',tr:'al-ḥakīm',ru:'Мудрый',cat:'имя Аллаха',root:'ح ك م',ex:'وَاللَّهُ عَزِيزٌ حَكِيمٌ',exTr:'wa llāhu ʿazīzun ḥakīm',exRu:'Аллах — Могущественный, Мудрый'},
+// Существительные — основа
+{ar:'رَبّ',tr:'rabb',ru:'Господь',cat:'существит.',root:'ر ب ب',ex:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',exTr:'al-ḥamdu lillāhi rabbi l-ʿālamīn',exRu:'хвала Аллаху, Господу миров'},
+{ar:'رَحْمَة',tr:'raḥma',ru:'Милость',cat:'существит.',root:'ر ح م',ex:'وَرَحْمَتِي وَسِعَتْ كُلَّ شَيْءٍ',exTr:'wa raḥmatī wasiʿat kulla shayʾ',exRu:'Моя милость объемлет всё'},
+{ar:'نَفْس',tr:'nafs',ru:'Душа / Я',cat:'существит.',root:'ن ف س',ex:'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ',exTr:'kullu nafsin dhāʾiqatu l-mawt',exRu:'каждая душа вкусит смерть'},
+{ar:'حَقّ',tr:'ḥaqq',ru:'Истина',cat:'существит.',root:'ح ق ق',ex:'وَقُلِ الْحَقُّ مِن رَّبِّكُمْ',exTr:'wa quli l-ḥaqqu min rabbikum',exRu:'и скажи: «Истина — от вашего Господа»'},
+{ar:'كِتَاب',tr:'kitāb',ru:'Книга',cat:'существит.',root:'ك ت ب',ex:'ذَٰلِكَ الْكِتَابُ لَا رَيْبَ فِيهِ',exTr:'dhālika l-kitābu lā rayba fīh',exRu:'это Писание — нет сомнения в нём'},
+{ar:'يَوْم',tr:'yawm',ru:'День',cat:'существит.',root:'ي و م',ex:'مَالِكِ يَوْمِ الدِّينِ',exTr:'māliki yawmi d-dīn',exRu:'Властелину Дня воздаяния'},
+{ar:'عِلْم',tr:'ʿilm',ru:'Знание',cat:'существит.',root:'ع ل م',ex:'وَمَا أُوتِيتُم مِّنَ الْعِلْمِ إِلَّا قَلِيلًا',exTr:'wa mā ūtītum mina l-ʿilmi illā qalīlā',exRu:'вам дано знания лишь немного'},
+{ar:'قَلْب',tr:'qalb',ru:'Сердце',cat:'существит.',root:'ق ل ب',ex:'إِنَّ فِي ذَٰلِكَ لَذِكْرَىٰ لِمَن كَانَ لَهُ قَلْبٌ',exTr:'inna fī dhālika la-dhikrā liman kāna lahu qalb',exRu:'в этом напоминание для того, у кого есть сердце'},
+{ar:'صَبْر',tr:'ṣabr',ru:'Терпение',cat:'существит.',root:'ص ب ر',ex:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',exTr:'innallāha maʿa ṣ-ṣābirīn',exRu:'поистине, Аллах — с терпеливыми'},
+{ar:'شُكْر',tr:'shukr',ru:'Благодарность',cat:'существит.',root:'ش ك ر',ex:'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ',exTr:'la-in shakartum la-azīdannakum',exRu:'если будете благодарны — Я прибавлю вам'},
+{ar:'نُور',tr:'nūr',ru:'Свет',cat:'существит.',root:'ن و ر',ex:'اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ',exTr:'allāhu nūru s-samāwāti wa l-arḍ',exRu:'Аллах — Свет небес и земли'},
+{ar:'حَيَاة',tr:'ḥayāh',ru:'Жизнь',cat:'существит.',root:'ح ي ي',ex:'وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ',exTr:'wa ma l-ḥayātu d-dunyā illā matāʿu l-ghurūr',exRu:'мирская жизнь — лишь обманчивое наслаждение'},
+{ar:'إِنسَان',tr:'insān',ru:'Человек',cat:'существит.',root:'أ ن س',ex:'وَخُلِقَ الْإِنسَانُ ضَعِيفًا',exTr:'wa khuliqa l-insānu ḍaʿīfā',exRu:'человек создан слабым'},
+{ar:'دِين',tr:'dīn',ru:'Религия / Суд',cat:'существит.',root:'د ي ن',ex:'مَالِكِ يَوْمِ الدِّينِ',exTr:'māliki yawmi d-dīn'},
+{ar:'عَمَل',tr:'ʿamal',ru:'Поступок / Дело',cat:'существит.',root:'ع م ل',ex:'فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ',exTr:'faman yaʿmal mithqāla dharratin khayran yarah'},
+{ar:'خَيْر',tr:'khayr',ru:'Добро / Благо',cat:'существит.',root:'خ ي ر',ex:'وَمَا تَفْعَلُوا مِنْ خَيْرٍ يَعْلَمْهُ اللَّهُ',exTr:'wa mā tafʿalū min khayrin yaʿlamhu llāh',exRu:'Аллах знает то добро, что вы совершаете'},
+{ar:'آخِرَة',tr:'ākhira',ru:'Последняя жизнь',cat:'существит.',root:'أ خ ر',ex:'وَلَلْآخِرَةُ خَيْرٌ لَّكَ مِنَ الْأُولَىٰ',exTr:'wa la-l-ākhiratu khayrun laka mina l-ūlā',exRu:'последняя жизнь лучше для тебя, чем первая'},
+{ar:'سَلَام',tr:'salām',ru:'Мир',cat:'существит.',root:'س ل م',ex:'سَلَامٌ عَلَيْكُم بِمَا صَبَرْتُمْ',exTr:'salāmun ʿalaykum bimā ṣabartum',exRu:'мир вам за то, что вы терпели'},
+{ar:'إِيمَان',tr:'īmān',ru:'Вера',cat:'существит.',root:'أ م ن',ex:'يَا أَيُّهَا الَّذِينَ آمَنُوا',exTr:'yā ayyuhā lladhīna āmanū',exRu:'о те, которые уверовали'},
+{ar:'أَرْض',tr:'arḍ',ru:'Земля',cat:'существит.',root:'أ ر ض',ex:'لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ',exTr:'lahu mā fi s-samāwāti wa mā fi l-arḍ'},
+{ar:'سَمَاء',tr:'samāʾ',ru:'Небо',cat:'существит.',root:'س م و',ex:'اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ',exTr:'allāhu nūru s-samāwāti wa l-arḍ'},
+{ar:'مَوْت',tr:'mawt',ru:'Смерть',cat:'существит.',root:'م و ت',ex:'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ',exTr:'kullu nafsin dhāʾiqatu l-mawt'},
+{ar:'جَنَّة',tr:'janna',ru:'Рай / Сад',cat:'существит.',root:'ج ن ن',ex:'وَبَشِّرِ الَّذِينَ آمَنُوا أَنَّ لَهُمْ جَنَّاتٍ',exTr:'wa bashshiri lladhīna āmanū anna lahum jannāt',exRu:'обрадуй верующих вестью о садах'},
+{ar:'نَار',tr:'nār',ru:'Огонь / Ад',cat:'существит.',root:'ن ي ر',ex:'وَاتَّقُوا النَّارَ الَّتِي أُعِدَّتْ لِلْكَافِرِينَ',exTr:'wa ttaqū n-nāra llatī uʿiddat li-l-kāfirīn',exRu:'бойтесь огня, уготованного для неверующих'},
+{ar:'صَلَاة',tr:'ṣalāh',ru:'Намаз / Молитва',cat:'существит.',root:'ص ل و',ex:'وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ',exTr:'wa aqīmū ṣ-ṣalāta wa ātū z-zakāh',exRu:'совершайте молитву и выплачивайте закят'},
+{ar:'زَكَاة',tr:'zakāh',ru:'Закят',cat:'существит.',root:'ز ك و',ex:'وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ',exTr:'wa aqīmū ṣ-ṣalāta wa ātū z-zakāh'},
+{ar:'تَوْبَة',tr:'tawba',ru:'Покаяние',cat:'существит.',root:'ت و ب',ex:'إِنَّ اللَّهَ يُحِبُّ التَّوَّابِينَ',exTr:'inna llāha yuḥibbu t-tawwābīn',exRu:'поистине, Аллах любит кающихся'},
+{ar:'دُعَاء',tr:'duʿāʾ',ru:'Мольба / Дуа',cat:'существит.',root:'د ع و',ex:'قُلْ مَا يَعْبَأُ بِكُمْ رَبِّي لَوْلَا دُعَاؤُكُمْ',exTr:'qul mā yaʿbaʾu bikum rabbī lawlā duʿāʾukum',exRu:'скажи: «Что Господу с вас без вашей мольбы»'},
+{ar:'ذِكْر',tr:'dhikr',ru:'Поминание / Упоминание',cat:'существит.',root:'ذ ك ر',ex:'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',exTr:'alā bi-dhikri llāhi taṭmaʾinnu l-qulūb',exRu:'только поминанием Аллаха успокаиваются сердца'},
+{ar:'أَمَانَة',tr:'amāna',ru:'Доверие / Аманат',cat:'существит.',root:'أ م ن',ex:'إِنَّا عَرَضْنَا الْأَمَانَةَ عَلَى السَّمَاوَاتِ',exTr:'innā ʿaraḍnā l-amānata ʿalā s-samāwāt',exRu:'Мы предложили доверие небесам'},
+{ar:'صِرَاط',tr:'ṣirāṭ',ru:'Путь / Дорога',cat:'существит.',root:'ص ر ط',ex:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',exTr:'ihdinā ṣ-ṣirāṭa l-mustaqīm',exRu:'веди нас прямым путём'},
+{ar:'أَهْل',tr:'ahl',ru:'Семья / Люди',cat:'существит.',root:'أ ه ل',ex:'يَا أَهْلَ الْكِتَابِ',exTr:'yā ahla l-kitāb',exRu:'о люди Писания'},
+{ar:'عَالَم',tr:'ʿālam',ru:'Мир / Вселенная',cat:'существит.',root:'ع ل م',ex:'رَبِّ الْعَالَمِينَ',exTr:'rabbi l-ʿālamīn',exRu:'Господу миров'},
+{ar:'كَلِمَة',tr:'kalima',ru:'Слово',cat:'существит.',root:'ك ل م',ex:'كَلِمَةُ اللَّهِ هِيَ الْعُلْيَا',exTr:'kalimatu llāhi hiya l-ʿulyā',exRu:'слово Аллаха — высшее'},
+{ar:'آيَة',tr:'āya',ru:'Знамение / Аят',cat:'существит.',root:'أ ي و',ex:'وَمِنْ آيَاتِهِ أَنْ خَلَقَكُم',exTr:'wa min āyātihi an khalaqakum',exRu:'из Его знамений — что Он создал вас'},
+{ar:'سُورَة',tr:'sūra',ru:'Сура',cat:'существит.',root:'س و ر',ex:'فَأْتُوا بِسُورَةٍ مِّن مِّثْلِهِ',exTr:'faʾtū bi-sūratin min mithlihi',exRu:'принесите суру, подобную ему'},
+{ar:'قُرْآن',tr:'qurʾān',ru:'Коран',cat:'существит.',root:'ق ر أ',ex:'الرَّحْمَٰنُ عَلَّمَ الْقُرْآنَ',exTr:'ar-raḥmānu ʿallama l-qurʾān'},
+// Глаголы
+{ar:'قَالَ',tr:'qāla',ru:'сказал',cat:'глагол',root:'ق و ل',ex:'وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ',exTr:'wa qāla rabbukumu dʿūnī astajib lakum',exRu:'ваш Господь сказал: взывайте ко Мне — Я отвечу'},
+{ar:'جَاءَ',tr:'jāʾa',ru:'пришёл',cat:'глагол',root:'ج ي أ',ex:'إِذَا جَاءَ نَصْرُ اللَّهِ',exTr:'idhā jāʾa naṣru llāh',exRu:'когда придёт помощь Аллаха'},
+{ar:'كَانَ',tr:'kāna',ru:'был / есть',cat:'глагол',root:'ك و ن',ex:'وَكَانَ اللَّهُ عَلِيمًا حَكِيمًا',exTr:'wa kāna llāhu ʿalīman ḥakīmā',exRu:'Аллах — Знающий, Мудрый'},
+{ar:'يَعْلَمُ',tr:'yaʿlamu',ru:'знает',cat:'глагол',root:'ع ل م',ex:'وَاللَّهُ يَعْلَمُ مَا تَصْنَعُونَ',exTr:'wa llāhu yaʿlamu mā taṣnaʿūn',exRu:'Аллах знает то, что вы делаете'},
+{ar:'آمَنَ',tr:'āmana',ru:'уверовал',cat:'глагол',root:'أ م ن',ex:'يَا أَيُّهَا الَّذِينَ آمَنُوا',exTr:'yā ayyuhā lladhīna āmanū'},
+{ar:'عَمِلَ',tr:'ʿamila',ru:'делал / совершал',cat:'глагол',root:'ع م ل',ex:'فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا',exTr:'faman yaʿmal mithqāla dharratin khayran',exRu:'кто совершит добро весом с пылинку'},
+{ar:'خَلَقَ',tr:'khalaqa',ru:'сотворил',cat:'глагол',root:'خ ل ق',ex:'الَّذِي خَلَقَ الْمَوْتَ وَالْحَيَاةَ',exTr:'alladhī khalaqa l-mawta wa l-ḥayāh',exRu:'Тот, Кто сотворил смерть и жизнь'},
+{ar:'رَزَقَ',tr:'razaqa',ru:'наделил уделом',cat:'глагол',root:'ر ز ق',ex:'وَمَا رَزَقْنَاهُمْ يُنفِقُونَ',exTr:'wa mā razaqnāhum yunfiqūn',exRu:'и из того, чем Мы наделили их, расходуют'},
+{ar:'هَدَى',tr:'hadā',ru:'повёл прямым путём',cat:'глагол',root:'ه د ي',ex:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',exTr:'ihdinā ṣ-ṣirāṭa l-mustaqīm'},
+{ar:'تَابَ',tr:'tāba',ru:'покаялся',cat:'глагол',root:'ت و ب',ex:'إِلَّا مَن تَابَ وَآمَنَ',exTr:'illā man tāba wa āmana',exRu:'кроме тех, кто покаялся и уверовал'},
+{ar:'قَرَأَ',tr:'qaraʾa',ru:'читал',cat:'глагол',root:'ق ر أ',ex:'اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ',exTr:'iqraʾ bi-smi rabbika lladhī khalaqa',exRu:'читай во имя Господа твоего, Который сотворил'},
+{ar:'نَزَلَ',tr:'nazala',ru:'ниспослал',cat:'глагол',root:'ن ز ل',ex:'إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ',exTr:'innā anzalnāhu fī laylati l-qadr',exRu:'Мы ниспослали его в Ночь предопределения'},
+{ar:'دَعَا',tr:'daʿā',ru:'взывал / просил',cat:'глагол',root:'د ع و',ex:'وَقَالَ رَبُّكُمُ ادْعُونِي',exTr:'wa qāla rabbukumu dʿūnī',exRu:'ваш Господь сказал: взывайте ко Мне'},
+{ar:'أَسْلَمَ',tr:'aslama',ru:'покорился / принял Ислам',cat:'глагол',root:'س ل م',ex:'وَمَنْ أَسْلَمَ وَجْهَهُ لِلَّهِ',exTr:'wa man aslama wajhahu lillāh',exRu:'кто покорил себя Аллаху'},
+// Прилагательные
+{ar:'كَبِير',tr:'kabīr',ru:'большой / великий',cat:'прилагат.',root:'ك ب ر',ex:'وَهُوَ الْعَلِيُّ الْكَبِيرُ',exTr:'wa huwa l-ʿaliyyu l-kabīr',exRu:'Он — Высокий, Великий'},
+{ar:'صَغِير',tr:'ṣaghīr',ru:'маленький',cat:'прилагат.',root:'ص غ ر',ex:'لَا يُغَادِرُ صَغِيرَةً وَلَا كَبِيرَةً',exTr:'lā yughādiru ṣaghīratan wa lā kabīra',exRu:'не оставит ни малого, ни великого'},
+{ar:'عَظِيم',tr:'ʿaẓīm',ru:'великий / огромный',cat:'прилагат.',root:'ع ظ م',ex:'وَهُوَ الْعَلِيُّ الْعَظِيمُ',exTr:'wa huwa l-ʿaliyyu l-ʿaẓīm',exRu:'Он — Высокий, Огромный'},
+{ar:'كَرِيم',tr:'karīm',ru:'щедрый / благородный',cat:'прилагат.',root:'ك ر م',ex:'إِنَّهُ لَقُرْآنٌ كَرِيمٌ',exTr:'innahu la-qurʾānun karīm',exRu:'воистину, это Коран благородный'},
+{ar:'قَرِيب',tr:'qarīb',ru:'близкий',cat:'прилагат.',root:'ق ر ب',ex:'إِنِّي قَرِيبٌ أُجِيبُ دَعْوَةَ الدَّاعِ',exTr:'innī qarībun ujību daʿwata d-dāʿ',exRu:'Я близко и отвечаю на зов взывающего'},
+{ar:'كَثِير',tr:'kathīr',ru:'много / многий',cat:'прилагат.',root:'ك ث ر',ex:'وَاذْكُرُوا اللَّهَ كَثِيرًا',exTr:'wa dhkurū llāha kathīrā',exRu:'поминайте Аллаха многократно'},
+{ar:'قَلِيل',tr:'qalīl',ru:'мало / малый',cat:'прилагат.',root:'ق ل ل',ex:'وَمَا أُوتِيتُم مِّنَ الْعِلْمِ إِلَّا قَلِيلًا',exTr:'wa mā ūtītum mina l-ʿilmi illā qalīlā'},
+{ar:'جَدِيد',tr:'jadīd',ru:'новый',cat:'прилагат.',root:'ج د د',ex:'إِنَّا خَلَقْنَاهُنَّ خَلْقًا جَدِيدًا',exTr:'innā khalaqnāhunna khalqan jadīdā',exRu:'Мы сотворим их особым творением'},
+{ar:'صَحِيح',tr:'ṣaḥīḥ',ru:'правильный / верный',cat:'прилагат.',root:'ص ح ح',ex:'',exTr:''},
+{ar:'مُسْتَقِيم',tr:'mustaqīm',ru:'прямой',cat:'прилагат.',root:'ق و م',ex:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',exTr:'ihdinā ṣ-ṣirāṭa l-mustaqīm'},
+// Числа и важные слова
+{ar:'أَحَد',tr:'aḥad',ru:'один / единственный',cat:'числит.',root:'و ح د',ex:'قُلْ هُوَ اللَّهُ أَحَدٌ',exTr:'qul huwa llāhu aḥad'},
+{ar:'كُلّ',tr:'kull',ru:'каждый / весь',cat:'местоим.',root:'ك ل ل',ex:'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ',exTr:'kullu nafsin dhāʾiqatu l-mawt'},
+{ar:'شَيْء',tr:'shayʾ',ru:'вещь / что-либо',cat:'существит.',root:'ش ي أ',ex:'وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ',exTr:'wa llāhu bi-kulli shayʾin ʿalīm'},
+{ar:'نَاس',tr:'nās',ru:'люди',cat:'существит.',root:'أ ن س',ex:'قُلْ أَعُوذُ بِرَبِّ النَّاسِ',exTr:'qul aʿūdhu bi-rabbi n-nās'},
+{ar:'رَسُول',tr:'rasūl',ru:'посланник',cat:'существит.',root:'ر س ل',ex:'مُّحَمَّدٌ رَّسُولُ اللَّهِ',exTr:'muḥammadun rasūlu llāh',exRu:'Мухаммад — посланник Аллаха'},
+{ar:'نَبِيّ',tr:'nabī',ru:'пророк',cat:'существит.',root:'ن ب أ',ex:'النَّبِيُّ أَوْلَىٰ بِالْمُؤْمِنِينَ مِنْ أَنفُسِهِمْ',exTr:'an-nabiyyu awlā bi-l-muʾminīna min anfusihim',exRu:'Пророк ближе к верующим, чем они сами'},
+{ar:'مُؤْمِن',tr:'muʾmin',ru:'верующий',cat:'существит.',root:'أ م ن',ex:'إِنَّمَا الْمُؤْمِنُونَ إِخْوَةٌ',exTr:'innamā l-muʾminūna ikhwa',exRu:'поистине, верующие — братья'},
+{ar:'مُسْلِم',tr:'muslim',ru:'мусульманин',cat:'существит.',root:'س ل م',ex:'وَأَنَا أَوَّلُ الْمُسْلِمِينَ',exTr:'wa anā awwalu l-muslimīn',exRu:'и я — первый из покорившихся'},
+{ar:'عَبْد',tr:'ʿabd',ru:'раб / слуга',cat:'существит.',root:'ع ب د',ex:'وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ',exTr:'wa mā khalaqtu l-jinna wa l-insa illā li-yaʿbudūn',exRu:'Я сотворил джиннов и людей лишь для поклонения Мне'},
+{ar:'إِسْلَام',tr:'islām',ru:'Ислам / покорность',cat:'существит.',root:'س ل م',ex:'إِنَّ الدِّينَ عِندَ اللَّهِ الْإِسْلَامُ',exTr:'inna d-dīna ʿinda llāhi l-islām',exRu:'поистине, религия пред Аллахом — Ислам'},
+{ar:'حَمْد',tr:'ḥamd',ru:'Хвала',cat:'существит.',root:'ح م د',ex:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',exTr:'al-ḥamdu lillāhi rabbi l-ʿālamīn'},
+{ar:'تَوَكُّل',tr:'tawakkul',ru:'упование на Аллаха',cat:'существит.',root:'و ك ل',ex:'وَعَلَى اللَّهِ فَتَوَكَّلُوا',exTr:'wa ʿalā llāhi fa-tawakkalū'},
+{ar:'رِزْق',tr:'rizq',ru:'удел / пропитание',cat:'существит.',root:'ر ز ق',ex:'وَفِي السَّمَاءِ رِزْقُكُمْ',exTr:'wa fi s-samāʾi rizqukum',exRu:'и на небесах — ваш удел'},
+{ar:'فَضْل',tr:'faḍl',ru:'милость / щедрость',cat:'существит.',root:'ف ض ل',ex:'ذَٰلِكَ فَضْلُ اللَّهِ يُؤْتِيهِ مَن يَشَاءُ',exTr:'dhālika faḍlu llāhi yuʾtīhi man yashāʾ',exRu:'это — милость Аллаха, Он даёт её кому пожелает'},
+{ar:'جِهَاد',tr:'jihād',ru:'усердие / борьба',cat:'существит.',root:'ج ه د',ex:'وَجَاهِدُوا فِي اللَّهِ حَقَّ جِهَادِهِ',exTr:'wa jāhidū fi llāhi ḥaqqa jihādihi',exRu:'усердствуйте ради Аллаха должным усердием'},
+{ar:'صِدْق',tr:'ṣidq',ru:'правдивость / искренность',cat:'существит.',root:'ص د ق',ex:'هَٰذَا يَوْمُ يَنفَعُ الصَّادِقِينَ صِدْقُهُمْ',exTr:'hādhā yawmu yanfaʿu ṣ-ṣādiqīna ṣidquhum',exRu:'это — день, когда правдивым поможет их правдивость'},
+{ar:'عَدْل',tr:'ʿadl',ru:'справедливость',cat:'существит.',root:'ع د ل',ex:'إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ',exTr:'inna llāha yaʾmuru bi-l-ʿadli wa l-iḥsān',exRu:'Аллах велит справедливость и благодеяние'},
+{ar:'إِحْسَان',tr:'iḥsān',ru:'благодеяние / совершенство',cat:'существит.',root:'ح س ن',ex:'إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ',exTr:'inna llāha yaʾmuru bi-l-ʿadli wa l-iḥsān'},
+{ar:'أُمَّة',tr:'umma',ru:'община / народ',cat:'существит.',root:'أ م م',ex:'كُنتُمْ خَيْرَ أُمَّةٍ أُخْرِجَتْ لِلنَّاسِ',exTr:'kuntum khayra ummatin ukhrijat li-n-nās',exRu:'вы — лучшая из общин, выведенная для людей'},
+{ar:'خَلِيفَة',tr:'khalīfa',ru:'наместник / халиф',cat:'существит.',root:'خ ل ف',ex:'إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً',exTr:'innī jāʿilun fi l-arḍi khalīfa',exRu:'Я установлю на земле наместника'},
+{ar:'مَلَك',tr:'malak',ru:'ангел',cat:'существит.',root:'م ل ك',ex:'قُلْ يَتَوَفَّاكُم مَّلَكُ الْمَوْتِ',exTr:'qul yatawaffākum malaku l-mawt',exRu:'скажи: ангел смерти заберёт вас'},
+{ar:'شَيْطَان',tr:'shayṭān',ru:'шайтан',cat:'существит.',root:'ش ط ن',ex:'إِنَّ الشَّيْطَانَ لَكُمْ عَدُوٌّ فَاتَّخِذُوهُ عَدُوًّا',exTr:'inna sh-shayṭāna lakum ʿaduwwun',exRu:'поистине, шайтан — ваш враг'},
+{ar:'تَقْوَى',tr:'taqwā',ru:'богобоязненность',cat:'существит.',root:'و ق ي',ex:'وَتَزَوَّدُوا فَإِنَّ خَيْرَ الزَّادِ التَّقْوَى',exTr:'wa tazawwadū fa-inna khayra z-zādi t-taqwā',exRu:'берите припасы, лучший припас — богобоязненность'},
+{ar:'صَبَرَ',tr:'ṣabara',ru:'терпел',cat:'глагол',root:'ص ب ر',ex:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',exTr:'inna llāha maʿa ṣ-ṣābirīn'},
+{ar:'شَكَرَ',tr:'shakara',ru:'благодарил',cat:'глагол',root:'ش ك ر',ex:'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ',exTr:'la-in shakartum la-azīdannakum'},
+{ar:'عَبَدَ',tr:'ʿabada',ru:'поклонялся',cat:'глагол',root:'ع ب د',ex:'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ',exTr:'iyyāka naʿbudu wa iyyāka nastaʿīn',exRu:'Тебе одному поклоняемся и Тебя просим о помощи'},
+{ar:'اسْتَغْفَرَ',tr:'istaghfara',ru:'просил прощения',cat:'глагол',root:'غ ف ر',ex:'فَاسْتَغْفِرُوهُ ثُمَّ تُوبُوا إِلَيْهِ',exTr:'fa-staghfirūhu thumma tūbū ilayh',exRu:'просите у Него прощения, потом кайтесь перед Ним'},
+];
+
+const HARAKATS={
+  fatha:{name:'Фатха',ar:'بَ',desc:'Маленькая чёрточка НАД буквой. Самый частый знак в арабском. Читается как краткое «а» или «э». Встречается в каждом слове Корана.',exs:[{ar:'كَتَبَ',tr:'катаба — писал'},{ar:'فَتَحَ',tr:'фатаха — открыл'},{ar:'ذَهَبَ',tr:'захаба — ушёл'}]},
+  kasra:{name:'Касра',ar:'بِ',desc:'Чёрточка ПОД буквой. Читается как краткое «и». Запомни: касра «падает вниз» — и звук тянется вниз: «и».',exs:[{ar:'بِسْمِ',tr:'бисми — именем'},{ar:'مِنْ',tr:'мин — от/из'},{ar:'فِي',tr:'фи — в'}]},
+  damma:{name:'Дамма',ar:'بُ',desc:'Маленькая завитушка НАД буквой. Читается как краткое «у». Похожа на перевёрнутую запятую над строкой.',exs:[{ar:'كُلُّ',tr:'кулл — каждый'},{ar:'هُوَ',tr:'хуа — он'},{ar:'لَهُ',tr:'лаху — ему'}]},
+  sukun:{name:'Сукун',ar:'بْ',desc:'Маленький кружок НАД буквой. Означает: буква «закрыта» — гласного нет. Слог заканчивается этой согласной. Читай просто согласную без добавления гласной.',exs:[{ar:'مِنْ',tr:'мин — от'},{ar:'عَنْ',tr:'ʿан — о'},{ar:'قُلْ',tr:'куль — скажи'}]},
+  shadda:{name:'Шадда',ar:'بّ',desc:'Знак «w» НАД буквой. Буква произносится ДВАЖДЫ. Первое произношение закрывает предыдущий слог, второе открывает новый. Это самое важное правило для правильного произношения.',exs:[{ar:'رَبّ',tr:'рабб — Господь'},{ar:'مَكَّة',tr:'Макка'},{ar:'إِنَّ',tr:'инна — поистине'}]},
+  tanwin:{name:'Танвин',ar:'بً',desc:'Удвоенные огласовки на конце слова. Добавляют звук «н». Три вида: ً(ан) ٍ(ин) ٌ(ун). Только у неопределённых существительных. На конце фразы произносится без «н».',exs:[{ar:'كِتَابًا',tr:'китабан'},{ar:'عِلْمٌ',tr:'ʿилмун'},{ar:'بَيْتٍ',tr:'байтин'}]},
+  madd:{name:'Мадда — долгие гласные',ar:'آ',desc:'Долгий звук = держи ровно 2 счёта. Три долгих: ā (алиф после фатхи), ū (вав после даммы), ī (йа после касры). Это другой класс — не краткие!',exs:[{ar:'اللَّهُ',tr:'аллāху — долгое а'},{ar:'نُورٌ',tr:'нуур — долгое у'},{ar:'دِين',tr:'диин — долгое и'}]},
+  hamza:{name:'Хамза',ar:'أَ',desc:'Гортанная смычка. Краткое «закрытие» горла перед гласным. В арабском это полноценная согласная буква — не просто призвук. Похожа на немецкое придыхание в «beachten».',exs:[{ar:'أَحَد',tr:'ахад — один'},{ar:'إِنَّ',tr:'инна — поистине'},{ar:'سُؤَال',tr:'суʾал — вопрос'}]},
+};
+
+const TAJWEED=[
+  {name:'Идгам',ar:'إِدْغَام',color:'#3dba7e',desc:'Слияние двух одинаковых или похожих букв. Если нунсакин (نْ) или танвин стоит перед буквами ي ن م و ل ر — они сливаются. Звук «н» исчезает, а следующая буква усиливается.',ex:'مِن نِّعْمَةٍ',exTr:'мин ниʿма → «мин-ниʿма» (н сливается)'},
+  {name:'Гунна',ar:'غُنَّة',color:'#d4a843',desc:'Носовой призвук при произнесении букв م и ن с шаддой, а также при идгаме. Длится 2 счёта. Звук идёт через нос, рот закрыт. Это главная мелодия арабского чтения.',ex:'إِنَّ',exTr:'инна — слышишь носовой «нн»?'},
+  {name:'Ихфа',ar:'إِخْفَاء',color:'#4a90d9',desc:'Скрытое произношение нунсакина или танвина перед 15 буквами. Звук «н» не произносится чётко — он как бы «прячется», и слышен лёгкий носовой призвук.',ex:'مِن شَرِّ',exTr:'мин шарр → «м(н)шарр» — н скрытый'},
+  {name:'Ляйн',ar:'لَيِّن',color:'#8b5cf6',desc:'Буквы «мягкости» — вав (و) и йа (ي) с сукуном после фатхи. Произносятся мягко, без полного долгого звука. Как краткое скольжение.',ex:'خَوْف',exTr:'хавф — «ав» произноси мягко'},
+  {name:'Мадд василь',ar:'مَدّ وَصْل',color:'#e05555',desc:'Алиф васль (ٱ) в начале слова. При непрерывном чтении он не произносится, слово начинается со следующей буквы. Читается только в начале чтения или после паузы.',ex:'اقْرَأْ',exTr:'При паузе: «Икраʾ». При продолжении: пропускай алиф'},
+];
+
+const SOUND_Q=[
+  {ar:'بَ',correct:'Фатха — «а»',choices:['Фатха — «а»','Касра — «и»','Дамма — «у»','Сукун']},
+  {ar:'بِ',correct:'Касра — «и»',choices:['Фатха — «а»','Касра — «и»','Дамма — «у»','Танвин']},
+  {ar:'بُ',correct:'Дамма — «у»',choices:['Дамма — «у»','Касра — «и»','Сукун','Мадда']},
+  {ar:'بْ',correct:'Сукун — нет гласной',choices:['Фатха — «а»','Сукун — нет гласной','Шадда — удвоение','Танвин']},
+  {ar:'بّ',correct:'Шадда — удвоение',choices:['Шадда — удвоение','Сукун','Дамма — «у»','Хамза']},
+  {ar:'بً',correct:'Танвин — «ан»',choices:['Танвин — «ан»','Фатха — «а»','Мадда','Шадда — удвоение']},
+  {ar:'آ',correct:'Мадда — долгий «а»',choices:['Мадда — долгий «а»','Фатха — «а»','Хамза','Сукун']},
+  {ar:'أَ',correct:'Хамза — гортанная смычка',choices:['Хамза — гортанная смычка','Касра — «и»','Фатха — «а»','Танвин']},
+  {ar:'تَ',correct:'Фатха — «а»',choices:['Фатха — «а»','Касра — «и»','Сукун','Дамма — «у»']},
+  {ar:'سِ',correct:'Касра — «и»',choices:['Касра — «и»','Фатха — «а»','Дамма — «у»','Шадда — удвоение']},
+  {ar:'نُ',correct:'Дамма — «у»',choices:['Дамма — «у»','Фатха — «а»','Сукун','Касра — «и»']},
+  {ar:'مْ',correct:'Сукун — нет гласной',choices:['Сукун — нет гласной','Дамма — «у»','Фатха — «а»','Шадда']},
+  {ar:'رّ',correct:'Шадда — удвоение',choices:['Шадда — удвоение','Мадда — долгий «а»','Сукун','Фатха — «а»']},
+  {ar:'بٌ',correct:'Танвин — «ун»',choices:['Танвин — «ун»','Дамма — «у»','Сукун','Фатха — «а»']},
+];
+
+const AOD=[
+  {ar:'إِنَّ مَعَ الْعُسْرِ يُسْرًا',ru:'«Поистине, вместе с трудностью — лёгкость»',ref:'Аш-Шарх, 94:6'},
+  {ar:'وَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَّكُمْ',ru:'«Быть может, вам неприятно то, что является благом для вас»',ref:'Аль-Бакара, 2:216'},
+  {ar:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',ru:'«Поистине, Аллах — с терпеливыми»',ref:'Аль-Бакара, 2:153'},
+  {ar:'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ',ru:'«Достаточно нам Аллаха — наилучший Покровитель»',ref:'Аль-Имран, 3:173'},
+  {ar:'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',ru:'«Только поминанием Аллаха успокаиваются сердца»',ref:'Ар-Раад, 13:28'},
+  {ar:'وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا',ru:'«Кто боится Аллаха — тому Он откроет выход»',ref:'Ат-Талак, 65:2'},
+  {ar:'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ',ru:'«Если будете благодарны — Я непременно прибавлю вам»',ref:'Ибрахим, 14:7'},
+];
+
+const SURAHS=[
+  {name:'Аль-Фатиха',ref:'1',ayahs:[
+    {num:1,ar:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',ru:'Во имя Аллаха, Милостивого, Милосердного',words:[{ar:'بِسْمِ',ru:'именем'},{ar:'اللَّهِ',ru:'Аллаха'},{ar:'الرَّحْمَٰنِ',ru:'Милостивого'},{ar:'الرَّحِيمِ',ru:'Милосердного'}]},
+    {num:2,ar:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',ru:'Хвала Аллаху, Господу миров',words:[{ar:'الْحَمْدُ',ru:'хвала'},{ar:'لِلَّهِ',ru:'Аллаху'},{ar:'رَبِّ',ru:'Господу'},{ar:'الْعَالَمِينَ',ru:'миров'}]},
+    {num:3,ar:'الرَّحْمَٰنِ الرَّحِيمِ',ru:'Милостивому, Милосердному',words:[{ar:'الرَّحْمَٰنِ',ru:'Милостивому'},{ar:'الرَّحِيمِ',ru:'Милосердному'}]},
+    {num:4,ar:'مَالِكِ يَوْمِ الدِّينِ',ru:'Властелину Дня воздаяния',words:[{ar:'مَالِكِ',ru:'Властелину'},{ar:'يَوْمِ',ru:'дня'},{ar:'الدِّينِ',ru:'воздаяния'}]},
+    {num:5,ar:'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ',ru:'Тебе одному поклоняемся и Тебя одного просим о помощи',words:[{ar:'إِيَّاكَ',ru:'Тебе'},{ar:'نَعْبُدُ',ru:'поклоняемся'},{ar:'وَإِيَّاكَ',ru:'и Тебя'},{ar:'نَسْتَعِينُ',ru:'просим помощи'}]},
+    {num:6,ar:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',ru:'Веди нас прямым путём',words:[{ar:'اهْدِنَا',ru:'веди нас'},{ar:'الصِّرَاطَ',ru:'путём'},{ar:'الْمُسْتَقِيمَ',ru:'прямым'}]},
+    {num:7,ar:'صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ',ru:'Путём тех, кого Ты облагодетельствовал, не тех, на кого Ты разгневался, и не заблудших',words:[{ar:'صِرَاطَ',ru:'путём'},{ar:'الَّذِينَ',ru:'тех, кто'},{ar:'أَنْعَمْتَ',ru:'облагодетельствовал'},{ar:'غَيْرِ',ru:'не'},{ar:'الْمَغْضُوبِ',ru:'разгневанных'},{ar:'الضَّالِّينَ',ru:'заблудших'}]},
+  ]},
+  {name:'Аль-Ихлас',ref:'112',ayahs:[
+    {num:1,ar:'قُلْ هُوَ اللَّهُ أَحَدٌ',ru:'Скажи: «Он — Аллах Единый»',words:[{ar:'قُلْ',ru:'скажи'},{ar:'هُوَ',ru:'Он'},{ar:'اللَّهُ',ru:'Аллах'},{ar:'أَحَدٌ',ru:'Единый'}]},
+    {num:2,ar:'اللَّهُ الصَّمَدُ',ru:'Аллах — Вечный, Самодостаточный',words:[{ar:'اللَّهُ',ru:'Аллах'},{ar:'الصَّمَدُ',ru:'Вечный'}]},
+    {num:3,ar:'لَمْ يَلِدْ وَلَمْ يُولَدْ',ru:'Он не родил и не был рождён',words:[{ar:'لَمْ',ru:'не'},{ar:'يَلِدْ',ru:'родил'},{ar:'وَلَمْ',ru:'и не'},{ar:'يُولَدْ',ru:'был рождён'}]},
+    {num:4,ar:'وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ',ru:'И нет никого равного Ему',words:[{ar:'وَلَمْ',ru:'и не'},{ar:'يَكُن',ru:'есть'},{ar:'لَّهُ',ru:'Ему'},{ar:'كُفُوًا',ru:'равного'},{ar:'أَحَدٌ',ru:'никого'}]},
+  ]},
+  {name:'Аль-Фалак',ref:'113',ayahs:[
+    {num:1,ar:'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ',ru:'Скажи: «Прибегаю к защите Господа рассвета»',words:[{ar:'قُلْ',ru:'скажи'},{ar:'أَعُوذُ',ru:'прибегаю к защите'},{ar:'بِرَبِّ',ru:'к Господу'},{ar:'الْفَلَقِ',ru:'рассвета'}]},
+    {num:2,ar:'مِن شَرِّ مَا خَلَقَ',ru:'От зла того, что Он сотворил',words:[{ar:'مِن',ru:'от'},{ar:'شَرِّ',ru:'зла'},{ar:'مَا',ru:'того, что'},{ar:'خَلَقَ',ru:'сотворил'}]},
+    {num:3,ar:'وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ',ru:'От зла ночного мрака, когда он наступает',words:[{ar:'غَاسِقٍ',ru:'ночного мрака'},{ar:'إِذَا وَقَبَ',ru:'когда наступает'}]},
+    {num:4,ar:'وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ',ru:'От зла дующих на узлы',words:[{ar:'النَّفَّاثَاتِ',ru:'дующих'},{ar:'فِي الْعُقَدِ',ru:'на узлы'}]},
+    {num:5,ar:'وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ',ru:'От зла завистника, когда он завидует',words:[{ar:'حَاسِدٍ',ru:'завистника'},{ar:'إِذَا حَسَدَ',ru:'когда завидует'}]},
+  ]},
+  {name:'Ан-Нас',ref:'114',ayahs:[
+    {num:1,ar:'قُلْ أَعُوذُ بِرَبِّ النَّاسِ',ru:'Скажи: «Прибегаю к защите Господа людей»',words:[{ar:'قُلْ',ru:'скажи'},{ar:'أَعُوذُ',ru:'прибегаю к защите'},{ar:'بِرَبِّ',ru:'к Господу'},{ar:'النَّاسِ',ru:'людей'}]},
+    {num:2,ar:'مَلِكِ النَّاسِ',ru:'Царю людей',words:[{ar:'مَلِكِ',ru:'Царю'},{ar:'النَّاسِ',ru:'людей'}]},
+    {num:3,ar:'إِلَٰهِ النَّاسِ',ru:'Богу людей',words:[{ar:'إِلَٰهِ',ru:'Богу'},{ar:'النَّاسِ',ru:'людей'}]},
+    {num:4,ar:'مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ',ru:'От зла искусителя, отступающего',words:[{ar:'الْوَسْوَاسِ',ru:'искусителя'},{ar:'الْخَنَّاسِ',ru:'отступающего'}]},
+    {num:5,ar:'الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ',ru:'Который нашёптывает в груди людей',words:[{ar:'يُوَسْوِسُ',ru:'нашёптывает'},{ar:'فِي صُدُورِ',ru:'в груди'},{ar:'النَّاسِ',ru:'людей'}]},
+    {num:6,ar:'مِنَ الْجِنَّةِ وَالنَّاسِ',ru:'Из джиннов и людей',words:[{ar:'الْجِنَّةِ',ru:'джиннов'},{ar:'وَالنَّاسِ',ru:'и людей'}]},
+  ]},
+  {name:'Ясин 1-7',ref:'36:1-7',ayahs:[
+    {num:1,ar:'يس',ru:'Йа. Син.',words:[{ar:'يس',ru:'Йа Син (буквы)'}]},
+    {num:2,ar:'وَالْقُرْآنِ الْحَكِيمِ',ru:'Клянусь мудрым Кораном',words:[{ar:'وَالْقُرْآنِ',ru:'и Кораном'},{ar:'الْحَكِيمِ',ru:'мудрым'}]},
+    {num:3,ar:'إِنَّكَ لَمِنَ الْمُرْسَلِينَ',ru:'Воистину, ты — один из посланников',words:[{ar:'إِنَّكَ',ru:'воистину ты'},{ar:'لَمِنَ',ru:'из числа'},{ar:'الْمُرْسَلِينَ',ru:'посланников'}]},
+    {num:4,ar:'عَلَىٰ صِرَاطٍ مُّسْتَقِيمٍ',ru:'На прямом пути',words:[{ar:'عَلَىٰ',ru:'на'},{ar:'صِرَاطٍ',ru:'пути'},{ar:'مُّسْتَقِيمٍ',ru:'прямом'}]},
+    {num:5,ar:'تَنزِيلَ الْعَزِيزِ الرَّحِيمِ',ru:'Ниспосланном Могущественным, Милосердным',words:[{ar:'تَنزِيلَ',ru:'ниспосланном'},{ar:'الْعَزِيزِ',ru:'Могущественным'},{ar:'الرَّحِيمِ',ru:'Милосердным'}]},
+  ]},
+];
+
+const ACHIEV=[
+  {id:'first_word',icon:'🌱',name:'Первое слово',cond:s=>s.cards.filter(c=>c.introduced).length>=1},
+  {id:'words_10',icon:'📚',name:'10 слов',cond:s=>s.cards.filter(c=>c.introduced).length>=10},
+  {id:'words_50',icon:'⭐',name:'50 слов',cond:s=>s.cards.filter(c=>c.introduced).length>=50},
+  {id:'words_100',icon:'🏆',name:'100 слов',cond:s=>s.cards.filter(c=>c.introduced).length>=100},
+  {id:'streak_3',icon:'🔥',name:'3 дня стрик',cond:s=>s.streak>=3},
+  {id:'streak_7',icon:'💎',name:'7 дней стрик',cond:s=>s.streak>=7},
+  {id:'all_hk',icon:'✨',name:'Все огласовки',cond:s=>s.harakatSeen.length>=8},
+  {id:'tajweed',icon:'🎵',name:'Таджвид',cond:s=>s.tjSeen.length>=4},
+  {id:'fatiha',icon:'🕌',name:'Аль-Фатиха',cond:s=>s.studiedAyahs>=7},
+  {id:'xp_100',icon:'💫',name:'100 XP',cond:s=>s.xp>=100},
+  {id:'xp_500',icon:'🌟',name:'500 XP',cond:s=>s.xp>=500},
+  {id:'xp_1000',icon:'👑',name:'1000 XP',cond:s=>s.xp>=1000},
+];
+
+// ═══════════════════════════════════════════════════════
+// СОСТОЯНИЕ
+// ═══════════════════════════════════════════════════════
+const STORE='qurani_v2';
+const NEW_PER_DAY=10;
+const DAY=86400000;
+const RESET_HOUR=4; // сброс в 4:00 утра
+
+// "День" считается с 4:00 до 4:00 следующего дня
+// Если сейчас 01:30 — это ещё вчерашний день
+function getAppDay(){
+  const now=new Date();
+  // Сдвигаем время назад на RESET_HOUR часов
+  const shifted=new Date(now.getTime()-RESET_HOUR*3600000);
+  return`${shifted.getFullYear()}-${shifted.getMonth()}-${shifted.getDate()}`;
+}
+// Для обратной совместимости
+function todayStr(){return getAppDay();}
+
+function mkState(){
+  return{
+    cards:WORDS.map(()=>({interval:0,ef:2.5,nextReview:0,introduced:false})),
+    harakatSeen:[],tjSeen:[],
+    streak:1,xp:0,lastDay:todayStr(),
+    newToday:0,newDayKey:todayStr(),
+    weekData:[0,0,0,0,0,0,0],
+    studiedAyahs:0,sexIdx:0,
+    achUnlocked:[],
+  };
+}
+
+let S=(()=>{try{return JSON.parse(localStorage.getItem(STORE))||mkState();}catch(e){return mkState();}})();
+if(!S.tjSeen)S.tjSeen=[];
+if(!S.achUnlocked)S.achUnlocked=[];
+if(S.newDayKey!==todayStr()){S.newDayKey=todayStr();S.newToday=0;}
+(()=>{
+  // Вычисляем вчерашний день (тоже со сдвигом 4 утра)
+  const yesterday=new Date(Date.now()-DAY);
+  const shiftedY=new Date(yesterday.getTime()-RESET_HOUR*3600000);
+  const yd=`${shiftedY.getFullYear()}-${shiftedY.getMonth()}-${shiftedY.getDate()}`;
+  if(S.lastDay!==todayStr()&&S.lastDay!==yd)S.streak=0;
+})();
+
+function save(){localStorage.setItem(STORE,JSON.stringify(S));}
+
+// ═══ SRS ═══
+function srsUpdate(i,q){
+  const c=S.cards[i];
+  if(q===1){c.interval=1;c.nextReview=Date.now()+DAY;}
+  else if(q===2){c.interval=Math.max(1,Math.round((c.interval||1)*1.2));c.ef=Math.max(1.3,c.ef-.15);c.nextReview=Date.now()+c.interval*DAY;}
+  else{if(!c.interval)c.interval=1;else if(c.interval===1)c.interval=3;else c.interval=Math.round(c.interval*c.ef);c.ef=Math.max(1.3,c.ef+.1);c.nextReview=Date.now()+c.interval*DAY;}
+}
+
+function buildQueue(){
+  const now=Date.now(),rev=[],nw=[];
+  S.cards.forEach((c,i)=>{if(c.introduced){if(c.nextReview<=now)rev.push(i);}else nw.push(i);});
+  return[...rev,...nw.slice(0,Math.max(0,NEW_PER_DAY-S.newToday))];
+}
+
+// ═══ ДОСТИЖЕНИЯ ═══
+function checkAchievements(){
+  ACHIEV.forEach(a=>{
+    if(!S.achUnlocked.includes(a.id)&&a.cond(S)){
+      S.achUnlocked.push(a.id);
+      showToast('🏆 '+a.name);
+    }
+  });
+}
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;top:calc(var(--st)+70px);left:50%;transform:translateX(-50%);background:var(--gold);color:#0c0e14;padding:9px 18px;border-radius:20px;font-size:13px;font-weight:600;z-index:300;animation:pop .2s ease;white-space:nowrap';
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+
+// ═══ NAV ═══
+const TABS=['home','sound','words','quran','progress'];
+function goTab(name,idx){
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sc-'+name).classList.add('active');
+  document.querySelectorAll('.bn')[idx].classList.add('active');
+  if(name==='home')renderHome();
+  if(name==='sound')renderSound();
+  if(name==='words')initWords();
+  if(name==='quran'){renderSurahTabs();renderSurah(curSurah);}
+  if(name==='progress')renderProgress();
+}
+
+// ═══ HOME ═══
+function renderHome(){
+  const learned=S.cards.filter(c=>c.introduced).length;
+  const pct=Math.round((learned/300)*100);
+  document.getElementById('h-pf').style.width=pct+'%';
+  document.getElementById('h-pl').textContent=learned+' / 300';
+  document.getElementById('h-w').textContent=learned;
+  document.getElementById('h-s').textContent=S.harakatSeen.length;
+  document.getElementById('h-a').textContent=S.studiedAyahs;
+  document.getElementById('h-d').textContent=S.streak;
+  document.getElementById('sv').textContent=S.streak;
+  document.getElementById('xv').textContent=S.xp;
+  // Аят дня по дню недели
+  const a=AOD[new Date().getDay()%AOD.length];
+  document.getElementById('aodAr').textContent=a.ar;
+  document.getElementById('aodRu').textContent=a.ru;
+  document.getElementById('aodRef').textContent=a.ref;
+}
+
+// ═══ ЗВУК ═══
+function renderSound(){
+  // Harakat grid
+  const hkKeys=Object.keys(HARAKATS);
+  document.getElementById('hkGrid').innerHTML=hkKeys.map(k=>{
+    const h=HARAKATS[k];
+    return`<div class="hk${S.harakatSeen.includes(k)?' done':''}" onclick="openHarakat('${k}')" id="hk-${k}">
+      <div class="hk-ar">${h.ar}</div>
+      <div class="hk-name">${h.name}</div>
+      <div class="hk-snd">${h.desc.split('.')[0].substring(0,40)}</div>
+    </div>`;
+  }).join('');
+  // Tajweed grid
+  document.getElementById('tjGrid').innerHTML=TAJWEED.map((t,i)=>`
+    <div class="tj${S.tjSeen.includes(i)?' done':''}" onclick="openTajweed(${i})">
+      <div class="tj-head">
+        <div class="tj-dot" style="background:${t.color}"></div>
+        <div class="tj-name">${t.name}</div>
+        <div class="tj-ar">${t.ar}</div>
+      </div>
+      <div class="tj-desc">${t.desc.substring(0,80)}...</div>
+      <div class="tj-ex">${t.ex}</div>
+    </div>`).join('');
+}
+
+function openHarakat(key){
+  const h=HARAKATS[key];
+  document.getElementById('mTl').textContent=h.name;
+  document.getElementById('mDc').textContent=h.desc;
+  document.getElementById('mAr').textContent=h.ar;
+  document.getElementById('mEx').innerHTML=h.exs.map(e=>`<div class="mex"><div class="mex-ar">${e.ar}</div><div class="mex-tr">${e.tr}</div></div>`).join('');
+  document.getElementById('modal').classList.remove('hidden');
+  if(!S.harakatSeen.includes(key)){S.harakatSeen.push(key);document.getElementById('hk-'+key)?.classList.add('done');S.xp+=5;checkAchievements();save();}
+}
+
+function openTajweed(i){
+  const t=TAJWEED[i];
+  document.getElementById('mTl').textContent=t.name+' — '+t.ar;
+  document.getElementById('mDc').textContent=t.desc;
+  document.getElementById('mAr').textContent=t.ex;
+  document.getElementById('mEx').innerHTML=`<div class="mex" style="grid-column:1/-1"><div class="mex-ar" style="font-size:18px">${t.ex}</div><div class="mex-tr">${t.exTr}</div></div>`;
+  document.getElementById('modal').classList.remove('hidden');
+  if(!S.tjSeen.includes(i)){S.tjSeen.push(i);S.xp+=8;checkAchievements();save();}
+}
+
+function closeMov(e){if(e.target===document.getElementById('modal'))closeModal();}
+function closeModal(){document.getElementById('modal').classList.add('hidden');}
+
+// Sound exercise
+let sexOk=false;
+function initSex(){
+  sexOk=false;
+  const q=SOUND_Q[S.sexIdx%SOUND_Q.length];
+  document.getElementById('sexAr').textContent=q.ar;
+  document.getElementById('sexCh').innerHTML=q.choices.map(c=>`<button class="sex-btn" onclick="ansSex(this,'${c.replace(/'/g,"\\'")}','${q.correct.replace(/'/g,"\\'")}')">${c}</button>`).join('');
+  document.getElementById('sexRes').classList.add('hidden');
+  document.getElementById('sexNext').classList.add('hidden');
+}
+function ansSex(btn,c,cor){
+  if(sexOk)return;sexOk=true;
+  const ok=c===cor;
+  btn.classList.add(ok?'ok':'no');
+  if(!ok)document.querySelectorAll('.sex-btn').forEach(b=>{if(b.textContent===cor)b.classList.add('ok');});
+  const r=document.getElementById('sexRes');r.textContent=ok?'✓ Верно!':'✗ '+cor;r.className='sex-res '+(ok?'ok':'no');r.classList.remove('hidden');
+  document.getElementById('sexNext').classList.remove('hidden');
+  if(ok){S.xp+=3;save();}
+}
+function nextSex(){S.sexIdx++;save();initSex();}
+
+// ═══ СЛОВА ═══
+let wQ=[],wPos=0,wFlipped=false,wLocked=false,touchX=0;
+
+function initWords(){wQ=buildQueue();wPos=0;updateWordStats();renderWordCard();}
+
+function updateWordStats(){
+  const now=Date.now();
+  const intro=S.cards.filter(c=>c.introduced).length;
+  const due=S.cards.filter(c=>c.introduced&&c.nextReview<=now).length;
+  const canNew=Math.max(0,NEW_PER_DAY-S.newToday);
+  document.getElementById('qN').textContent=canNew;
+  document.getElementById('qR').textContent=due;
+  document.getElementById('qD').textContent=intro;
+}
+
+function restoreFC(){
+  document.getElementById('fc').innerHTML=`
+    <div class="fc-tag" id="fcTag"></div>
+    <div class="fc-type nt" id="fcType"></div>
+    <div class="fc-front">
+      <div class="w-ar" id="wAr"></div>
+      <div class="w-tr" id="wTr"></div>
+      <div class="tap-h">нажми — открыть</div>
+    </div>
+    <div class="fc-back">
+      <div class="w-ru" id="wRu"></div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center">
+        <div class="w-cat" id="wCat"></div>
+        <div class="w-root" id="wRoot"></div>
+      </div>
+      <div class="qs">
+        <div class="qs-lbl">Из Корана</div>
+        <div class="qs-ar" id="wEx"></div>
+        <div class="qs-tr" id="wExTr"></div>
+        <div class="qs-ru" id="wExRu"></div>
+      </div>
+    </div>`;
+  bindTouch();
+}
+
+// Highlight the studied word inside ayah text
+function highlightWordInAyah(ayahAr, wordAr){
+  if(!ayahAr||!wordAr)return ayahAr||'—';
+  // Try exact match first, then without diacritics
+  const escaped=wordAr.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const re=new RegExp(escaped,'g');
+  if(re.test(ayahAr)){
+    return ayahAr.replace(re,`<span class="hl-word">${wordAr}</span>`);
+  }
+  // Strip diacritics from both and try again
+  const strip=s=>s.replace(/[\u064B-\u065F\u0670]/g,'');
+  const strippedAyah=strip(ayahAr);
+  const strippedWord=strip(wordAr);
+  const re2=new RegExp(strippedWord.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g');
+  if(re2.test(strippedAyah)){
+    // Rebuild with spans around matching positions
+    let result='';
+    let last=0;
+    let m;
+    re2.lastIndex=0;
+    while((m=re2.exec(strippedAyah))!==null){
+      result+=ayahAr.slice(last,m.index);
+      result+=`<span class="hl-word">${ayahAr.slice(m.index,m.index+m[0].length+2)}</span>`;
+      last=m.index+m[0].length;
+    }
+    result+=ayahAr.slice(last);
+    return result||ayahAr;
+  }
+  return ayahAr;
+}
+
+function renderWordCard(){
+  wQ=buildQueue();
+  if(wQ.length===0){showDone();return;}
+  if(wPos>=wQ.length)wPos=0;
+  if(!document.getElementById('wAr'))restoreFC();
+  const idx=wQ[wPos],w=WORDS[idx],c=S.cards[idx],isNew=!c.introduced;
+  document.getElementById('wAr').textContent=w.ar;
+  document.getElementById('wTr').textContent=w.tr;
+  document.getElementById('wRu').textContent=w.ru;
+  document.getElementById('wCat').textContent=w.cat;
+  document.getElementById('wRoot').textContent='корень: '+w.root;
+  // Highlighted ayah
+  const exEl=document.getElementById('wEx');
+  if(w.ex){
+    exEl.innerHTML=highlightWordInAyah(w.ex,w.ar);
+  } else {
+    exEl.textContent='—';
+  }
+  document.getElementById('wExTr').textContent=w.exTr||'';
+  // Russian translation of ayah
+  const ruEl=document.getElementById('wExRu');
+  if(ruEl) ruEl.textContent=w.exRu||'';
+  document.getElementById('fcTag').textContent=(wPos+1)+' / '+wQ.length;
+  const t=document.getElementById('fcType');
+  t.textContent=isNew?'🆕 новое':'🔁 повтор · '+c.interval+'д';
+  t.className='fc-type '+(isNew?'nt':'rt');
+  document.getElementById('fc').classList.remove('flipped');
+  document.getElementById('ansRow').classList.add('hidden');
+  document.getElementById('swHint').classList.add('hidden');
+  wFlipped=false;wLocked=false;
+}
+
+function showDone(){
+  const now=Date.now();
+  let nxt=Infinity;S.cards.forEach(c=>{if(c.introduced&&c.nextReview>now)nxt=Math.min(nxt,c.nextReview);});
+  const hrs=nxt===Infinity?null:Math.round((nxt-now)/3600000);
+  // Показываем сброс в 4 утра
+  const resetToday=new Date();
+  resetToday.setHours(RESET_HOUR,0,0,0);
+  if(resetToday<=now)resetToday.setDate(resetToday.getDate()+1);
+  const tillReset=Math.round((resetToday-now)/3600000);
+  const msg=hrs===null
+    ?`Новые слова откроются через ${tillReset} ч (в 4:00)`
+    :(hrs<24?`Повторение через ${hrs} ч`:'Повторение завтра');
+  document.getElementById('fc').innerHTML=`<div class="done-wrap"><div class="done-icon">🌙</div><div class="done-tl">На сегодня всё!</div><div class="done-sb">${msg}</div><div class="done-dua">بَارَكَ اللَّهُ فِيكَ</div></div>`;
+  document.getElementById('ansRow').classList.add('hidden');
+  document.getElementById('swHint').classList.add('hidden');
+  wFlipped=true;
+}
+
+function flipCard(){if(wFlipped||wLocked)return;document.getElementById('fc').classList.add('flipped');document.getElementById('ansRow').classList.remove('hidden');document.getElementById('swHint').classList.remove('hidden');wFlipped=true;}
+
+function answer(q){
+  if(!wFlipped||wLocked)return;wLocked=true;
+  const idx=wQ[wPos],wasNew=!S.cards[idx].introduced;
+  S.cards[idx].introduced=true;
+  if(wasNew)S.newToday++;
+  srsUpdate(idx,q);
+  if(S.lastDay!==todayStr()){S.lastDay=todayStr();S.streak++;}
+  // День недели тоже со сдвигом 4 утра
+  const shiftedNow=new Date(Date.now()-RESET_HOUR*3600000);
+  S.weekData[shiftedNow.getDay()]=(S.weekData[shiftedNow.getDay()]||0)+1;
+  S.xp+=q>=3?10:2;
+  checkAchievements();save();updateWordStats();
+  document.getElementById('sv').textContent=S.streak;
+  document.getElementById('xv').textContent=S.xp;
+  const fc=document.getElementById('fc');
+  fc.classList.add(q>=3?'sr':'sl');
+  setTimeout(()=>{fc.classList.remove('sl','sr');wPos++;renderWordCard();},220);
+}
+
+// Аудио через Web Speech API
+function speak(e){
+  e.stopPropagation();
+  if(!('speechSynthesis' in window))return;
+  const txt=document.getElementById('wAr').textContent;
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang='ar-SA';u.rate=0.8;u.pitch=1;
+  speechSynthesis.cancel();speechSynthesis.speak(u);
+}
+
+function bindTouch(){
+  const fc=document.getElementById('fc');
+  fc.addEventListener('touchstart',e=>{touchX=e.touches[0].clientX;},{passive:true});
+  fc.addEventListener('touchend',e=>{if(!wFlipped||wLocked)return;const dx=e.changedTouches[0].clientX-touchX;if(Math.abs(dx)>55)answer(dx>0?4:1);},{passive:true});
+}
+// initial bind
+document.getElementById('fc').addEventListener('touchstart',e=>{touchX=e.touches[0].clientX;},{passive:true});
+document.getElementById('fc').addEventListener('touchend',e=>{if(!wFlipped||wLocked)return;const dx=e.changedTouches[0].clientX-touchX;if(Math.abs(dx)>55)answer(dx>0?4:1);},{passive:true});
+
+// ═══ КОРАН ═══
+let curSurah=0;
+function renderSurahTabs(){
+  document.getElementById('surahTabs').innerHTML=SURAHS.map((s,i)=>`<button class="stab${i===curSurah?' active':''}" onclick="switchSurah(${i},this)">${s.name}</button>`).join('');
+}
+function switchSurah(i,el){curSurah=i;document.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderSurah(i);}
+
+// FIX: store word data in array to avoid HTML attribute escaping bugs
+const _wpopData=[];
+function renderSurah(i){
+  const s=SURAHS[i];
+  const knownAr=WORDS.filter((_,wi)=>S.cards[wi].introduced).map(w=>w.ar);
+  _wpopData.length=0;
+  let html=`<p style="font-size:11px;color:var(--mu);text-align:center;margin-bottom:10px;letter-spacing:.3px">Сура ${s.ref} · нажми на слово — узнай значение</p>`;
+  s.ayahs.forEach(a=>{
+    const chips=a.words.map(w=>{
+      const kn=knownAr.some(k=>k===w.ar||k.includes(w.ar)||w.ar.includes(k.replace(/[ٰ]/g,'')));
+      const idx=_wpopData.push({ar:w.ar,ru:w.ru})-1;
+      return`<div class="wchip${kn?' kn':''}" data-idx="${idx}" onclick="showWpop(this)"><span class="wc-ar">${w.ar}</span><span class="wc-ru">${w.ru}</span></div>`;
+    }).join('');
+    html+=`<div class="ayah-block fi"><div class="ayah-num-row"><div class="ayah-badge">${a.num}</div><div class="ayah-ref">${s.name} · ${a.num}</div></div><div class="ayah-full">${a.ar}</div><div class="wchips">${chips}</div><div class="ayah-ru">${a.ru}</div></div>`;
+  });
+  document.getElementById('surahContent').innerHTML=html;
+  S.studiedAyahs=Math.max(S.studiedAyahs,s.ayahs.length+(curSurah*5));
+  checkAchievements();save();
+}
+
+let popT;
+// FIX: receives element, reads data-idx -> no string escaping issues
+function showWpop(el){
+  const d=_wpopData[parseInt(el.dataset.idx)];
+  if(!d)return;
+  document.querySelectorAll('.wchip').forEach(c=>c.classList.remove('on'));el.classList.add('on');
+  const p=document.getElementById('wpop');p.textContent=d.ar+' — '+d.ru;p.classList.remove('hidden');
+  clearTimeout(popT);popT=setTimeout(()=>{p.classList.add('hidden');el.classList.remove('on');},2400);
+}
+
+// ═══ ПРОГРЕСС ═══
+function renderProgress(){
+  const learned=S.cards.filter(c=>c.introduced).length;
+  const pct=Math.round((learned/300)*100);
+  document.getElementById('pPct').textContent=pct+'%';
+  document.getElementById('pBar').style.width=pct+'%';
+  document.getElementById('pSub').textContent=learned+' из 300 ключевых слов';
+  // Week
+  const days=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],dow=new Date().getDay(),mx=Math.max(...S.weekData,1);
+  document.getElementById('wBars').innerHTML=S.weekData.map((v,i)=>`<div class="bc"><div class="bar${i===dow?' td':''}" style="height:${Math.max(4,Math.round((v/mx)*50))}px"></div></div>`).join('');
+  document.getElementById('wDays').innerHTML=days.map((d,i)=>`<div style="flex:1;text-align:center;font-size:9px;color:${i===dow?'var(--gold2)':'var(--mu)'}">${d}</div>`).join('');
+  // Known words
+  const kw=S.cards.map((c,i)=>c.introduced?WORDS[i]:null).filter(Boolean);
+  document.getElementById('kCnt').textContent=kw.length;
+  document.getElementById('kChips').innerHTML=kw.length
+    ?kw.map(w=>`<span class="kchip"><span class="kc-ar">${w.ar}</span><span class="kc-ru">${w.ru}</span></span>`).join('')
+    :'<span style="font-size:12px;color:var(--bd2)">Начни учить слова!</span>';
+  // Achievements
+  document.getElementById('achGrid').innerHTML=ACHIEV.map(a=>{
+    const unlocked=S.achUnlocked.includes(a.id);
+    return`<div class="ach${unlocked?' unlocked':''}"><div class="ach-icon">${a.icon}</div><div class="ach-name">${a.name}</div></div>`;
+  }).join('');
+}
+
+// ═══ BACK BUTTON ═══
+window.addEventListener('popstate',e=>{
+  e.preventDefault();
+  const a=document.querySelector('.sc.active');
+  if(a&&a.id!=='sc-home'){goTab('home',0);history.pushState(null,'','');}
 });
+history.pushState(null,'','');
+
+// ═══ SERVICE WORKER ═══
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    reg.update();
+    reg.addEventListener('updatefound',()=>{
+      const nw=reg.installing;
+      nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller)document.getElementById('upd').style.display='block';});
+    });
+  });
+  navigator.serviceWorker.addEventListener('controllerchange',()=>location.reload());
+}
+
+// ═══ INIT ═══
+renderSurahTabs();
+renderSound();
+initSex();
+renderHome();
+</script>
+</body>
+</html>
