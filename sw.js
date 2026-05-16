@@ -1,4 +1,4 @@
-const VERSION = 'v1.3'; // ⬅️ МЕНЯЙ ЭТУ СТРОКУ ПРИ КАЖДОМ ДЕПЛОЕ
+const VERSION = 'v2.0'; // ⬅️ МЕНЯЙ ЭТУ СТРОКУ ПРИ КАЖДОМ ДЕПЛОЕ
 const CACHE_NAME = `arab-srs-${VERSION}`;
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
@@ -17,7 +17,6 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  // Для index.html всегда пробуем сеть, чтобы ловить обновления
   if (e.request.url.endsWith('/index.html') || e.request.url === location.origin + '/') {
     e.respondWith(fetch(e.request).then(net => {
       caches.open(CACHE_NAME).then(c => c.put(e.request, net.clone()));
@@ -25,7 +24,6 @@ self.addEventListener('fetch', e => {
     }).catch(() => caches.match(e.request)));
     return;
   }
-  // Остальное: кэш → сеть
   e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(n => {
     caches.open(CACHE_NAME).then(c => c.put(e.request, n.clone()));
     return n;
