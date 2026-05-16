@@ -334,30 +334,55 @@ const WORDS=[
   {ar:'دِين',tr:'dīn',ru:'Религия / Воздаяние',ex:'مَالِكِ يَوْمِ الدِّينِ',exTr:'Māliki yawmi d-dīn'},
 ];
 
-const STORE_KEY='arabic_pwa_v1';
-let state=JSON.parse(localStorage.getItem(STORE_KEY)||'null')||{done:0,learnedWords:[],streak:1,weekData:[0,0,0,0,0,0,0],cardIdx:0};
+const STORE_KEY='arabic_pwa_v2';
+let state=JSON.parse(localStorage.getItem(STORE_KEY)||'null')||{learnedIds:[],streak:1,weekData:[0,0,0,0,0,0,0],queueIdx:0};
 
+// BUG FIX 1: Build queue = only words not yet learned, no infinite loop
+// BUG FIX 2: learnedIds tracks by index so same word can't be counted twice
+let queue=[];
 let flipped=false;
+let answering=false; // BUG FIX 3: lock against double-tap
 let touchStartX=0;
+
+function buildQueue(){
+  queue=WORDS.map((_,i)=>i).filter(i=>!state.learnedIds.includes(i));
+  // rotate so we don't restart from zero every time
+  if(state.queueIdx>=queue.length)state.queueIdx=0;
+}
 
 function save(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
 
 function showCard(){
-  const w=WORDS[state.cardIdx%WORDS.length];
+  buildQueue();
+  if(queue.length===0){
+    // All words learned — show completion screen
+    document.getElementById('wAr').textContent='🎉';
+    document.getElementById('wTr').textContent='Все слова изучены!';
+    document.getElementById('cardTag').textContent='Готово';
+    document.getElementById('flashcard').classList.remove('flipped');
+    document.getElementById('ansRow').classList.add('hidden');
+    document.getElementById('swipeHint').classList.add('hidden');
+    flipped=false;
+    return;
+  }
+  const wordIdx=queue[state.queueIdx%queue.length];
+  const w=WORDS[wordIdx];
   document.getElementById('wAr').textContent=w.ar;
   document.getElementById('wTr').textContent=w.tr;
   document.getElementById('wRu').textContent=w.ru;
   document.getElementById('wEx').textContent=w.ex;
   document.getElementById('wExTr').textContent=w.exTr;
-  document.getElementById('cardTag').textContent='Слово '+(state.cardIdx%WORDS.length+1)+' / '+WORDS.length;
+  // BUG FIX 4: show position in remaining queue, not in full WORDS array
+  document.getElementById('cardTag').textContent='Слово '+(state.queueIdx%queue.length+1)+' / '+queue.length;
   document.getElementById('flashcard').classList.remove('flipped');
   document.getElementById('ansRow').classList.add('hidden');
   document.getElementById('swipeHint').classList.add('hidden');
   flipped=false;
+  answering=false;
 }
 
 function flipCard(){
-  if(flipped)return;
+  if(flipped||answering)return;
   document.getElementById('flashcard').classList.add('flipped');
   document.getElementById('ansRow').classList.remove('hidden');
   document.getElementById('swipeHint').classList.remove('hidden');
@@ -365,13 +390,17 @@ function flipCard(){
 }
 
 function answer(q){
-  if(!flipped)return;
-  const w=WORDS[state.cardIdx%WORDS.length];
+  if(!flipped||answering)return; // BUG FIX 3: double-tap guard
+  answering=true;
+  buildQueue();
+  const wordIdx=queue[state.queueIdx%queue.length];
   if(q>=3){
-    state.done++;
-    state.learnedWords.push(w);
-    const today=new Date().getDay();
-    state.weekData[today]=(state.weekData[today]||0)+1;
+    // BUG FIX 2: only add if not already learned (prevents duplicate counting)
+    if(!state.learnedIds.includes(wordIdx)){
+      state.learnedIds.push(wordIdx);
+      const today=new Date().getDay();
+      state.weekData[today]=(state.weekData[today]||0)+1;
+    }
     updateStats();
     save();
   }
@@ -379,19 +408,28 @@ function answer(q){
   fc.classList.add(q>=3?'swipe-right':'swipe-left');
   setTimeout(()=>{
     fc.classList.remove('swipe-left','swipe-right');
-    state.cardIdx++;
-    if(state.cardIdx>=WORDS.length)state.cardIdx=0;
+    // BUG FIX 1: advance in remaining queue, not in full WORDS array
+    if(q>=3){
+      // Word removed from queue — don't advance idx, next word slides in
+      buildQueue(); // rebuild without the just-learned word
+    } else {
+      state.queueIdx++;
+    }
     save();
     showCard();
   },240);
 }
 
 function updateStats(){
-  document.getElementById('sDone').textContent=state.done;
-  document.getElementById('sNew').textContent=Math.max(0,WORDS.length-state.done);
-  document.getElementById('progFill').style.width=Math.round((state.done/300)*100)+'%';
-  document.getElementById('progLabel').textContent=state.done+' / 300';
-  document.getElementById('pLearned').textContent=state.done;
+  const learned=state.learnedIds.length;
+  const remaining=WORDS.length-learned;
+  document.getElementById('sDone').textContent=learned;
+  // BUG FIX 5: sNew = words remaining, not WORDS.length - done (which could go negative)
+  document.getElementById('sNew').textContent=Math.max(0,remaining);
+  document.getElementById('sRev').textContent=0; // future SRS
+  document.getElementById('progFill').style.width=Math.round((learned/300)*100)+'%';
+  document.getElementById('progLabel').textContent=learned+' / 300';
+  document.getElementById('pLearned').textContent=learned;
   document.getElementById('pStreak').textContent=state.streak;
   document.getElementById('streakVal').textContent=state.streak;
 }
@@ -414,8 +452,9 @@ function renderChart(){
   barsEl.innerHTML=state.weekData.map((v,i)=>`<div class="bar-wrap"><div class="bar${i===todayIdx?' today':''}" style="height:${Math.max(4,Math.round((v/max)*64))}px"></div></div>`).join('');
   daysEl.innerHTML=days.map((d,i)=>`<div class="bar-day" style="flex:1;text-align:center${i===todayIdx?';color:var(--accent)':''}">${d}</div>`).join('');
   const chips=document.getElementById('learnedChips');
-  if(state.learnedWords.length===0){chips.innerHTML='<span style="font-size:13px;color:var(--border)">Пока пусто — иди учи!</span>';return;}
-  chips.innerHTML=state.learnedWords.map(w=>`<span class="learned-chip"><span class="chip-ar">${w.ar}</span><span class="chip-ru">${w.ru}</span></span>`).join('');
+  const learnedWords=state.learnedIds.map(i=>WORDS[i]).filter(Boolean);
+  if(learnedWords.length===0){chips.innerHTML='<span style="font-size:13px;color:var(--border)">Пока пусто — иди учи!</span>';return;}
+  chips.innerHTML=learnedWords.map(w=>`<span class="learned-chip"><span class="chip-ar">${w.ar}</span><span class="chip-ru">${w.ru}</span></span>`).join('');
 }
 
 // Коран — подсветка слова
