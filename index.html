@@ -126,27 +126,32 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
 .qt{flex:1;background:var(--sf);border:1px solid var(--bd);border-radius:11px;padding:9px 6px;text-align:center}
 .qtn{font-size:19px;font-weight:600;line-height:1;margin-bottom:2px}
 .qtl{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.4px}
-.card-wrap{padding:0 20px}
-.fc{background:var(--sf);border:1px solid var(--bd);border-radius:21px;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px 20px;cursor:pointer;position:relative;overflow:hidden;transition:border-color .15s}
+/* ══ СЛОВА — layout fix ══ */
+.words-screen{display:flex;flex-direction:column;height:100%}
+.words-top{padding:14px 20px 0;flex-shrink:0}
+.card-wrap{padding:0 20px;flex-shrink:0}
+.fc{background:var(--sf);border:1px solid var(--bd);border-radius:21px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:44px 20px 20px;cursor:pointer;position:relative;overflow:hidden;transition:border-color .15s}
 .fc::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(212,168,67,.05),transparent 60%);pointer-events:none}
 .fc-tag{position:absolute;top:12px;left:12px;font-size:10px;color:var(--mu);background:var(--sf2);border-radius:7px;padding:3px 8px;font-weight:500}
 .fc-type{position:absolute;top:12px;right:12px;font-size:10px;border-radius:7px;padding:3px 8px;font-weight:600}
 .fc-type.nt{background:rgba(212,168,67,.14);color:var(--gold2)}
 .fc-type.rt{background:rgba(74,144,217,.11);color:var(--blue)}
-.fc-front,.fc-back{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
-.fc-back{display:none}
+.fc-front{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;min-height:180px;justify-content:center;padding:10px 0 30px}
+.fc-back{display:none;flex-direction:column;align-items:center;gap:9px;width:100%}
 .fc.flipped .fc-front{display:none}
 .fc.flipped .fc-back{display:flex}
-.w-ar{font-family:'Scheherazade New',serif;font-size:68px;color:var(--tx);direction:rtl;line-height:1.1;text-align:center}
+.w-ar{font-family:'Scheherazade New',serif;font-size:64px;color:var(--tx);direction:rtl;line-height:1.15;text-align:center}
 .w-tr{font-size:14px;color:var(--mu);font-style:italic;letter-spacing:.3px}
-.tap-h{font-size:11px;color:var(--bd2);position:absolute;bottom:14px}
-.w-ru{font-size:26px;font-weight:500}
+.tap-h{font-size:11px;color:var(--bd2);margin-top:4px}
+.w-ru{font-size:22px;font-weight:500}
 .w-root{font-size:11px;color:var(--gdim);font-family:'Scheherazade New',serif;direction:rtl}
 .w-cat{font-size:10px;color:var(--mu);background:var(--sf2);border-radius:6px;padding:2px 7px;text-transform:uppercase;letter-spacing:.3px}
-.qs{background:var(--sf2);border:1px solid var(--bd);border-radius:11px;padding:10px 13px;width:100%;text-align:center}
-.qs-lbl{font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.qs-ar{font-family:'Scheherazade New',serif;font-size:17px;direction:rtl;line-height:1.8;color:var(--tx)}
+.qs{background:var(--sf2);border:1px solid var(--bd);border-radius:11px;padding:9px 12px;width:100%;text-align:center}
+.qs-lbl{font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.qs-ar{font-family:'Scheherazade New',serif;font-size:16px;direction:rtl;line-height:1.75;color:var(--tx)}
 .qs-tr{font-size:10px;color:var(--mu);font-style:italic;margin-top:2px}
+.qs-ru{font-size:11px;color:var(--mu);margin-top:4px;line-height:1.4;font-style:italic;border-top:1px solid var(--bd);padding-top:4px}
+.hl-word{color:var(--gold2);font-weight:700;background:rgba(212,168,67,.12);border-radius:4px;padding:0 2px}
 .audio-btn{background:none;border:1px solid var(--bd2);border-radius:20px;padding:5px 12px;color:var(--mu);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;margin-top:2px;transition:border-color .2s,color .2s}
 .audio-btn:active{border-color:var(--gold);color:var(--gold2)}
 .sw-hint{display:flex;justify-content:space-between;padding:7px 20px 0;font-size:11px;color:var(--bd2)}
@@ -156,7 +161,7 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
 .ans-a{background:rgba(224,85,85,.09);color:#f08080;border:1px solid rgba(224,85,85,.2)}
 .ans-h{background:rgba(212,168,67,.08);color:var(--gold2);border:1px solid rgba(212,168,67,.17)}
 .ans-g{background:rgba(61,186,126,.08);color:var(--green2);border:1px solid rgba(61,186,126,.17)}
-.done-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:260px;padding:28px}
+.done-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px}
 .done-icon{font-size:52px;margin-bottom:12px}
 .done-tl{font-size:20px;font-weight:600;color:var(--green2);margin-bottom:7px}
 .done-sb{font-size:13px;color:var(--mu);line-height:1.6}
@@ -326,14 +331,16 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
           </div>
           <div class="fc-back">
             <div class="w-ru" id="wRu">именем</div>
-            <div class="w-cat" id="wCat">предлог</div>
-            <div class="w-root" id="wRoot">корень: س م و</div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center">
+              <div class="w-cat" id="wCat">предлог</div>
+              <div class="w-root" id="wRoot">корень: س م و</div>
+            </div>
             <div class="qs">
               <div class="qs-lbl">Из Корана</div>
               <div class="qs-ar" id="wEx">بِسْمِ اللَّهِ</div>
               <div class="qs-tr" id="wExTr">Bismillāh</div>
+              <div class="qs-ru" id="wExRu"></div>
             </div>
-            <button class="audio-btn" onclick="speak(event)">🔊 Произнести</button>
           </div>
         </div>
       </div>
@@ -408,91 +415,91 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
 // ═══════════════════════════════════════════════════════
 const WORDS=[
 // Предлоги и частицы (самые частые в Коране)
-{ar:'بِسْمِ',tr:'bismi',ru:'именем',cat:'предлог',root:'س م و',ex:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',exTr:'Bismillāhi r-raḥmāni r-raḥīm'},
-{ar:'مِنْ',tr:'min',ru:'от / из',cat:'предлог',root:'م ن',ex:'مِن شَرِّ مَا خَلَقَ',exTr:'min sharri mā khalaqa'},
-{ar:'فِي',tr:'fī',ru:'в / во',cat:'предлог',root:'ف ي',ex:'فِي سَبِيلِ اللَّهِ',exTr:'fī sabīli llāh'},
-{ar:'عَلَى',tr:'ʿalā',ru:'на / над',cat:'предлог',root:'ع ل و',ex:'وَعَلَى اللَّهِ فَتَوَكَّلُوا',exTr:'wa ʿalā llāhi fa-tawakkalū'},
-{ar:'إِلَى',tr:'ilā',ru:'к / до',cat:'предлог',root:'أ ل و',ex:'إِلَى اللَّهِ الْمَصِيرُ',exTr:'ilā llāhi l-maṣīr'},
-{ar:'عَنْ',tr:'ʿan',ru:'о / от',cat:'предлог',root:'ع ن',ex:'يَعْلَمُ مَا تُخْفُونَ وَمَا تُعْلِنُونَ',exTr:'yaʿlamu mā tukhfūna'},
-{ar:'مَا',tr:'mā',ru:'что / то что',cat:'частица',root:'م ا',ex:'مَا شَاءَ اللَّهُ',exTr:'mā shāʾa llāh'},
-{ar:'لَا',tr:'lā',ru:'нет / не',cat:'частица',root:'ل ا',ex:'لَا إِلَٰهَ إِلَّا اللَّهُ',exTr:'lā ilāha illā llāh'},
-{ar:'وَ',tr:'wa',ru:'и / а',cat:'союз',root:'و',ex:'وَاللَّهُ غَفُورٌ رَّحِيمٌ',exTr:'wa llāhu ghafūrun raḥīm'},
-{ar:'أَنَّ',tr:'anna',ru:'что (союз)',cat:'союз',root:'أ ن',ex:'وَأَنَّ اللَّهَ لَا يُضِيعُ',exTr:'wa anna llāha lā yuḍīʿ'},
-{ar:'إِنَّ',tr:'inna',ru:'поистине',cat:'частица',root:'أ ن',ex:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',exTr:'inna llāha maʿa ṣ-ṣābirīn'},
-{ar:'هُوَ',tr:'huwa',ru:'он',cat:'местоим.',root:'ه و',ex:'قُلْ هُوَ اللَّهُ أَحَدٌ',exTr:'qul huwa llāhu aḥad'},
-{ar:'هُمْ',tr:'hum',ru:'они',cat:'местоим.',root:'ه م',ex:'هُمُ الْمُفْلِحُونَ',exTr:'humu l-mufliḥūn'},
-{ar:'لَهُ',tr:'lahu',ru:'ему / для него',cat:'местоим.',root:'ل ه',ex:'لَهُ مَا فِي السَّمَاوَاتِ',exTr:'lahu mā fi s-samāwāt'},
-{ar:'لَمْ',tr:'lam',ru:'не (прош. вр.)',cat:'частица',root:'ل م',ex:'لَمْ يَلِدْ وَلَمْ يُولَدْ',exTr:'lam yalid wa lam yūlad'},
+{ar:'بِسْمِ',tr:'bismi',ru:'именем',cat:'предлог',root:'س م و',ex:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',exTr:'Bismillāhi r-raḥmāni r-raḥīm',exRu:'Именем Аллаха, Милостивого, Милосердного'},
+{ar:'مِنْ',tr:'min',ru:'от / из',cat:'предлог',root:'م ن',ex:'مِن شَرِّ مَا خَلَقَ',exTr:'min sharri mā khalaqa',exRu:'от зла того, что Он сотворил'},
+{ar:'فِي',tr:'fī',ru:'в / во',cat:'предлог',root:'ف ي',ex:'فِي سَبِيلِ اللَّهِ',exTr:'fī sabīli llāh',exRu:'на пути Аллаха'},
+{ar:'عَلَى',tr:'ʿalā',ru:'на / над',cat:'предлог',root:'ع ل و',ex:'وَعَلَى اللَّهِ فَتَوَكَّلُوا',exTr:'wa ʿalā llāhi fa-tawakkalū',exRu:'и на Аллаха полагайтесь'},
+{ar:'إِلَى',tr:'ilā',ru:'к / до',cat:'предлог',root:'أ ل و',ex:'إِلَى اللَّهِ الْمَصِيرُ',exTr:'ilā llāhi l-maṣīr',exRu:'к Аллаху — конечное возвращение'},
+{ar:'عَنْ',tr:'ʿan',ru:'о / от',cat:'предлог',root:'ع ن',ex:'يَعْلَمُ مَا تُخْفُونَ وَمَا تُعْلِنُونَ',exTr:'yaʿlamu mā tukhfūna',exRu:'Он знает то, что вы скрываете'},
+{ar:'مَا',tr:'mā',ru:'что / то что',cat:'частица',root:'م ا',ex:'مَا شَاءَ اللَّهُ',exTr:'mā shāʾa llāh',exRu:'Что пожелал Аллах — то и будет'},
+{ar:'لَا',tr:'lā',ru:'нет / не',cat:'частица',root:'ل ا',ex:'لَا إِلَٰهَ إِلَّا اللَّهُ',exTr:'lā ilāha illā llāh',exRu:'нет бога, кроме Аллаха'},
+{ar:'وَ',tr:'wa',ru:'и / а',cat:'союз',root:'و',ex:'وَاللَّهُ غَفُورٌ رَّحِيمٌ',exTr:'wa llāhu ghafūrun raḥīm',exRu:'Аллах — Прощающий, Милосердный'},
+{ar:'أَنَّ',tr:'anna',ru:'что (союз)',cat:'союз',root:'أ ن',ex:'وَأَنَّ اللَّهَ لَا يُضِيعُ',exTr:'wa anna llāha lā yuḍīʿ',exRu:'и что Аллах не допускает пропасть'},
+{ar:'إِنَّ',tr:'inna',ru:'поистине',cat:'частица',root:'أ ن',ex:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',exTr:'inna llāha maʿa ṣ-ṣābirīn',exRu:'поистине, Аллах — с терпеливыми'},
+{ar:'هُوَ',tr:'huwa',ru:'он',cat:'местоим.',root:'ه و',ex:'قُلْ هُوَ اللَّهُ أَحَدٌ',exTr:'qul huwa llāhu aḥad',exRu:'Скажи: «Он — Аллах Единый»'},
+{ar:'هُمْ',tr:'hum',ru:'они',cat:'местоим.',root:'ه م',ex:'هُمُ الْمُفْلِحُونَ',exTr:'humu l-mufliḥūn',exRu:'они — преуспевшие'},
+{ar:'لَهُ',tr:'lahu',ru:'ему / для него',cat:'местоим.',root:'ل ه',ex:'لَهُ مَا فِي السَّمَاوَاتِ',exTr:'lahu mā fi s-samāwāt',exRu:'Ему принадлежит то, что на небесах'},
+{ar:'لَمْ',tr:'lam',ru:'не (прош. вр.)',cat:'частица',root:'ل م',ex:'لَمْ يَلِدْ وَلَمْ يُولَدْ',exTr:'lam yalid wa lam yūlad',exRu:'Он не родил и не был рождён'},
 // Имена Аллаха и атрибуты
 {ar:'اللَّهُ',tr:'allāhu',ru:'Аллах',cat:'имя',root:'أ ل ه',ex:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',exTr:'Bismillāhi r-raḥmāni r-raḥīm'},
-{ar:'الرَّحْمَٰنُ',tr:'ar-raḥmān',ru:'Милостивый',cat:'имя Аллаха',root:'ر ح م',ex:'الرَّحْمَٰنُ عَلَّمَ الْقُرْآنَ',exTr:'ar-raḥmānu ʿallama l-qurʾān'},
-{ar:'الرَّحِيمُ',tr:'ar-raḥīm',ru:'Милосердный',cat:'имя Аллаха',root:'ر ح م',ex:'وَكَانَ اللَّهُ غَفُورًا رَّحِيمًا',exTr:'wa kāna llāhu ghafūran raḥīmā'},
-{ar:'الْغَفُورُ',tr:'al-ghafūr',ru:'Прощающий',cat:'имя Аллаха',root:'غ ف ر',ex:'إِنَّ اللَّهَ غَفُورٌ رَّحِيمٌ',exTr:'inna llāha ghafūrun raḥīm'},
-{ar:'الْعَلِيمُ',tr:'al-ʿalīm',ru:'Всезнающий',cat:'имя Аллаха',root:'ع ل م',ex:'وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ',exTr:'wa llāhu bi-kulli shayʾin ʿalīm'},
-{ar:'الْقَدِيرُ',tr:'al-qadīr',ru:'Всемогущий',cat:'имя Аллаха',root:'ق د ر',ex:'إِنَّ اللَّهَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',exTr:'inna llāha ʿalā kulli shayʾin qadīr'},
-{ar:'الْحَكِيمُ',tr:'al-ḥakīm',ru:'Мудрый',cat:'имя Аллаха',root:'ح ك م',ex:'وَاللَّهُ عَزِيزٌ حَكِيمٌ',exTr:'wa llāhu ʿazīzun ḥakīm'},
+{ar:'الرَّحْمَٰنُ',tr:'ar-raḥmān',ru:'Милостивый',cat:'имя Аллаха',root:'ر ح م',ex:'الرَّحْمَٰنُ عَلَّمَ الْقُرْآنَ',exTr:'ar-raḥmānu ʿallama l-qurʾān',exRu:'Милостивый научил Корану'},
+{ar:'الرَّحِيمُ',tr:'ar-raḥīm',ru:'Милосердный',cat:'имя Аллаха',root:'ر ح م',ex:'وَكَانَ اللَّهُ غَفُورًا رَّحِيمًا',exTr:'wa kāna llāhu ghafūran raḥīmā',exRu:'Аллах — Прощающий, Милосердный'},
+{ar:'الْغَفُورُ',tr:'al-ghafūr',ru:'Прощающий',cat:'имя Аллаха',root:'غ ف ر',ex:'إِنَّ اللَّهَ غَفُورٌ رَّحِيمٌ',exTr:'inna llāha ghafūrun raḥīm',exRu:'поистине, Аллах — Прощающий, Милосердный'},
+{ar:'الْعَلِيمُ',tr:'al-ʿalīm',ru:'Всезнающий',cat:'имя Аллаха',root:'ع ل م',ex:'وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ',exTr:'wa llāhu bi-kulli shayʾin ʿalīm',exRu:'Аллах знает обо всём'},
+{ar:'الْقَدِيرُ',tr:'al-qadīr',ru:'Всемогущий',cat:'имя Аллаха',root:'ق د ر',ex:'إِنَّ اللَّهَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',exTr:'inna llāha ʿalā kulli shayʾin qadīr',exRu:'поистине, Аллах над всем властен'},
+{ar:'الْحَكِيمُ',tr:'al-ḥakīm',ru:'Мудрый',cat:'имя Аллаха',root:'ح ك م',ex:'وَاللَّهُ عَزِيزٌ حَكِيمٌ',exTr:'wa llāhu ʿazīzun ḥakīm',exRu:'Аллах — Могущественный, Мудрый'},
 // Существительные — основа
-{ar:'رَبّ',tr:'rabb',ru:'Господь',cat:'существит.',root:'ر ب ب',ex:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',exTr:'al-ḥamdu lillāhi rabbi l-ʿālamīn'},
-{ar:'رَحْمَة',tr:'raḥma',ru:'Милость',cat:'существит.',root:'ر ح م',ex:'وَرَحْمَتِي وَسِعَتْ كُلَّ شَيْءٍ',exTr:'wa raḥmatī wasiʿat kulla shayʾ'},
-{ar:'نَفْس',tr:'nafs',ru:'Душа / Я',cat:'существит.',root:'ن ف س',ex:'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ',exTr:'kullu nafsin dhāʾiqatu l-mawt'},
-{ar:'حَقّ',tr:'ḥaqq',ru:'Истина',cat:'существит.',root:'ح ق ق',ex:'وَقُلِ الْحَقُّ مِن رَّبِّكُمْ',exTr:'wa quli l-ḥaqqu min rabbikum'},
-{ar:'كِتَاب',tr:'kitāb',ru:'Книга',cat:'существит.',root:'ك ت ب',ex:'ذَٰلِكَ الْكِتَابُ لَا رَيْبَ فِيهِ',exTr:'dhālika l-kitābu lā rayba fīh'},
-{ar:'يَوْم',tr:'yawm',ru:'День',cat:'существит.',root:'ي و م',ex:'مَالِكِ يَوْمِ الدِّينِ',exTr:'māliki yawmi d-dīn'},
-{ar:'عِلْم',tr:'ʿilm',ru:'Знание',cat:'существит.',root:'ع ل م',ex:'وَمَا أُوتِيتُم مِّنَ الْعِلْمِ إِلَّا قَلِيلًا',exTr:'wa mā ūtītum mina l-ʿilmi illā qalīlā'},
-{ar:'قَلْب',tr:'qalb',ru:'Сердце',cat:'существит.',root:'ق ل ب',ex:'إِنَّ فِي ذَٰلِكَ لَذِكْرَىٰ لِمَن كَانَ لَهُ قَلْبٌ',exTr:'inna fī dhālika la-dhikrā liman kāna lahu qalb'},
-{ar:'صَبْر',tr:'ṣabr',ru:'Терпение',cat:'существит.',root:'ص ب ر',ex:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',exTr:'innallāha maʿa ṣ-ṣābirīn'},
-{ar:'شُكْر',tr:'shukr',ru:'Благодарность',cat:'существит.',root:'ش ك ر',ex:'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ',exTr:'la-in shakartum la-azīdannakum'},
-{ar:'نُور',tr:'nūr',ru:'Свет',cat:'существит.',root:'ن و ر',ex:'اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ',exTr:'allāhu nūru s-samāwāti wa l-arḍ'},
-{ar:'حَيَاة',tr:'ḥayāh',ru:'Жизнь',cat:'существит.',root:'ح ي ي',ex:'وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ',exTr:'wa ma l-ḥayātu d-dunyā illā matāʿu l-ghurūr'},
-{ar:'إِنسَان',tr:'insān',ru:'Человек',cat:'существит.',root:'أ ن س',ex:'وَخُلِقَ الْإِنسَانُ ضَعِيفًا',exTr:'wa khuliqa l-insānu ḍaʿīfā'},
+{ar:'رَبّ',tr:'rabb',ru:'Господь',cat:'существит.',root:'ر ب ب',ex:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',exTr:'al-ḥamdu lillāhi rabbi l-ʿālamīn',exRu:'хвала Аллаху, Господу миров'},
+{ar:'رَحْمَة',tr:'raḥma',ru:'Милость',cat:'существит.',root:'ر ح م',ex:'وَرَحْمَتِي وَسِعَتْ كُلَّ شَيْءٍ',exTr:'wa raḥmatī wasiʿat kulla shayʾ',exRu:'Моя милость объемлет всё'},
+{ar:'نَفْس',tr:'nafs',ru:'Душа / Я',cat:'существит.',root:'ن ف س',ex:'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ',exTr:'kullu nafsin dhāʾiqatu l-mawt',exRu:'каждая душа вкусит смерть'},
+{ar:'حَقّ',tr:'ḥaqq',ru:'Истина',cat:'существит.',root:'ح ق ق',ex:'وَقُلِ الْحَقُّ مِن رَّبِّكُمْ',exTr:'wa quli l-ḥaqqu min rabbikum',exRu:'и скажи: «Истина — от вашего Господа»'},
+{ar:'كِتَاب',tr:'kitāb',ru:'Книга',cat:'существит.',root:'ك ت ب',ex:'ذَٰلِكَ الْكِتَابُ لَا رَيْبَ فِيهِ',exTr:'dhālika l-kitābu lā rayba fīh',exRu:'это Писание — нет сомнения в нём'},
+{ar:'يَوْم',tr:'yawm',ru:'День',cat:'существит.',root:'ي و م',ex:'مَالِكِ يَوْمِ الدِّينِ',exTr:'māliki yawmi d-dīn',exRu:'Властелину Дня воздаяния'},
+{ar:'عِلْم',tr:'ʿilm',ru:'Знание',cat:'существит.',root:'ع ل م',ex:'وَمَا أُوتِيتُم مِّنَ الْعِلْمِ إِلَّا قَلِيلًا',exTr:'wa mā ūtītum mina l-ʿilmi illā qalīlā',exRu:'вам дано знания лишь немного'},
+{ar:'قَلْب',tr:'qalb',ru:'Сердце',cat:'существит.',root:'ق ل ب',ex:'إِنَّ فِي ذَٰلِكَ لَذِكْرَىٰ لِمَن كَانَ لَهُ قَلْبٌ',exTr:'inna fī dhālika la-dhikrā liman kāna lahu qalb',exRu:'в этом напоминание для того, у кого есть сердце'},
+{ar:'صَبْر',tr:'ṣabr',ru:'Терпение',cat:'существит.',root:'ص ب ر',ex:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',exTr:'innallāha maʿa ṣ-ṣābirīn',exRu:'поистине, Аллах — с терпеливыми'},
+{ar:'شُكْر',tr:'shukr',ru:'Благодарность',cat:'существит.',root:'ش ك ر',ex:'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ',exTr:'la-in shakartum la-azīdannakum',exRu:'если будете благодарны — Я прибавлю вам'},
+{ar:'نُور',tr:'nūr',ru:'Свет',cat:'существит.',root:'ن و ر',ex:'اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ',exTr:'allāhu nūru s-samāwāti wa l-arḍ',exRu:'Аллах — Свет небес и земли'},
+{ar:'حَيَاة',tr:'ḥayāh',ru:'Жизнь',cat:'существит.',root:'ح ي ي',ex:'وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ',exTr:'wa ma l-ḥayātu d-dunyā illā matāʿu l-ghurūr',exRu:'мирская жизнь — лишь обманчивое наслаждение'},
+{ar:'إِنسَان',tr:'insān',ru:'Человек',cat:'существит.',root:'أ ن س',ex:'وَخُلِقَ الْإِنسَانُ ضَعِيفًا',exTr:'wa khuliqa l-insānu ḍaʿīfā',exRu:'человек создан слабым'},
 {ar:'دِين',tr:'dīn',ru:'Религия / Суд',cat:'существит.',root:'د ي ن',ex:'مَالِكِ يَوْمِ الدِّينِ',exTr:'māliki yawmi d-dīn'},
 {ar:'عَمَل',tr:'ʿamal',ru:'Поступок / Дело',cat:'существит.',root:'ع م ل',ex:'فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ',exTr:'faman yaʿmal mithqāla dharratin khayran yarah'},
-{ar:'خَيْر',tr:'khayr',ru:'Добро / Благо',cat:'существит.',root:'خ ي ر',ex:'وَمَا تَفْعَلُوا مِنْ خَيْرٍ يَعْلَمْهُ اللَّهُ',exTr:'wa mā tafʿalū min khayrin yaʿlamhu llāh'},
-{ar:'آخِرَة',tr:'ākhira',ru:'Последняя жизнь',cat:'существит.',root:'أ خ ر',ex:'وَلَلْآخِرَةُ خَيْرٌ لَّكَ مِنَ الْأُولَىٰ',exTr:'wa la-l-ākhiratu khayrun laka mina l-ūlā'},
-{ar:'سَلَام',tr:'salām',ru:'Мир',cat:'существит.',root:'س ل م',ex:'سَلَامٌ عَلَيْكُم بِمَا صَبَرْتُمْ',exTr:'salāmun ʿalaykum bimā ṣabartum'},
-{ar:'إِيمَان',tr:'īmān',ru:'Вера',cat:'существит.',root:'أ م ن',ex:'يَا أَيُّهَا الَّذِينَ آمَنُوا',exTr:'yā ayyuhā lladhīna āmanū'},
+{ar:'خَيْر',tr:'khayr',ru:'Добро / Благо',cat:'существит.',root:'خ ي ر',ex:'وَمَا تَفْعَلُوا مِنْ خَيْرٍ يَعْلَمْهُ اللَّهُ',exTr:'wa mā tafʿalū min khayrin yaʿlamhu llāh',exRu:'Аллах знает то добро, что вы совершаете'},
+{ar:'آخِرَة',tr:'ākhira',ru:'Последняя жизнь',cat:'существит.',root:'أ خ ر',ex:'وَلَلْآخِرَةُ خَيْرٌ لَّكَ مِنَ الْأُولَىٰ',exTr:'wa la-l-ākhiratu khayrun laka mina l-ūlā',exRu:'последняя жизнь лучше для тебя, чем первая'},
+{ar:'سَلَام',tr:'salām',ru:'Мир',cat:'существит.',root:'س ل م',ex:'سَلَامٌ عَلَيْكُم بِمَا صَبَرْتُمْ',exTr:'salāmun ʿalaykum bimā ṣabartum',exRu:'мир вам за то, что вы терпели'},
+{ar:'إِيمَان',tr:'īmān',ru:'Вера',cat:'существит.',root:'أ م ن',ex:'يَا أَيُّهَا الَّذِينَ آمَنُوا',exTr:'yā ayyuhā lladhīna āmanū',exRu:'о те, которые уверовали'},
 {ar:'أَرْض',tr:'arḍ',ru:'Земля',cat:'существит.',root:'أ ر ض',ex:'لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ',exTr:'lahu mā fi s-samāwāti wa mā fi l-arḍ'},
 {ar:'سَمَاء',tr:'samāʾ',ru:'Небо',cat:'существит.',root:'س م و',ex:'اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ',exTr:'allāhu nūru s-samāwāti wa l-arḍ'},
 {ar:'مَوْت',tr:'mawt',ru:'Смерть',cat:'существит.',root:'م و ت',ex:'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ',exTr:'kullu nafsin dhāʾiqatu l-mawt'},
-{ar:'جَنَّة',tr:'janna',ru:'Рай / Сад',cat:'существит.',root:'ج ن ن',ex:'وَبَشِّرِ الَّذِينَ آمَنُوا أَنَّ لَهُمْ جَنَّاتٍ',exTr:'wa bashshiri lladhīna āmanū anna lahum jannāt'},
-{ar:'نَار',tr:'nār',ru:'Огонь / Ад',cat:'существит.',root:'ن ي ر',ex:'وَاتَّقُوا النَّارَ الَّتِي أُعِدَّتْ لِلْكَافِرِينَ',exTr:'wa ttaqū n-nāra llatī uʿiddat li-l-kāfirīn'},
-{ar:'صَلَاة',tr:'ṣalāh',ru:'Намаз / Молитва',cat:'существит.',root:'ص ل و',ex:'وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ',exTr:'wa aqīmū ṣ-ṣalāta wa ātū z-zakāh'},
+{ar:'جَنَّة',tr:'janna',ru:'Рай / Сад',cat:'существит.',root:'ج ن ن',ex:'وَبَشِّرِ الَّذِينَ آمَنُوا أَنَّ لَهُمْ جَنَّاتٍ',exTr:'wa bashshiri lladhīna āmanū anna lahum jannāt',exRu:'обрадуй верующих вестью о садах'},
+{ar:'نَار',tr:'nār',ru:'Огонь / Ад',cat:'существит.',root:'ن ي ر',ex:'وَاتَّقُوا النَّارَ الَّتِي أُعِدَّتْ لِلْكَافِرِينَ',exTr:'wa ttaqū n-nāra llatī uʿiddat li-l-kāfirīn',exRu:'бойтесь огня, уготованного для неверующих'},
+{ar:'صَلَاة',tr:'ṣalāh',ru:'Намаз / Молитва',cat:'существит.',root:'ص ل و',ex:'وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ',exTr:'wa aqīmū ṣ-ṣalāta wa ātū z-zakāh',exRu:'совершайте молитву и выплачивайте закят'},
 {ar:'زَكَاة',tr:'zakāh',ru:'Закят',cat:'существит.',root:'ز ك و',ex:'وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ',exTr:'wa aqīmū ṣ-ṣalāta wa ātū z-zakāh'},
-{ar:'تَوْبَة',tr:'tawba',ru:'Покаяние',cat:'существит.',root:'ت و ب',ex:'إِنَّ اللَّهَ يُحِبُّ التَّوَّابِينَ',exTr:'inna llāha yuḥibbu t-tawwābīn'},
-{ar:'دُعَاء',tr:'duʿāʾ',ru:'Мольба / Дуа',cat:'существит.',root:'د ع و',ex:'قُلْ مَا يَعْبَأُ بِكُمْ رَبِّي لَوْلَا دُعَاؤُكُمْ',exTr:'qul mā yaʿbaʾu bikum rabbī lawlā duʿāʾukum'},
-{ar:'ذِكْر',tr:'dhikr',ru:'Поминание / Упоминание',cat:'существит.',root:'ذ ك ر',ex:'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',exTr:'alā bi-dhikri llāhi taṭmaʾinnu l-qulūb'},
-{ar:'أَمَانَة',tr:'amāna',ru:'Доверие / Аманат',cat:'существит.',root:'أ م ن',ex:'إِنَّا عَرَضْنَا الْأَمَانَةَ عَلَى السَّمَاوَاتِ',exTr:'innā ʿaraḍnā l-amānata ʿalā s-samāwāt'},
-{ar:'صِرَاط',tr:'ṣirāṭ',ru:'Путь / Дорога',cat:'существит.',root:'ص ر ط',ex:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',exTr:'ihdinā ṣ-ṣirāṭa l-mustaqīm'},
-{ar:'أَهْل',tr:'ahl',ru:'Семья / Люди',cat:'существит.',root:'أ ه ل',ex:'يَا أَهْلَ الْكِتَابِ',exTr:'yā ahla l-kitāb'},
-{ar:'عَالَم',tr:'ʿālam',ru:'Мир / Вселенная',cat:'существит.',root:'ع ل م',ex:'رَبِّ الْعَالَمِينَ',exTr:'rabbi l-ʿālamīn'},
-{ar:'كَلِمَة',tr:'kalima',ru:'Слово',cat:'существит.',root:'ك ل م',ex:'كَلِمَةُ اللَّهِ هِيَ الْعُلْيَا',exTr:'kalimatu llāhi hiya l-ʿulyā'},
-{ar:'آيَة',tr:'āya',ru:'Знамение / Аят',cat:'существит.',root:'أ ي و',ex:'وَمِنْ آيَاتِهِ أَنْ خَلَقَكُم',exTr:'wa min āyātihi an khalaqakum'},
-{ar:'سُورَة',tr:'sūra',ru:'Сура',cat:'существит.',root:'س و ر',ex:'فَأْتُوا بِسُورَةٍ مِّن مِّثْلِهِ',exTr:'faʾtū bi-sūratin min mithlihi'},
+{ar:'تَوْبَة',tr:'tawba',ru:'Покаяние',cat:'существит.',root:'ت و ب',ex:'إِنَّ اللَّهَ يُحِبُّ التَّوَّابِينَ',exTr:'inna llāha yuḥibbu t-tawwābīn',exRu:'поистине, Аллах любит кающихся'},
+{ar:'دُعَاء',tr:'duʿāʾ',ru:'Мольба / Дуа',cat:'существит.',root:'د ع و',ex:'قُلْ مَا يَعْبَأُ بِكُمْ رَبِّي لَوْلَا دُعَاؤُكُمْ',exTr:'qul mā yaʿbaʾu bikum rabbī lawlā duʿāʾukum',exRu:'скажи: «Что Господу с вас без вашей мольбы»'},
+{ar:'ذِكْر',tr:'dhikr',ru:'Поминание / Упоминание',cat:'существит.',root:'ذ ك ر',ex:'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',exTr:'alā bi-dhikri llāhi taṭmaʾinnu l-qulūb',exRu:'только поминанием Аллаха успокаиваются сердца'},
+{ar:'أَمَانَة',tr:'amāna',ru:'Доверие / Аманат',cat:'существит.',root:'أ م ن',ex:'إِنَّا عَرَضْنَا الْأَمَانَةَ عَلَى السَّمَاوَاتِ',exTr:'innā ʿaraḍnā l-amānata ʿalā s-samāwāt',exRu:'Мы предложили доверие небесам'},
+{ar:'صِرَاط',tr:'ṣirāṭ',ru:'Путь / Дорога',cat:'существит.',root:'ص ر ط',ex:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',exTr:'ihdinā ṣ-ṣirāṭa l-mustaqīm',exRu:'веди нас прямым путём'},
+{ar:'أَهْل',tr:'ahl',ru:'Семья / Люди',cat:'существит.',root:'أ ه ل',ex:'يَا أَهْلَ الْكِتَابِ',exTr:'yā ahla l-kitāb',exRu:'о люди Писания'},
+{ar:'عَالَم',tr:'ʿālam',ru:'Мир / Вселенная',cat:'существит.',root:'ع ل م',ex:'رَبِّ الْعَالَمِينَ',exTr:'rabbi l-ʿālamīn',exRu:'Господу миров'},
+{ar:'كَلِمَة',tr:'kalima',ru:'Слово',cat:'существит.',root:'ك ل م',ex:'كَلِمَةُ اللَّهِ هِيَ الْعُلْيَا',exTr:'kalimatu llāhi hiya l-ʿulyā',exRu:'слово Аллаха — высшее'},
+{ar:'آيَة',tr:'āya',ru:'Знамение / Аят',cat:'существит.',root:'أ ي و',ex:'وَمِنْ آيَاتِهِ أَنْ خَلَقَكُم',exTr:'wa min āyātihi an khalaqakum',exRu:'из Его знамений — что Он создал вас'},
+{ar:'سُورَة',tr:'sūra',ru:'Сура',cat:'существит.',root:'س و ر',ex:'فَأْتُوا بِسُورَةٍ مِّن مِّثْلِهِ',exTr:'faʾtū bi-sūratin min mithlihi',exRu:'принесите суру, подобную ему'},
 {ar:'قُرْآن',tr:'qurʾān',ru:'Коран',cat:'существит.',root:'ق ر أ',ex:'الرَّحْمَٰنُ عَلَّمَ الْقُرْآنَ',exTr:'ar-raḥmānu ʿallama l-qurʾān'},
 // Глаголы
-{ar:'قَالَ',tr:'qāla',ru:'сказал',cat:'глагол',root:'ق و ل',ex:'وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ',exTr:'wa qāla rabbukumu dʿūnī astajib lakum'},
-{ar:'جَاءَ',tr:'jāʾa',ru:'пришёл',cat:'глагол',root:'ج ي أ',ex:'إِذَا جَاءَ نَصْرُ اللَّهِ',exTr:'idhā jāʾa naṣru llāh'},
-{ar:'كَانَ',tr:'kāna',ru:'был / есть',cat:'глагол',root:'ك و ن',ex:'وَكَانَ اللَّهُ عَلِيمًا حَكِيمًا',exTr:'wa kāna llāhu ʿalīman ḥakīmā'},
-{ar:'يَعْلَمُ',tr:'yaʿlamu',ru:'знает',cat:'глагол',root:'ع ل م',ex:'وَاللَّهُ يَعْلَمُ مَا تَصْنَعُونَ',exTr:'wa llāhu yaʿlamu mā taṣnaʿūn'},
+{ar:'قَالَ',tr:'qāla',ru:'сказал',cat:'глагол',root:'ق و ل',ex:'وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ',exTr:'wa qāla rabbukumu dʿūnī astajib lakum',exRu:'ваш Господь сказал: взывайте ко Мне — Я отвечу'},
+{ar:'جَاءَ',tr:'jāʾa',ru:'пришёл',cat:'глагол',root:'ج ي أ',ex:'إِذَا جَاءَ نَصْرُ اللَّهِ',exTr:'idhā jāʾa naṣru llāh',exRu:'когда придёт помощь Аллаха'},
+{ar:'كَانَ',tr:'kāna',ru:'был / есть',cat:'глагол',root:'ك و ن',ex:'وَكَانَ اللَّهُ عَلِيمًا حَكِيمًا',exTr:'wa kāna llāhu ʿalīman ḥakīmā',exRu:'Аллах — Знающий, Мудрый'},
+{ar:'يَعْلَمُ',tr:'yaʿlamu',ru:'знает',cat:'глагол',root:'ع ل م',ex:'وَاللَّهُ يَعْلَمُ مَا تَصْنَعُونَ',exTr:'wa llāhu yaʿlamu mā taṣnaʿūn',exRu:'Аллах знает то, что вы делаете'},
 {ar:'آمَنَ',tr:'āmana',ru:'уверовал',cat:'глагол',root:'أ م ن',ex:'يَا أَيُّهَا الَّذِينَ آمَنُوا',exTr:'yā ayyuhā lladhīna āmanū'},
-{ar:'عَمِلَ',tr:'ʿamila',ru:'делал / совершал',cat:'глагол',root:'ع م ل',ex:'فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا',exTr:'faman yaʿmal mithqāla dharratin khayran'},
-{ar:'خَلَقَ',tr:'khalaqa',ru:'сотворил',cat:'глагол',root:'خ ل ق',ex:'الَّذِي خَلَقَ الْمَوْتَ وَالْحَيَاةَ',exTr:'alladhī khalaqa l-mawta wa l-ḥayāh'},
-{ar:'رَزَقَ',tr:'razaqa',ru:'наделил уделом',cat:'глагол',root:'ر ز ق',ex:'وَمَا رَزَقْنَاهُمْ يُنفِقُونَ',exTr:'wa mā razaqnāhum yunfiqūn'},
+{ar:'عَمِلَ',tr:'ʿamila',ru:'делал / совершал',cat:'глагол',root:'ع م ل',ex:'فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا',exTr:'faman yaʿmal mithqāla dharratin khayran',exRu:'кто совершит добро весом с пылинку'},
+{ar:'خَلَقَ',tr:'khalaqa',ru:'сотворил',cat:'глагол',root:'خ ل ق',ex:'الَّذِي خَلَقَ الْمَوْتَ وَالْحَيَاةَ',exTr:'alladhī khalaqa l-mawta wa l-ḥayāh',exRu:'Тот, Кто сотворил смерть и жизнь'},
+{ar:'رَزَقَ',tr:'razaqa',ru:'наделил уделом',cat:'глагол',root:'ر ز ق',ex:'وَمَا رَزَقْنَاهُمْ يُنفِقُونَ',exTr:'wa mā razaqnāhum yunfiqūn',exRu:'и из того, чем Мы наделили их, расходуют'},
 {ar:'هَدَى',tr:'hadā',ru:'повёл прямым путём',cat:'глагол',root:'ه د ي',ex:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',exTr:'ihdinā ṣ-ṣirāṭa l-mustaqīm'},
-{ar:'تَابَ',tr:'tāba',ru:'покаялся',cat:'глагол',root:'ت و ب',ex:'إِلَّا مَن تَابَ وَآمَنَ',exTr:'illā man tāba wa āmana'},
-{ar:'قَرَأَ',tr:'qaraʾa',ru:'читал',cat:'глагол',root:'ق ر أ',ex:'اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ',exTr:'iqraʾ bi-smi rabbika lladhī khalaqa'},
-{ar:'نَزَلَ',tr:'nazala',ru:'ниспослал',cat:'глагол',root:'ن ز ل',ex:'إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ',exTr:'innā anzalnāhu fī laylati l-qadr'},
-{ar:'دَعَا',tr:'daʿā',ru:'взывал / просил',cat:'глагол',root:'د ع و',ex:'وَقَالَ رَبُّكُمُ ادْعُونِي',exTr:'wa qāla rabbukumu dʿūnī'},
-{ar:'أَسْلَمَ',tr:'aslama',ru:'покорился / принял Ислам',cat:'глагол',root:'س ل م',ex:'وَمَنْ أَسْلَمَ وَجْهَهُ لِلَّهِ',exTr:'wa man aslama wajhahu lillāh'},
+{ar:'تَابَ',tr:'tāba',ru:'покаялся',cat:'глагол',root:'ت و ب',ex:'إِلَّا مَن تَابَ وَآمَنَ',exTr:'illā man tāba wa āmana',exRu:'кроме тех, кто покаялся и уверовал'},
+{ar:'قَرَأَ',tr:'qaraʾa',ru:'читал',cat:'глагол',root:'ق ر أ',ex:'اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ',exTr:'iqraʾ bi-smi rabbika lladhī khalaqa',exRu:'читай во имя Господа твоего, Который сотворил'},
+{ar:'نَزَلَ',tr:'nazala',ru:'ниспослал',cat:'глагол',root:'ن ز ل',ex:'إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ',exTr:'innā anzalnāhu fī laylati l-qadr',exRu:'Мы ниспослали его в Ночь предопределения'},
+{ar:'دَعَا',tr:'daʿā',ru:'взывал / просил',cat:'глагол',root:'د ع و',ex:'وَقَالَ رَبُّكُمُ ادْعُونِي',exTr:'wa qāla rabbukumu dʿūnī',exRu:'ваш Господь сказал: взывайте ко Мне'},
+{ar:'أَسْلَمَ',tr:'aslama',ru:'покорился / принял Ислам',cat:'глагол',root:'س ل م',ex:'وَمَنْ أَسْلَمَ وَجْهَهُ لِلَّهِ',exTr:'wa man aslama wajhahu lillāh',exRu:'кто покорил себя Аллаху'},
 // Прилагательные
-{ar:'كَبِير',tr:'kabīr',ru:'большой / великий',cat:'прилагат.',root:'ك ب ر',ex:'وَهُوَ الْعَلِيُّ الْكَبِيرُ',exTr:'wa huwa l-ʿaliyyu l-kabīr'},
-{ar:'صَغِير',tr:'ṣaghīr',ru:'маленький',cat:'прилагат.',root:'ص غ ر',ex:'لَا يُغَادِرُ صَغِيرَةً وَلَا كَبِيرَةً',exTr:'lā yughādiru ṣaghīratan wa lā kabīra'},
-{ar:'عَظِيم',tr:'ʿaẓīm',ru:'великий / огромный',cat:'прилагат.',root:'ع ظ م',ex:'وَهُوَ الْعَلِيُّ الْعَظِيمُ',exTr:'wa huwa l-ʿaliyyu l-ʿaẓīm'},
-{ar:'كَرِيم',tr:'karīm',ru:'щедрый / благородный',cat:'прилагат.',root:'ك ر م',ex:'إِنَّهُ لَقُرْآنٌ كَرِيمٌ',exTr:'innahu la-qurʾānun karīm'},
-{ar:'قَرِيب',tr:'qarīb',ru:'близкий',cat:'прилагат.',root:'ق ر ب',ex:'إِنِّي قَرِيبٌ أُجِيبُ دَعْوَةَ الدَّاعِ',exTr:'innī qarībun ujību daʿwata d-dāʿ'},
-{ar:'كَثِير',tr:'kathīr',ru:'много / многий',cat:'прилагат.',root:'ك ث ر',ex:'وَاذْكُرُوا اللَّهَ كَثِيرًا',exTr:'wa dhkurū llāha kathīrā'},
+{ar:'كَبِير',tr:'kabīr',ru:'большой / великий',cat:'прилагат.',root:'ك ب ر',ex:'وَهُوَ الْعَلِيُّ الْكَبِيرُ',exTr:'wa huwa l-ʿaliyyu l-kabīr',exRu:'Он — Высокий, Великий'},
+{ar:'صَغِير',tr:'ṣaghīr',ru:'маленький',cat:'прилагат.',root:'ص غ ر',ex:'لَا يُغَادِرُ صَغِيرَةً وَلَا كَبِيرَةً',exTr:'lā yughādiru ṣaghīratan wa lā kabīra',exRu:'не оставит ни малого, ни великого'},
+{ar:'عَظِيم',tr:'ʿaẓīm',ru:'великий / огромный',cat:'прилагат.',root:'ع ظ م',ex:'وَهُوَ الْعَلِيُّ الْعَظِيمُ',exTr:'wa huwa l-ʿaliyyu l-ʿaẓīm',exRu:'Он — Высокий, Огромный'},
+{ar:'كَرِيم',tr:'karīm',ru:'щедрый / благородный',cat:'прилагат.',root:'ك ر م',ex:'إِنَّهُ لَقُرْآنٌ كَرِيمٌ',exTr:'innahu la-qurʾānun karīm',exRu:'воистину, это Коран благородный'},
+{ar:'قَرِيب',tr:'qarīb',ru:'близкий',cat:'прилагат.',root:'ق ر ب',ex:'إِنِّي قَرِيبٌ أُجِيبُ دَعْوَةَ الدَّاعِ',exTr:'innī qarībun ujību daʿwata d-dāʿ',exRu:'Я близко и отвечаю на зов взывающего'},
+{ar:'كَثِير',tr:'kathīr',ru:'много / многий',cat:'прилагат.',root:'ك ث ر',ex:'وَاذْكُرُوا اللَّهَ كَثِيرًا',exTr:'wa dhkurū llāha kathīrā',exRu:'поминайте Аллаха многократно'},
 {ar:'قَلِيل',tr:'qalīl',ru:'мало / малый',cat:'прилагат.',root:'ق ل ل',ex:'وَمَا أُوتِيتُم مِّنَ الْعِلْمِ إِلَّا قَلِيلًا',exTr:'wa mā ūtītum mina l-ʿilmi illā qalīlā'},
-{ar:'جَدِيد',tr:'jadīd',ru:'новый',cat:'прилагат.',root:'ج د د',ex:'إِنَّا خَلَقْنَاهُنَّ خَلْقًا جَدِيدًا',exTr:'innā khalaqnāhunna khalqan jadīdā'},
+{ar:'جَدِيد',tr:'jadīd',ru:'новый',cat:'прилагат.',root:'ج د د',ex:'إِنَّا خَلَقْنَاهُنَّ خَلْقًا جَدِيدًا',exTr:'innā khalaqnāhunna khalqan jadīdā',exRu:'Мы сотворим их особым творением'},
 {ar:'صَحِيح',tr:'ṣaḥīḥ',ru:'правильный / верный',cat:'прилагат.',root:'ص ح ح',ex:'',exTr:''},
 {ar:'مُسْتَقِيم',tr:'mustaqīm',ru:'прямой',cat:'прилагат.',root:'ق و م',ex:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',exTr:'ihdinā ṣ-ṣirāṭa l-mustaqīm'},
 // Числа и важные слова
@@ -500,29 +507,29 @@ const WORDS=[
 {ar:'كُلّ',tr:'kull',ru:'каждый / весь',cat:'местоим.',root:'ك ل ل',ex:'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ',exTr:'kullu nafsin dhāʾiqatu l-mawt'},
 {ar:'شَيْء',tr:'shayʾ',ru:'вещь / что-либо',cat:'существит.',root:'ش ي أ',ex:'وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ',exTr:'wa llāhu bi-kulli shayʾin ʿalīm'},
 {ar:'نَاس',tr:'nās',ru:'люди',cat:'существит.',root:'أ ن س',ex:'قُلْ أَعُوذُ بِرَبِّ النَّاسِ',exTr:'qul aʿūdhu bi-rabbi n-nās'},
-{ar:'رَسُول',tr:'rasūl',ru:'посланник',cat:'существит.',root:'ر س ل',ex:'مُّحَمَّدٌ رَّسُولُ اللَّهِ',exTr:'muḥammadun rasūlu llāh'},
-{ar:'نَبِيّ',tr:'nabī',ru:'пророк',cat:'существит.',root:'ن ب أ',ex:'النَّبِيُّ أَوْلَىٰ بِالْمُؤْمِنِينَ مِنْ أَنفُسِهِمْ',exTr:'an-nabiyyu awlā bi-l-muʾminīna min anfusihim'},
-{ar:'مُؤْمِن',tr:'muʾmin',ru:'верующий',cat:'существит.',root:'أ م ن',ex:'إِنَّمَا الْمُؤْمِنُونَ إِخْوَةٌ',exTr:'innamā l-muʾminūna ikhwa'},
-{ar:'مُسْلِم',tr:'muslim',ru:'мусульманин',cat:'существит.',root:'س ل م',ex:'وَأَنَا أَوَّلُ الْمُسْلِمِينَ',exTr:'wa anā awwalu l-muslimīn'},
-{ar:'عَبْد',tr:'ʿabd',ru:'раб / слуга',cat:'существит.',root:'ع ب د',ex:'وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ',exTr:'wa mā khalaqtu l-jinna wa l-insa illā li-yaʿbudūn'},
-{ar:'إِسْلَام',tr:'islām',ru:'Ислам / покорность',cat:'существит.',root:'س ل م',ex:'إِنَّ الدِّينَ عِندَ اللَّهِ الْإِسْلَامُ',exTr:'inna d-dīna ʿinda llāhi l-islām'},
+{ar:'رَسُول',tr:'rasūl',ru:'посланник',cat:'существит.',root:'ر س ل',ex:'مُّحَمَّدٌ رَّسُولُ اللَّهِ',exTr:'muḥammadun rasūlu llāh',exRu:'Мухаммад — посланник Аллаха'},
+{ar:'نَبِيّ',tr:'nabī',ru:'пророк',cat:'существит.',root:'ن ب أ',ex:'النَّبِيُّ أَوْلَىٰ بِالْمُؤْمِنِينَ مِنْ أَنفُسِهِمْ',exTr:'an-nabiyyu awlā bi-l-muʾminīna min anfusihim',exRu:'Пророк ближе к верующим, чем они сами'},
+{ar:'مُؤْمِن',tr:'muʾmin',ru:'верующий',cat:'существит.',root:'أ م ن',ex:'إِنَّمَا الْمُؤْمِنُونَ إِخْوَةٌ',exTr:'innamā l-muʾminūna ikhwa',exRu:'поистине, верующие — братья'},
+{ar:'مُسْلِم',tr:'muslim',ru:'мусульманин',cat:'существит.',root:'س ل م',ex:'وَأَنَا أَوَّلُ الْمُسْلِمِينَ',exTr:'wa anā awwalu l-muslimīn',exRu:'и я — первый из покорившихся'},
+{ar:'عَبْد',tr:'ʿabd',ru:'раб / слуга',cat:'существит.',root:'ع ب د',ex:'وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ',exTr:'wa mā khalaqtu l-jinna wa l-insa illā li-yaʿbudūn',exRu:'Я сотворил джиннов и людей лишь для поклонения Мне'},
+{ar:'إِسْلَام',tr:'islām',ru:'Ислам / покорность',cat:'существит.',root:'س ل م',ex:'إِنَّ الدِّينَ عِندَ اللَّهِ الْإِسْلَامُ',exTr:'inna d-dīna ʿinda llāhi l-islām',exRu:'поистине, религия пред Аллахом — Ислам'},
 {ar:'حَمْد',tr:'ḥamd',ru:'Хвала',cat:'существит.',root:'ح م د',ex:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',exTr:'al-ḥamdu lillāhi rabbi l-ʿālamīn'},
 {ar:'تَوَكُّل',tr:'tawakkul',ru:'упование на Аллаха',cat:'существит.',root:'و ك ل',ex:'وَعَلَى اللَّهِ فَتَوَكَّلُوا',exTr:'wa ʿalā llāhi fa-tawakkalū'},
-{ar:'رِزْق',tr:'rizq',ru:'удел / пропитание',cat:'существит.',root:'ر ز ق',ex:'وَفِي السَّمَاءِ رِزْقُكُمْ',exTr:'wa fi s-samāʾi rizqukum'},
-{ar:'فَضْل',tr:'faḍl',ru:'милость / щедрость',cat:'существит.',root:'ف ض ل',ex:'ذَٰلِكَ فَضْلُ اللَّهِ يُؤْتِيهِ مَن يَشَاءُ',exTr:'dhālika faḍlu llāhi yuʾtīhi man yashāʾ'},
-{ar:'جِهَاد',tr:'jihād',ru:'усердие / борьба',cat:'существит.',root:'ج ه د',ex:'وَجَاهِدُوا فِي اللَّهِ حَقَّ جِهَادِهِ',exTr:'wa jāhidū fi llāhi ḥaqqa jihādihi'},
-{ar:'صِدْق',tr:'ṣidq',ru:'правдивость / искренность',cat:'существит.',root:'ص د ق',ex:'هَٰذَا يَوْمُ يَنفَعُ الصَّادِقِينَ صِدْقُهُمْ',exTr:'hādhā yawmu yanfaʿu ṣ-ṣādiqīna ṣidquhum'},
-{ar:'عَدْل',tr:'ʿadl',ru:'справедливость',cat:'существит.',root:'ع د ل',ex:'إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ',exTr:'inna llāha yaʾmuru bi-l-ʿadli wa l-iḥsān'},
+{ar:'رِزْق',tr:'rizq',ru:'удел / пропитание',cat:'существит.',root:'ر ز ق',ex:'وَفِي السَّمَاءِ رِزْقُكُمْ',exTr:'wa fi s-samāʾi rizqukum',exRu:'и на небесах — ваш удел'},
+{ar:'فَضْل',tr:'faḍl',ru:'милость / щедрость',cat:'существит.',root:'ف ض ل',ex:'ذَٰلِكَ فَضْلُ اللَّهِ يُؤْتِيهِ مَن يَشَاءُ',exTr:'dhālika faḍlu llāhi yuʾtīhi man yashāʾ',exRu:'это — милость Аллаха, Он даёт её кому пожелает'},
+{ar:'جِهَاد',tr:'jihād',ru:'усердие / борьба',cat:'существит.',root:'ج ه د',ex:'وَجَاهِدُوا فِي اللَّهِ حَقَّ جِهَادِهِ',exTr:'wa jāhidū fi llāhi ḥaqqa jihādihi',exRu:'усердствуйте ради Аллаха должным усердием'},
+{ar:'صِدْق',tr:'ṣidq',ru:'правдивость / искренность',cat:'существит.',root:'ص د ق',ex:'هَٰذَا يَوْمُ يَنفَعُ الصَّادِقِينَ صِدْقُهُمْ',exTr:'hādhā yawmu yanfaʿu ṣ-ṣādiqīna ṣidquhum',exRu:'это — день, когда правдивым поможет их правдивость'},
+{ar:'عَدْل',tr:'ʿadl',ru:'справедливость',cat:'существит.',root:'ع د ل',ex:'إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ',exTr:'inna llāha yaʾmuru bi-l-ʿadli wa l-iḥsān',exRu:'Аллах велит справедливость и благодеяние'},
 {ar:'إِحْسَان',tr:'iḥsān',ru:'благодеяние / совершенство',cat:'существит.',root:'ح س ن',ex:'إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ',exTr:'inna llāha yaʾmuru bi-l-ʿadli wa l-iḥsān'},
-{ar:'أُمَّة',tr:'umma',ru:'община / народ',cat:'существит.',root:'أ م م',ex:'كُنتُمْ خَيْرَ أُمَّةٍ أُخْرِجَتْ لِلنَّاسِ',exTr:'kuntum khayra ummatin ukhrijat li-n-nās'},
-{ar:'خَلِيفَة',tr:'khalīfa',ru:'наместник / халиф',cat:'существит.',root:'خ ل ف',ex:'إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً',exTr:'innī jāʿilun fi l-arḍi khalīfa'},
-{ar:'مَلَك',tr:'malak',ru:'ангел',cat:'существит.',root:'م ل ك',ex:'قُلْ يَتَوَفَّاكُم مَّلَكُ الْمَوْتِ',exTr:'qul yatawaffākum malaku l-mawt'},
-{ar:'شَيْطَان',tr:'shayṭān',ru:'шайтан',cat:'существит.',root:'ش ط ن',ex:'إِنَّ الشَّيْطَانَ لَكُمْ عَدُوٌّ فَاتَّخِذُوهُ عَدُوًّا',exTr:'inna sh-shayṭāna lakum ʿaduwwun'},
-{ar:'تَقْوَى',tr:'taqwā',ru:'богобоязненность',cat:'существит.',root:'و ق ي',ex:'وَتَزَوَّدُوا فَإِنَّ خَيْرَ الزَّادِ التَّقْوَى',exTr:'wa tazawwadū fa-inna khayra z-zādi t-taqwā'},
+{ar:'أُمَّة',tr:'umma',ru:'община / народ',cat:'существит.',root:'أ م م',ex:'كُنتُمْ خَيْرَ أُمَّةٍ أُخْرِجَتْ لِلنَّاسِ',exTr:'kuntum khayra ummatin ukhrijat li-n-nās',exRu:'вы — лучшая из общин, выведенная для людей'},
+{ar:'خَلِيفَة',tr:'khalīfa',ru:'наместник / халиф',cat:'существит.',root:'خ ل ف',ex:'إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً',exTr:'innī jāʿilun fi l-arḍi khalīfa',exRu:'Я установлю на земле наместника'},
+{ar:'مَلَك',tr:'malak',ru:'ангел',cat:'существит.',root:'م ل ك',ex:'قُلْ يَتَوَفَّاكُم مَّلَكُ الْمَوْتِ',exTr:'qul yatawaffākum malaku l-mawt',exRu:'скажи: ангел смерти заберёт вас'},
+{ar:'شَيْطَان',tr:'shayṭān',ru:'шайтан',cat:'существит.',root:'ش ط ن',ex:'إِنَّ الشَّيْطَانَ لَكُمْ عَدُوٌّ فَاتَّخِذُوهُ عَدُوًّا',exTr:'inna sh-shayṭāna lakum ʿaduwwun',exRu:'поистине, шайтан — ваш враг'},
+{ar:'تَقْوَى',tr:'taqwā',ru:'богобоязненность',cat:'существит.',root:'و ق ي',ex:'وَتَزَوَّدُوا فَإِنَّ خَيْرَ الزَّادِ التَّقْوَى',exTr:'wa tazawwadū fa-inna khayra z-zādi t-taqwā',exRu:'берите припасы, лучший припас — богобоязненность'},
 {ar:'صَبَرَ',tr:'ṣabara',ru:'терпел',cat:'глагол',root:'ص ب ر',ex:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',exTr:'inna llāha maʿa ṣ-ṣābirīn'},
 {ar:'شَكَرَ',tr:'shakara',ru:'благодарил',cat:'глагол',root:'ش ك ر',ex:'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ',exTr:'la-in shakartum la-azīdannakum'},
-{ar:'عَبَدَ',tr:'ʿabada',ru:'поклонялся',cat:'глагол',root:'ع ب د',ex:'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ',exTr:'iyyāka naʿbudu wa iyyāka nastaʿīn'},
-{ar:'اسْتَغْفَرَ',tr:'istaghfara',ru:'просил прощения',cat:'глагол',root:'غ ف ر',ex:'فَاسْتَغْفِرُوهُ ثُمَّ تُوبُوا إِلَيْهِ',exTr:'fa-staghfirūhu thumma tūbū ilayh'},
+{ar:'عَبَدَ',tr:'ʿabada',ru:'поклонялся',cat:'глагол',root:'ع ب د',ex:'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ',exTr:'iyyāka naʿbudu wa iyyāka nastaʿīn',exRu:'Тебе одному поклоняемся и Тебя просим о помощи'},
+{ar:'اسْتَغْفَرَ',tr:'istaghfara',ru:'просил прощения',cat:'глагол',root:'غ ف ر',ex:'فَاسْتَغْفِرُوهُ ثُمَّ تُوبُوا إِلَيْهِ',exTr:'fa-staghfirūhu thumma tūbū ilayh',exRu:'просите у Него прощения, потом кайтесь перед Ним'},
 ];
 
 const HARAKATS={
@@ -818,16 +825,49 @@ function restoreFC(){
     </div>
     <div class="fc-back">
       <div class="w-ru" id="wRu"></div>
-      <div class="w-cat" id="wCat"></div>
-      <div class="w-root" id="wRoot"></div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center">
+        <div class="w-cat" id="wCat"></div>
+        <div class="w-root" id="wRoot"></div>
+      </div>
       <div class="qs">
         <div class="qs-lbl">Из Корана</div>
         <div class="qs-ar" id="wEx"></div>
         <div class="qs-tr" id="wExTr"></div>
+        <div class="qs-ru" id="wExRu"></div>
       </div>
-      <button class="audio-btn" onclick="speak(event)">🔊 Произнести</button>
     </div>`;
   bindTouch();
+}
+
+// Highlight the studied word inside ayah text
+function highlightWordInAyah(ayahAr, wordAr){
+  if(!ayahAr||!wordAr)return ayahAr||'—';
+  // Try exact match first, then without diacritics
+  const escaped=wordAr.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const re=new RegExp(escaped,'g');
+  if(re.test(ayahAr)){
+    return ayahAr.replace(re,`<span class="hl-word">${wordAr}</span>`);
+  }
+  // Strip diacritics from both and try again
+  const strip=s=>s.replace(/[\u064B-\u065F\u0670]/g,'');
+  const strippedAyah=strip(ayahAr);
+  const strippedWord=strip(wordAr);
+  const re2=new RegExp(strippedWord.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g');
+  if(re2.test(strippedAyah)){
+    // Rebuild with spans around matching positions
+    let result='';
+    let last=0;
+    let m;
+    re2.lastIndex=0;
+    while((m=re2.exec(strippedAyah))!==null){
+      result+=ayahAr.slice(last,m.index);
+      result+=`<span class="hl-word">${ayahAr.slice(m.index,m.index+m[0].length+2)}</span>`;
+      last=m.index+m[0].length;
+    }
+    result+=ayahAr.slice(last);
+    return result||ayahAr;
+  }
+  return ayahAr;
 }
 
 function renderWordCard(){
@@ -841,8 +881,17 @@ function renderWordCard(){
   document.getElementById('wRu').textContent=w.ru;
   document.getElementById('wCat').textContent=w.cat;
   document.getElementById('wRoot').textContent='корень: '+w.root;
-  document.getElementById('wEx').textContent=w.ex||'—';
+  // Highlighted ayah
+  const exEl=document.getElementById('wEx');
+  if(w.ex){
+    exEl.innerHTML=highlightWordInAyah(w.ex,w.ar);
+  } else {
+    exEl.textContent='—';
+  }
   document.getElementById('wExTr').textContent=w.exTr||'';
+  // Russian translation of ayah
+  const ruEl=document.getElementById('wExRu');
+  if(ruEl) ruEl.textContent=w.exRu||'';
   document.getElementById('fcTag').textContent=(wPos+1)+' / '+wQ.length;
   const t=document.getElementById('fcType');
   t.textContent=isNew?'🆕 новое':'🔁 повтор · '+c.interval+'д';
