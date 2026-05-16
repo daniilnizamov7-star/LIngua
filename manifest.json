@@ -1,14 +1,14 @@
 {
-  "name": "Араб • Корень и Слово",
-  "short_name": "Араб",
-  "description": "SRS-карточки для изучения частотных слов Корана",
+  "name": "عربي — Арабский",
+  "short_name": "عربي",
+  "description": "Изучай арабский через слова Корана",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0b1220",
-  "theme_color": "#0b1220",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
   "orientation": "portrait",
   "icons": [
-    { "src": "https://cdn-icons-png.flaticon.com/512/10361/10361454.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "https://cdn-icons-png.flaticon.com/512/10361/10361454.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
   ]
 }
