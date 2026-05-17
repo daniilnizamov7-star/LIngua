@@ -22,16 +22,27 @@
   --pur:#8b5cf6;--pur2:#a78bfa;
   --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
 }
+.light{
+  --bg:#f0f4f8;--bg2:#e8edf3;--sf:#ffffff;--sf2:#f0f4f8;--sf3:#e4eaf1;
+  --bd:#d0d9e4;--bd2:#b8c5d3;--tx:#1a2130;--tx2:#3a4a5c;--mu:#6b7c93;
+  --gold:#b8860b;--gold2:#9a6f00;--gdim:#f5e6c0;
+  --green:#1a7a4a;--green2:#15663e;--gdim2:#d4f0e2;
+  --blue:#2563eb;--red:#c0392b;--rdim:#fde8e6;
+  --pur:#6d28d9;--pur2:#5b21b6;
+}
 html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;overflow:hidden}
+
 .app{height:100%;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative}
 #upd{display:none;background:var(--gold);color:#000;font-size:13px;font-weight:600;padding:10px;text-align:center;cursor:pointer;flex-shrink:0}
 /* Header */
 .hdr{padding:calc(var(--st)+14px) 20px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-bottom:1px solid var(--bd)}
 .logo{font-family:'Scheherazade New',serif;font-size:26px;color:var(--gold);line-height:1}
 .logo-sub{font-size:10px;color:var(--mu);margin-top:2px;letter-spacing:.8px;text-transform:uppercase}
+.hdr-right{display:flex;align-items:center;gap:8px}
 .pills{display:flex;gap:7px}
 .pill{display:flex;align-items:center;gap:4px;background:var(--sf2);border:1px solid var(--bd2);border-radius:20px;padding:5px 10px;font-size:12px;font-weight:500}
 .pill.g{color:var(--gold2)}.pill.gr{color:var(--green2)}
+.theme-btn{background:var(--sf2);border:1px solid var(--bd2);border-radius:20px;width:34px;height:34px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
 /* Screens */
 .screens{flex:1;overflow:hidden;position:relative}
 .sc{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;padding-bottom:calc(var(--sb)+90px);-webkit-overflow-scrolling:touch}
@@ -57,6 +68,7 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
 
 /* ══ HOME ══ */
 .hero{margin:18px 20px 0;background:linear-gradient(135deg,#1a2240,#0f1624);border:1px solid var(--bd2);border-radius:20px;padding:22px;position:relative;overflow:hidden}
+.light .hero{background:linear-gradient(135deg,#e8f0fe,#dce8ff);border-color:#c5d5f0}
 .hero::before{content:'بِسْمِ اللَّهِ';position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-family:'Scheherazade New',serif;font-size:78px;color:rgba(212,168,67,.05);pointer-events:none;line-height:1}
 .hgreet{font-size:13px;color:var(--mu);margin-bottom:4px}
 .htitle{font-size:20px;font-weight:600;margin-bottom:14px;line-height:1.35}
@@ -120,7 +132,29 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
 .sex-res.no{background:rgba(224,85,85,.09);color:var(--red)}
 .next-btn{width:100%;padding:13px;background:var(--gold);border:none;border-radius:13px;color:#0c0e14;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
 
-/* ══ РИСМ (Почему так написано) ══ */
+/* ══ ИМЕНА АЛЛАХА ══ */
+.asma-wrap{padding:14px 20px 20px}
+.asma-header{margin-bottom:14px}
+.asma-progress-row{display:flex;align-items:center;gap:10px}
+.asma-prog-bar{flex:1;height:5px;background:var(--sf2);border-radius:3px;overflow:hidden}
+.asma-prog-fill{height:100%;background:linear-gradient(90deg,var(--gdim),var(--gold2));border-radius:3px;transition:width .5s}
+.asma-prog-lbl{font-size:11px;color:var(--mu);white-space:nowrap}
+.asma-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.asma-card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:13px 11px;cursor:pointer;text-align:center;transition:all .2s;position:relative}
+.asma-card:active{transform:scale(.97)}
+.asma-card.known{border-color:var(--gold);background:rgba(212,168,67,.04)}
+.asma-card.known::after{content:'✓';position:absolute;top:7px;right:9px;font-size:10px;color:var(--gold2)}
+.asma-ar{font-family:'Scheherazade New',serif;font-size:22px;direction:rtl;color:var(--gold2);line-height:1.3;margin-bottom:4px}
+.asma-tr{font-size:11px;font-weight:600;color:var(--tx);margin-bottom:2px}
+.asma-ru{font-size:10px;color:var(--mu)}
+/* Modal for asma */
+.asma-modal-ar{font-family:'Scheherazade New',serif;font-size:52px;direction:rtl;color:var(--gold2);text-align:center;margin:12px 0;line-height:1.3}
+.asma-modal-tr{font-size:18px;font-weight:600;text-align:center;margin-bottom:4px}
+.asma-modal-ru{font-size:15px;color:var(--mu);text-align:center;margin-bottom:14px}
+.asma-modal-desc{font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:10px}
+.asma-modal-ref{font-size:11px;color:var(--gold-dim,var(--mu));font-style:italic}
+.asma-know-btn{width:100%;padding:13px;background:var(--gold);border:none;border-radius:13px;color:#0c0e14;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:10px}
+.asma-know-btn.known{background:var(--gdim2,var(--sf2));color:var(--green2)}
 .rasm-grid{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
 .rasm-card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:14px;cursor:pointer;transition:border-color .15s;position:relative}
 .rasm-card:active{background:var(--sf2)}
@@ -175,7 +209,7 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
 .qs-ar{font-family:'Scheherazade New',serif;font-size:16px;direction:rtl;line-height:1.75;color:var(--tx)}
 .qs-tr{font-size:10px;color:var(--mu);font-style:italic;margin-top:2px}
 .qs-ru{font-size:11px;color:var(--mu);margin-top:4px;line-height:1.4;font-style:italic;border-top:1px solid var(--bd);padding-top:4px}
-.hl-word{color:var(--gold2);font-weight:700;background:rgba(212,168,67,.12);border-radius:4px;padding:0 2px}
+.hl-word{color:var(--gold2);font-weight:700;background:var(--gdim);border-radius:4px;padding:0 2px;opacity:.9}
 .audio-btn{background:none;border:1px solid var(--bd2);border-radius:20px;padding:5px 12px;color:var(--mu);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;margin-top:2px;transition:border-color .2s,color .2s}
 .audio-btn:active{border-color:var(--gold);color:var(--gold2)}
 .sw-hint{display:flex;justify-content:space-between;padding:7px 20px 0;font-size:11px;color:var(--bd2)}
@@ -189,7 +223,7 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
 .done-icon{font-size:52px;margin-bottom:12px}
 .done-tl{font-size:20px;font-weight:600;color:var(--green2);margin-bottom:7px}
 .done-sb{font-size:13px;color:var(--mu);line-height:1.6}
-.done-dua{font-family:'Scheherazade New',serif;font-size:19px;color:var(--gdim);direction:rtl;margin-top:12px}
+.done-dua{font-family:'Scheherazade New',serif;font-size:19px;color:var(--gold);direction:rtl;margin-top:12px}
 
 /* ══ КОРАН ══ */
 .qr-wrap{padding:14px 20px 20px}
@@ -266,9 +300,12 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
       <div class="logo">قرآني</div>
       <div class="logo-sub">Путь к Корану</div>
     </div>
-    <div class="pills">
-      <div class="pill g">🔥<span id="sv">1</span></div>
-      <div class="pill gr">⭐<span id="xv">0</span></div>
+    <div class="hdr-right">
+      <div class="pills">
+        <div class="pill g">🔥<span id="sv">1</span></div>
+        <div class="pill gr">⭐<span id="xv">0</span></div>
+      </div>
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Сменить тему">☀️</button>
     </div>
   </div>
 
@@ -302,7 +339,7 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
           <div class="ticon bl">🕌</div>
           <div><div class="ttl">Разбор аятов</div><div class="tsb">Аль-Фатиха, Ихлас, Фалак, Ан-Нас, Ясин</div></div>
         </div>
-        <div class="task" onclick="goTab('progress',4)">
+        <div class="task" onclick="goTab('progress',5)">
           <div class="ticon pu">📊</div>
           <div><div class="ttl">Прогресс</div><div class="tsb">Достижения, статистика, стрик</div></div>
         </div>
@@ -388,6 +425,21 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
       <div class="wpop hidden" id="wpop"></div>
     </div>
 
+    <!-- ИМЕНА АЛЛАХА -->
+    <div class="sc" id="sc-asma">
+      <div class="asma-wrap">
+        <div class="asma-header">
+          <div class="stitle">Аль-Асма уль-Хусна</div>
+          <div style="font-size:12px;color:var(--mu);margin-bottom:12px;line-height:1.6">99 прекрасных имён Аллаха. Нажми — читай, запоминай, размышляй.</div>
+          <div class="asma-progress-row">
+            <div class="asma-prog-bar"><div class="asma-prog-fill" id="asmaProgFill" style="width:0%"></div></div>
+            <div class="asma-prog-lbl"><span id="asmaProgN">0</span> / 99</div>
+          </div>
+        </div>
+        <div class="asma-grid" id="asmaGrid"></div>
+      </div>
+    </div>
+
     <!-- ПРОГРЕСС -->
     <div class="sc" id="sc-progress">
       <div class="pr-wrap">
@@ -416,11 +468,12 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
   </div>
 
   <div class="bnav">
-    <button class="bn active" onclick="goTab('home',0)"><span class="bni">🏠</span>Главная</button>
+    <button class="bn active" onclick="goTab('home',0)"><span class="bni">🏠</span>Дом</button>
     <button class="bn" onclick="goTab('sound',1)"><span class="bni">🔊</span>Звук</button>
     <button class="bn" onclick="goTab('words',2)"><span class="bni">📖</span>Слова</button>
     <button class="bn" onclick="goTab('quran',3)"><span class="bni">🕌</span>Коран</button>
-    <button class="bn" onclick="goTab('progress',4)"><span class="bni">📊</span>Итоги</button>
+    <button class="bn" onclick="goTab('asma',4)"><span class="bni">✨</span>Имена</button>
+    <button class="bn" onclick="goTab('progress',5)"><span class="bni">📊</span>Итоги</button>
   </div>
 </div>
 
@@ -458,7 +511,7 @@ const WORDS=[
 {ar:'لَهُ',tr:'lahu',ru:'ему / для него',cat:'местоим.',root:'ل ه',ex:'لَهُ مَا فِي السَّمَاوَاتِ',exTr:'lahu mā fi s-samāwāt',exRu:'Ему принадлежит то, что на небесах'},
 {ar:'لَمْ',tr:'lam',ru:'не (прош. вр.)',cat:'частица',root:'ل م',ex:'لَمْ يَلِدْ وَلَمْ يُولَدْ',exTr:'lam yalid wa lam yūlad',exRu:'Он не родил и не был рождён'},
 // Имена Аллаха и атрибуты
-{ar:'اللَّهُ',tr:'allāhu',ru:'Аллах',cat:'имя',root:'أ ل ه',ex:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',exTr:'Bismillāhi r-raḥmāni r-raḥīm'},
+{ar:'اللَّهُ',tr:'allāhu',ru:'Аллах',cat:'имя',root:'أ ل ه',ex:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',exTr:'Bismillāhi r-raḥmāni r-raḥīm',exRu:'Именем Аллаха, Милостивого, Милосердного'},
 {ar:'الرَّحْمَٰنُ',tr:'ar-raḥmān',ru:'Милостивый',cat:'имя Аллаха',root:'ر ح م',ex:'الرَّحْمَٰنُ عَلَّمَ الْقُرْآنَ',exTr:'ar-raḥmānu ʿallama l-qurʾān',exRu:'Милостивый научил Корану'},
 {ar:'الرَّحِيمُ',tr:'ar-raḥīm',ru:'Милосердный',cat:'имя Аллаха',root:'ر ح م',ex:'وَكَانَ اللَّهُ غَفُورًا رَّحِيمًا',exTr:'wa kāna llāhu ghafūran raḥīmā',exRu:'Аллах — Прощающий, Милосердный'},
 {ar:'الْغَفُورُ',tr:'al-ghafūr',ru:'Прощающий',cat:'имя Аллаха',root:'غ ف ر',ex:'إِنَّ اللَّهَ غَفُورٌ رَّحِيمٌ',exTr:'inna llāha ghafūrun raḥīm',exRu:'поистине, Аллах — Прощающий, Милосердный'},
@@ -479,19 +532,19 @@ const WORDS=[
 {ar:'نُور',tr:'nūr',ru:'Свет',cat:'существит.',root:'ن و ر',ex:'اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ',exTr:'allāhu nūru s-samāwāti wa l-arḍ',exRu:'Аллах — Свет небес и земли'},
 {ar:'حَيَاة',tr:'ḥayāh',ru:'Жизнь',cat:'существит.',root:'ح ي ي',ex:'وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ',exTr:'wa ma l-ḥayātu d-dunyā illā matāʿu l-ghurūr',exRu:'мирская жизнь — лишь обманчивое наслаждение'},
 {ar:'إِنسَان',tr:'insān',ru:'Человек',cat:'существит.',root:'أ ن س',ex:'وَخُلِقَ الْإِنسَانُ ضَعِيفًا',exTr:'wa khuliqa l-insānu ḍaʿīfā',exRu:'человек создан слабым'},
-{ar:'دِين',tr:'dīn',ru:'Религия / Суд',cat:'существит.',root:'د ي ن',ex:'مَالِكِ يَوْمِ الدِّينِ',exTr:'māliki yawmi d-dīn'},
-{ar:'عَمَل',tr:'ʿamal',ru:'Поступок / Дело',cat:'существит.',root:'ع م ل',ex:'فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ',exTr:'faman yaʿmal mithqāla dharratin khayran yarah'},
+{ar:'دِين',tr:'dīn',ru:'Религия / Суд',cat:'существит.',root:'د ي ن',ex:'مَالِكِ يَوْمِ الدِّينِ',exTr:'māliki yawmi d-dīn',exRu:'Властелину Дня воздаяния'},
+{ar:'عَمَل',tr:'ʿamal',ru:'Поступок / Дело',cat:'существит.',root:'ع م ل',ex:'فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ',exTr:'faman yaʿmal mithqāla dharratin khayran yarah',exRu:'кто совершит добро весом с пылинку — увидит его'},
 {ar:'خَيْر',tr:'khayr',ru:'Добро / Благо',cat:'существит.',root:'خ ي ر',ex:'وَمَا تَفْعَلُوا مِنْ خَيْرٍ يَعْلَمْهُ اللَّهُ',exTr:'wa mā tafʿalū min khayrin yaʿlamhu llāh',exRu:'Аллах знает то добро, что вы совершаете'},
 {ar:'آخِرَة',tr:'ākhira',ru:'Последняя жизнь',cat:'существит.',root:'أ خ ر',ex:'وَلَلْآخِرَةُ خَيْرٌ لَّكَ مِنَ الْأُولَىٰ',exTr:'wa la-l-ākhiratu khayrun laka mina l-ūlā',exRu:'последняя жизнь лучше для тебя, чем первая'},
 {ar:'سَلَام',tr:'salām',ru:'Мир',cat:'существит.',root:'س ل م',ex:'سَلَامٌ عَلَيْكُم بِمَا صَبَرْتُمْ',exTr:'salāmun ʿalaykum bimā ṣabartum',exRu:'мир вам за то, что вы терпели'},
 {ar:'إِيمَان',tr:'īmān',ru:'Вера',cat:'существит.',root:'أ م ن',ex:'يَا أَيُّهَا الَّذِينَ آمَنُوا',exTr:'yā ayyuhā lladhīna āmanū',exRu:'о те, которые уверовали'},
-{ar:'أَرْض',tr:'arḍ',ru:'Земля',cat:'существит.',root:'أ ر ض',ex:'لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ',exTr:'lahu mā fi s-samāwāti wa mā fi l-arḍ'},
-{ar:'سَمَاء',tr:'samāʾ',ru:'Небо',cat:'существит.',root:'س م و',ex:'اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ',exTr:'allāhu nūru s-samāwāti wa l-arḍ'},
-{ar:'مَوْت',tr:'mawt',ru:'Смерть',cat:'существит.',root:'م و ت',ex:'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ',exTr:'kullu nafsin dhāʾiqatu l-mawt'},
+{ar:'أَرْض',tr:'arḍ',ru:'Земля',cat:'существит.',root:'أ ر ض',ex:'لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ',exTr:'lahu mā fi s-samāwāti wa mā fi l-arḍ',exRu:'Ему принадлежит то, что на небесах и на земле'},
+{ar:'سَمَاء',tr:'samāʾ',ru:'Небо',cat:'существит.',root:'س م و',ex:'اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ',exTr:'allāhu nūru s-samāwāti wa l-arḍ',exRu:'Аллах — Свет небес и земли'},
+{ar:'مَوْت',tr:'mawt',ru:'Смерть',cat:'существит.',root:'م و ت',ex:'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ',exTr:'kullu nafsin dhāʾiqatu l-mawt',exRu:'каждая душа вкусит смерть'},
 {ar:'جَنَّة',tr:'janna',ru:'Рай / Сад',cat:'существит.',root:'ج ن ن',ex:'وَبَشِّرِ الَّذِينَ آمَنُوا أَنَّ لَهُمْ جَنَّاتٍ',exTr:'wa bashshiri lladhīna āmanū anna lahum jannāt',exRu:'обрадуй верующих вестью о садах'},
 {ar:'نَار',tr:'nār',ru:'Огонь / Ад',cat:'существит.',root:'ن ي ر',ex:'وَاتَّقُوا النَّارَ الَّتِي أُعِدَّتْ لِلْكَافِرِينَ',exTr:'wa ttaqū n-nāra llatī uʿiddat li-l-kāfirīn',exRu:'бойтесь огня, уготованного для неверующих'},
 {ar:'صَلَاة',tr:'ṣalāh',ru:'Намаз / Молитва',cat:'существит.',root:'ص ل و',ex:'وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ',exTr:'wa aqīmū ṣ-ṣalāta wa ātū z-zakāh',exRu:'совершайте молитву и выплачивайте закят'},
-{ar:'زَكَاة',tr:'zakāh',ru:'Закят',cat:'существит.',root:'ز ك و',ex:'وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ',exTr:'wa aqīmū ṣ-ṣalāta wa ātū z-zakāh'},
+{ar:'زَكَاة',tr:'zakāh',ru:'Закят',cat:'существит.',root:'ز ك و',ex:'وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ',exTr:'wa aqīmū ṣ-ṣalāta wa ātū z-zakāh',exRu:'совершайте молитву и выплачивайте закят'},
 {ar:'تَوْبَة',tr:'tawba',ru:'Покаяние',cat:'существит.',root:'ت و ب',ex:'إِنَّ اللَّهَ يُحِبُّ التَّوَّابِينَ',exTr:'inna llāha yuḥibbu t-tawwābīn',exRu:'поистине, Аллах любит кающихся'},
 {ar:'دُعَاء',tr:'duʿāʾ',ru:'Мольба / Дуа',cat:'существит.',root:'د ع و',ex:'قُلْ مَا يَعْبَأُ بِكُمْ رَبِّي لَوْلَا دُعَاؤُكُمْ',exTr:'qul mā yaʿbaʾu bikum rabbī lawlā duʿāʾukum',exRu:'скажи: «Что Господу с вас без вашей мольбы»'},
 {ar:'ذِكْر',tr:'dhikr',ru:'Поминание / Упоминание',cat:'существит.',root:'ذ ك ر',ex:'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',exTr:'alā bi-dhikri llāhi taṭmaʾinnu l-qulūb',exRu:'только поминанием Аллаха успокаиваются сердца'},
@@ -502,17 +555,17 @@ const WORDS=[
 {ar:'كَلِمَة',tr:'kalima',ru:'Слово',cat:'существит.',root:'ك ل م',ex:'كَلِمَةُ اللَّهِ هِيَ الْعُلْيَا',exTr:'kalimatu llāhi hiya l-ʿulyā',exRu:'слово Аллаха — высшее'},
 {ar:'آيَة',tr:'āya',ru:'Знамение / Аят',cat:'существит.',root:'أ ي و',ex:'وَمِنْ آيَاتِهِ أَنْ خَلَقَكُم',exTr:'wa min āyātihi an khalaqakum',exRu:'из Его знамений — что Он создал вас'},
 {ar:'سُورَة',tr:'sūra',ru:'Сура',cat:'существит.',root:'س و ر',ex:'فَأْتُوا بِسُورَةٍ مِّن مِّثْلِهِ',exTr:'faʾtū bi-sūratin min mithlihi',exRu:'принесите суру, подобную ему'},
-{ar:'قُرْآن',tr:'qurʾān',ru:'Коран',cat:'существит.',root:'ق ر أ',ex:'الرَّحْمَٰنُ عَلَّمَ الْقُرْآنَ',exTr:'ar-raḥmānu ʿallama l-qurʾān'},
+{ar:'قُرْآن',tr:'qurʾān',ru:'Коран',cat:'существит.',root:'ق ر أ',ex:'الرَّحْمَٰنُ عَلَّمَ الْقُرْآنَ',exTr:'ar-raḥmānu ʿallama l-qurʾān',exRu:'Милостивый научил Корану'},
 // Глаголы
 {ar:'قَالَ',tr:'qāla',ru:'сказал',cat:'глагол',root:'ق و ل',ex:'وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ',exTr:'wa qāla rabbukumu dʿūnī astajib lakum',exRu:'ваш Господь сказал: взывайте ко Мне — Я отвечу'},
 {ar:'جَاءَ',tr:'jāʾa',ru:'пришёл',cat:'глагол',root:'ج ي أ',ex:'إِذَا جَاءَ نَصْرُ اللَّهِ',exTr:'idhā jāʾa naṣru llāh',exRu:'когда придёт помощь Аллаха'},
 {ar:'كَانَ',tr:'kāna',ru:'был / есть',cat:'глагол',root:'ك و ن',ex:'وَكَانَ اللَّهُ عَلِيمًا حَكِيمًا',exTr:'wa kāna llāhu ʿalīman ḥakīmā',exRu:'Аллах — Знающий, Мудрый'},
 {ar:'يَعْلَمُ',tr:'yaʿlamu',ru:'знает',cat:'глагол',root:'ع ل م',ex:'وَاللَّهُ يَعْلَمُ مَا تَصْنَعُونَ',exTr:'wa llāhu yaʿlamu mā taṣnaʿūn',exRu:'Аллах знает то, что вы делаете'},
-{ar:'آمَنَ',tr:'āmana',ru:'уверовал',cat:'глагол',root:'أ م ن',ex:'يَا أَيُّهَا الَّذِينَ آمَنُوا',exTr:'yā ayyuhā lladhīna āmanū'},
+{ar:'آمَنَ',tr:'āmana',ru:'уверовал',cat:'глагол',root:'أ م ن',ex:'يَا أَيُّهَا الَّذِينَ آمَنُوا',exTr:'yā ayyuhā lladhīna āmanū',exRu:'о те, которые уверовали'},
 {ar:'عَمِلَ',tr:'ʿamila',ru:'делал / совершал',cat:'глагол',root:'ع م ل',ex:'فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا',exTr:'faman yaʿmal mithqāla dharratin khayran',exRu:'кто совершит добро весом с пылинку'},
 {ar:'خَلَقَ',tr:'khalaqa',ru:'сотворил',cat:'глагол',root:'خ ل ق',ex:'الَّذِي خَلَقَ الْمَوْتَ وَالْحَيَاةَ',exTr:'alladhī khalaqa l-mawta wa l-ḥayāh',exRu:'Тот, Кто сотворил смерть и жизнь'},
 {ar:'رَزَقَ',tr:'razaqa',ru:'наделил уделом',cat:'глагол',root:'ر ز ق',ex:'وَمَا رَزَقْنَاهُمْ يُنفِقُونَ',exTr:'wa mā razaqnāhum yunfiqūn',exRu:'и из того, чем Мы наделили их, расходуют'},
-{ar:'هَدَى',tr:'hadā',ru:'повёл прямым путём',cat:'глагол',root:'ه د ي',ex:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',exTr:'ihdinā ṣ-ṣirāṭa l-mustaqīm'},
+{ar:'هَدَى',tr:'hadā',ru:'повёл прямым путём',cat:'глагол',root:'ه د ي',ex:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',exTr:'ihdinā ṣ-ṣirāṭa l-mustaqīm',exRu:'веди нас прямым путём'},
 {ar:'تَابَ',tr:'tāba',ru:'покаялся',cat:'глагол',root:'ت و ب',ex:'إِلَّا مَن تَابَ وَآمَنَ',exTr:'illā man tāba wa āmana',exRu:'кроме тех, кто покаялся и уверовал'},
 {ar:'قَرَأَ',tr:'qaraʾa',ru:'читал',cat:'глагол',root:'ق ر أ',ex:'اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ',exTr:'iqraʾ bi-smi rabbika lladhī khalaqa',exRu:'читай во имя Господа твоего, Который сотворил'},
 {ar:'نَزَلَ',tr:'nazala',ru:'ниспослал',cat:'глагол',root:'ن ز ل',ex:'إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ',exTr:'innā anzalnāhu fī laylati l-qadr',exRu:'Мы ниспослали его в Ночь предопределения'},
@@ -525,29 +578,29 @@ const WORDS=[
 {ar:'كَرِيم',tr:'karīm',ru:'щедрый / благородный',cat:'прилагат.',root:'ك ر م',ex:'إِنَّهُ لَقُرْآنٌ كَرِيمٌ',exTr:'innahu la-qurʾānun karīm',exRu:'воистину, это Коран благородный'},
 {ar:'قَرِيب',tr:'qarīb',ru:'близкий',cat:'прилагат.',root:'ق ر ب',ex:'إِنِّي قَرِيبٌ أُجِيبُ دَعْوَةَ الدَّاعِ',exTr:'innī qarībun ujību daʿwata d-dāʿ',exRu:'Я близко и отвечаю на зов взывающего'},
 {ar:'كَثِير',tr:'kathīr',ru:'много / многий',cat:'прилагат.',root:'ك ث ر',ex:'وَاذْكُرُوا اللَّهَ كَثِيرًا',exTr:'wa dhkurū llāha kathīrā',exRu:'поминайте Аллаха многократно'},
-{ar:'قَلِيل',tr:'qalīl',ru:'мало / малый',cat:'прилагат.',root:'ق ل ل',ex:'وَمَا أُوتِيتُم مِّنَ الْعِلْمِ إِلَّا قَلِيلًا',exTr:'wa mā ūtītum mina l-ʿilmi illā qalīlā'},
+{ar:'قَلِيل',tr:'qalīl',ru:'мало / малый',cat:'прилагат.',root:'ق ل ل',ex:'وَمَا أُوتِيتُم مِّنَ الْعِلْمِ إِلَّا قَلِيلًا',exTr:'wa mā ūtītum mina l-ʿilmi illā qalīlā',exRu:'вам дано знания лишь немного'},
 {ar:'جَدِيد',tr:'jadīd',ru:'новый',cat:'прилагат.',root:'ج د د',ex:'إِنَّا خَلَقْنَاهُنَّ خَلْقًا جَدِيدًا',exTr:'innā khalaqnāhunna khalqan jadīdā',exRu:'Мы сотворим их особым творением'},
 {ar:'صَحِيح',tr:'ṣaḥīḥ',ru:'правильный / верный',cat:'прилагат.',root:'ص ح ح',ex:'',exTr:''},
 {ar:'مُسْتَقِيم',tr:'mustaqīm',ru:'прямой',cat:'прилагат.',root:'ق و م',ex:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',exTr:'ihdinā ṣ-ṣirāṭa l-mustaqīm'},
 // Числа и важные слова
-{ar:'أَحَد',tr:'aḥad',ru:'один / единственный',cat:'числит.',root:'و ح د',ex:'قُلْ هُوَ اللَّهُ أَحَدٌ',exTr:'qul huwa llāhu aḥad'},
+{ar:'أَحَد',tr:'aḥad',ru:'один / единственный',cat:'числит.',root:'و ح د',ex:'قُلْ هُوَ اللَّهُ أَحَدٌ',exTr:'qul huwa llāhu aḥad',exRu:'Скажи: Он — Аллах Единый'},
 {ar:'كُلّ',tr:'kull',ru:'каждый / весь',cat:'местоим.',root:'ك ل ل',ex:'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ',exTr:'kullu nafsin dhāʾiqatu l-mawt'},
-{ar:'شَيْء',tr:'shayʾ',ru:'вещь / что-либо',cat:'существит.',root:'ش ي أ',ex:'وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ',exTr:'wa llāhu bi-kulli shayʾin ʿalīm'},
-{ar:'نَاس',tr:'nās',ru:'люди',cat:'существит.',root:'أ ن س',ex:'قُلْ أَعُوذُ بِرَبِّ النَّاسِ',exTr:'qul aʿūdhu bi-rabbi n-nās'},
+{ar:'شَيْء',tr:'shayʾ',ru:'вещь / что-либо',cat:'существит.',root:'ش ي أ',ex:'وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ',exTr:'wa llāhu bi-kulli shayʾin ʿalīm',exRu:'Аллах знает обо всём'},
+{ar:'نَاس',tr:'nās',ru:'люди',cat:'существит.',root:'أ ن س',ex:'قُلْ أَعُوذُ بِرَبِّ النَّاسِ',exTr:'qul aʿūdhu bi-rabbi n-nās',exRu:'Скажи: прибегаю к Господу людей'},
 {ar:'رَسُول',tr:'rasūl',ru:'посланник',cat:'существит.',root:'ر س ل',ex:'مُّحَمَّدٌ رَّسُولُ اللَّهِ',exTr:'muḥammadun rasūlu llāh',exRu:'Мухаммад — посланник Аллаха'},
 {ar:'نَبِيّ',tr:'nabī',ru:'пророк',cat:'существит.',root:'ن ب أ',ex:'النَّبِيُّ أَوْلَىٰ بِالْمُؤْمِنِينَ مِنْ أَنفُسِهِمْ',exTr:'an-nabiyyu awlā bi-l-muʾminīna min anfusihim',exRu:'Пророк ближе к верующим, чем они сами'},
 {ar:'مُؤْمِن',tr:'muʾmin',ru:'верующий',cat:'существит.',root:'أ م ن',ex:'إِنَّمَا الْمُؤْمِنُونَ إِخْوَةٌ',exTr:'innamā l-muʾminūna ikhwa',exRu:'поистине, верующие — братья'},
 {ar:'مُسْلِم',tr:'muslim',ru:'мусульманин',cat:'существит.',root:'س ل م',ex:'وَأَنَا أَوَّلُ الْمُسْلِمِينَ',exTr:'wa anā awwalu l-muslimīn',exRu:'и я — первый из покорившихся'},
 {ar:'عَبْد',tr:'ʿabd',ru:'раб / слуга',cat:'существит.',root:'ع ب د',ex:'وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ',exTr:'wa mā khalaqtu l-jinna wa l-insa illā li-yaʿbudūn',exRu:'Я сотворил джиннов и людей лишь для поклонения Мне'},
 {ar:'إِسْلَام',tr:'islām',ru:'Ислам / покорность',cat:'существит.',root:'س ل م',ex:'إِنَّ الدِّينَ عِندَ اللَّهِ الْإِسْلَامُ',exTr:'inna d-dīna ʿinda llāhi l-islām',exRu:'поистине, религия пред Аллахом — Ислам'},
-{ar:'حَمْد',tr:'ḥamd',ru:'Хвала',cat:'существит.',root:'ح م د',ex:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',exTr:'al-ḥamdu lillāhi rabbi l-ʿālamīn'},
-{ar:'تَوَكُّل',tr:'tawakkul',ru:'упование на Аллаха',cat:'существит.',root:'و ك ل',ex:'وَعَلَى اللَّهِ فَتَوَكَّلُوا',exTr:'wa ʿalā llāhi fa-tawakkalū'},
+{ar:'حَمْد',tr:'ḥamd',ru:'Хвала',cat:'существит.',root:'ح م د',ex:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',exTr:'al-ḥamdu lillāhi rabbi l-ʿālamīn',exRu:'хвала Аллаху, Господу миров'},
+{ar:'تَوَكُّل',tr:'tawakkul',ru:'упование на Аллаха',cat:'существит.',root:'و ك ل',ex:'وَعَلَى اللَّهِ فَتَوَكَّلُوا',exTr:'wa ʿalā llāhi fa-tawakkalū',exRu:'и на Аллаха полагайтесь'},
 {ar:'رِزْق',tr:'rizq',ru:'удел / пропитание',cat:'существит.',root:'ر ز ق',ex:'وَفِي السَّمَاءِ رِزْقُكُمْ',exTr:'wa fi s-samāʾi rizqukum',exRu:'и на небесах — ваш удел'},
 {ar:'فَضْل',tr:'faḍl',ru:'милость / щедрость',cat:'существит.',root:'ف ض ل',ex:'ذَٰلِكَ فَضْلُ اللَّهِ يُؤْتِيهِ مَن يَشَاءُ',exTr:'dhālika faḍlu llāhi yuʾtīhi man yashāʾ',exRu:'это — милость Аллаха, Он даёт её кому пожелает'},
 {ar:'جِهَاد',tr:'jihād',ru:'усердие / борьба',cat:'существит.',root:'ج ه د',ex:'وَجَاهِدُوا فِي اللَّهِ حَقَّ جِهَادِهِ',exTr:'wa jāhidū fi llāhi ḥaqqa jihādihi',exRu:'усердствуйте ради Аллаха должным усердием'},
 {ar:'صِدْق',tr:'ṣidq',ru:'правдивость / искренность',cat:'существит.',root:'ص د ق',ex:'هَٰذَا يَوْمُ يَنفَعُ الصَّادِقِينَ صِدْقُهُمْ',exTr:'hādhā yawmu yanfaʿu ṣ-ṣādiqīna ṣidquhum',exRu:'это — день, когда правдивым поможет их правдивость'},
 {ar:'عَدْل',tr:'ʿadl',ru:'справедливость',cat:'существит.',root:'ع د ل',ex:'إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ',exTr:'inna llāha yaʾmuru bi-l-ʿadli wa l-iḥsān',exRu:'Аллах велит справедливость и благодеяние'},
-{ar:'إِحْسَان',tr:'iḥsān',ru:'благодеяние / совершенство',cat:'существит.',root:'ح س ن',ex:'إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ',exTr:'inna llāha yaʾmuru bi-l-ʿadli wa l-iḥsān'},
+{ar:'إِحْسَان',tr:'iḥsān',ru:'благодеяние / совершенство',cat:'существит.',root:'ح س ن',ex:'إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ',exTr:'inna llāha yaʾmuru bi-l-ʿadli wa l-iḥsān',exRu:'Аллах велит справедливость и благодеяние'},
 {ar:'أُمَّة',tr:'umma',ru:'община / народ',cat:'существит.',root:'أ م م',ex:'كُنتُمْ خَيْرَ أُمَّةٍ أُخْرِجَتْ لِلنَّاسِ',exTr:'kuntum khayra ummatin ukhrijat li-n-nās',exRu:'вы — лучшая из общин, выведенная для людей'},
 {ar:'خَلِيفَة',tr:'khalīfa',ru:'наместник / халиф',cat:'существит.',root:'خ ل ف',ex:'إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً',exTr:'innī jāʿilun fi l-arḍi khalīfa',exRu:'Я установлю на земле наместника'},
 {ar:'مَلَك',tr:'malak',ru:'ангел',cat:'существит.',root:'م ل ك',ex:'قُلْ يَتَوَفَّاكُم مَّلَكُ الْمَوْتِ',exTr:'qul yatawaffākum malaku l-mawt',exRu:'скажи: ангел смерти заберёт вас'},
@@ -678,6 +731,106 @@ const RASM=[
   },
 ];
 
+// ═══ АСМА УЛЬ-ХУСНА — 99 имён Аллаха ═══
+const ASMA=[
+  {ar:'الرَّحْمَٰنُ',tr:'Ар-Рахман',ru:'Милостивый',desc:'Проявляет милость ко всем созданиям в этом мире — верующим и неверующим',ref:'Аль-Фатиха 1:1'},
+  {ar:'الرَّحِيمُ',tr:'Ар-Рахим',ru:'Милосердный',desc:'Особая милость только к верующим в Day of Judgment и в вечной жизни',ref:'Аль-Фатиха 1:1'},
+  {ar:'الْمَلِكُ',tr:'Аль-Малик',ru:'Царь / Властелин',desc:'Абсолютный Владыка всего сущего, Чья власть ни от кого не зависит',ref:'Аль-Хашр 59:23'},
+  {ar:'الْقُدُّوسُ',tr:'Аль-Куддус',ru:'Пресвятой',desc:'Полностью свободен от любых недостатков и несовершенств',ref:'Аль-Хашр 59:23'},
+  {ar:'السَّلَامُ',tr:'Ас-Салам',ru:'Дарующий мир',desc:'Источник всякого мира и безопасности, свободен от всех недостатков',ref:'Аль-Хашр 59:23'},
+  {ar:'الْمُؤْمِنُ',tr:'Аль-Муʾмин',ru:'Дарующий веру',desc:'Даёт верующим уверенность и защищает их, верен Своим обещаниям',ref:'Аль-Хашр 59:23'},
+  {ar:'الْمُهَيْمِنُ',tr:'Аль-Мухаймин',ru:'Хранитель',desc:'Наблюдает и охраняет всё сущее, ничто не скрыто от Него',ref:'Аль-Хашр 59:23'},
+  {ar:'الْعَزِيزُ',tr:'Аль-Азиз',ru:'Могущественный',desc:'Непобедимый, Которого никто не может превзойти или противостоять Ему',ref:'Аль-Хашр 59:23'},
+  {ar:'الْجَبَّارُ',tr:'Аль-Джаббар',ru:'Всесильный',desc:'Исправляет и восстанавливает всё, принуждает к покорности',ref:'Аль-Хашр 59:23'},
+  {ar:'الْمُتَكَبِّرُ',tr:'Аль-Мутакаббир',ru:'Превеликий',desc:'Обладает абсолютным величием, которое принадлежит только Ему',ref:'Аль-Хашр 59:23'},
+  {ar:'الْخَالِقُ',tr:'Аль-Халик',ru:'Творец',desc:'Создаёт из ничего, определяет меру и форму каждой вещи',ref:'Аль-Хашр 59:24'},
+  {ar:'الْبَارِئُ',tr:'Аль-Бариʾ',ru:'Создатель',desc:'Создаёт всё в совершенном соответствии, без образца',ref:'Аль-Хашр 59:24'},
+  {ar:'الْمُصَوِّرُ',tr:'Аль-Мусаввир',ru:'Формообразователь',desc:'Придаёт каждому созданию его неповторимый облик',ref:'Аль-Хашр 59:24'},
+  {ar:'الْغَفَّارُ',tr:'Аль-Гаффар',ru:'Многопрощающий',desc:'Снова и снова прощает грехи тех, кто искренне кается',ref:'Та Ха 20:82'},
+  {ar:'الْقَهَّارُ',tr:'Аль-Каhhар',ru:'Всепокоряющий',desc:'Побеждает всё и всех, ничто не может противостоять Его воле',ref:'Юсуф 12:39'},
+  {ar:'الْوَهَّابُ',tr:'Аль-Ваhhаб',ru:'Щедродарящий',desc:'Дарует без всяких условий и без ожидания чего-либо взамен',ref:'Аль-Имран 3:8'},
+  {ar:'الرَّزَّاقُ',tr:'Ар-Раззак',ru:'Дарующий пропитание',desc:'Обеспечивает пропитание всем созданиям без исключения',ref:'Аз-Зарийат 51:58'},
+  {ar:'الْفَتَّاحُ',tr:'Аль-Фаттах',ru:'Открывающий',desc:'Открывает врата милости, знания, удела и победы',ref:'Саба 34:26'},
+  {ar:'الْعَلِيمُ',tr:'Аль-Алим',ru:'Всезнающий',desc:'Знает всё — явное и скрытое, прошлое, настоящее и будущее',ref:'Аль-Бакара 2:29'},
+  {ar:'الْقَابِضُ',tr:'Аль-Кабид',ru:'Удерживающий',desc:'Удерживает и сжимает по Своей мудрости',ref:'Аль-Бакара 2:245'},
+  {ar:'الْبَاسِطُ',tr:'Аль-Басит',ru:'Расширяющий',desc:'Расширяет и даёт в изобилии по Своей милости',ref:'Аль-Бакара 2:245'},
+  {ar:'الْحَكِيمُ',tr:'Аль-Хаким',ru:'Мудрый',desc:'Обладает абсолютной мудростью во всех Своих решениях и делах',ref:'Аль-Бакара 2:129'},
+  {ar:'اللَّطِيفُ',tr:'Аль-Латиф',ru:'Всеблагой',desc:'Тонко знает все детали, добр к рабам, даёт блага незаметными путями',ref:'Аль-Анам 6:103'},
+  {ar:'الْخَبِيرُ',tr:'Аль-Хабир',ru:'Осведомлённый',desc:'Полностью осведомлён о внутренних состояниях всех вещей',ref:'Аль-Анам 6:18'},
+  {ar:'الْحَلِيمُ',tr:'Аль-Халим',ru:'Кроткий',desc:'Не торопится наказать, терпелив к грешникам, даёт время для покаяния',ref:'Аль-Бакара 2:225'},
+  {ar:'الْعَظِيمُ',tr:'Аль-Азим',ru:'Величественный',desc:'Обладает абсолютным величием, которое не поддаётся описанию',ref:'Аш-Шура 42:4'},
+  {ar:'الشَّكُورُ',tr:'Аш-Шакур',ru:'Благодарный',desc:'Принимает малые дела и воздаёт за них многократно',ref:'Фатир 35:30'},
+  {ar:'الْعَلِيُّ',tr:'Аль-Алийй',ru:'Всевышний',desc:'Превыше всего — по положению, власти и сущности',ref:'Аш-Шура 42:4'},
+  {ar:'الْكَبِيرُ',tr:'Аль-Кабир',ru:'Великий',desc:'Велик по Своей сущности, превыше всего что можно представить',ref:'Аш-Шура 42:4'},
+  {ar:'الْحَفِيظُ',tr:'Аль-Хафиз',ru:'Хранящий',desc:'Охраняет всё сущее, хранит дела людей в точности',ref:'Худ 11:57'},
+  {ar:'الْمُقِيتُ',tr:'Аль-Мукит',ru:'Питающий',desc:'Даёт пропитание и поддерживает жизнь всех созданий',ref:'Ан-Ниса 4:85'},
+  {ar:'الْحَسِيبُ',tr:'Аль-Хасиб',ru:'Исчисляющий',desc:'Принимает полный отчёт, достаточен как Хранитель и Свидетель',ref:'Ан-Ниса 4:6'},
+  {ar:'الْجَلِيلُ',tr:'Аль-Джалиль',ru:'Великолепный',desc:'Обладает величием и достоинством, достойным поклонения',ref:'Ар-Рахман 55:27'},
+  {ar:'الْكَرِيمُ',tr:'Аль-Карим',ru:'Щедрый',desc:'Щедр безгранично, дарует больше чем просят и чем заслуживают',ref:'Аль-Инфитар 82:6'},
+  {ar:'الرَّقِيبُ',tr:'Ар-Ракиб',ru:'Наблюдающий',desc:'Неустанно наблюдает за всеми делами и состояниями',ref:'Ан-Ниса 4:1'},
+  {ar:'الْمُجِيبُ',tr:'Аль-Муджиб',ru:'Отвечающий',desc:'Отвечает на молитвы и просьбы всех взывающих к Нему',ref:'Худ 11:61'},
+  {ar:'الْوَاسِعُ',tr:'Аль-Васиʿ',ru:'Всеобъемлющий',desc:'Его знание, милость и щедрость безграничны и всеобъемлющи',ref:'Аль-Бакара 2:115'},
+  {ar:'الْوَدُودُ',tr:'Аль-Вадуд',ru:'Любящий',desc:'Любит верующих и внушает им взаимную любовь',ref:'Худ 11:90'},
+  {ar:'الْمَجِيدُ',tr:'Аль-Маджид',ru:'Славный',desc:'Обладает высшей славой, которая соединяет могущество и щедрость',ref:'Худ 11:73'},
+  {ar:'الْبَاعِثُ',tr:'Аль-Баис',ru:'Воскрешающий',desc:'Воскресит всех людей для расчёта в День воскресения',ref:'Аль-Хадж 22:7'},
+  {ar:'الشَّهِيدُ',tr:'Аш-Шахид',ru:'Свидетель',desc:'Свидетель всего — ничто не скрыто от Него ни в каком уголке',ref:'Ан-Ниса 4:79'},
+  {ar:'الْحَقُّ',tr:'Аль-Хакк',ru:'Истина',desc:'Его существование абсолютно истинно, всё остальное — относительно',ref:'Аль-Хадж 22:6'},
+  {ar:'الْوَكِيلُ',tr:'Аль-Вакиль',ru:'Покровитель',desc:'На Него можно полностью положиться — Он наилучший Распорядитель дел',ref:'Аль-Имран 3:173'},
+  {ar:'الْقَوِيُّ',tr:'Аль-Кавийй',ru:'Сильный',desc:'Обладает абсолютной силой, ничто не может Ему противостоять',ref:'Аль-Хадж 22:74'},
+  {ar:'الْمَتِينُ',tr:'Аль-Матин',ru:'Крепкий',desc:'Абсолютно крепок и устойчив, не нуждается ни в чьей помощи',ref:'Аз-Зарийат 51:58'},
+  {ar:'الْوَلِيُّ',tr:'Аль-Валийй',ru:'Друг / Покровитель',desc:'Покровитель верующих, помогает им и ведёт их к добру',ref:'Аш-Шура 42:28'},
+  {ar:'الْحَمِيدُ',tr:'Аль-Хамид',ru:'Достохвальный',desc:'Достоин всякой хвалы по Своей сущности, независимо от того хвалят Его или нет',ref:'Лукман 31:26'},
+  {ar:'الْمُحْصِي',tr:'Аль-Мухси',ru:'Исчисляющий',desc:'Точно исчисляет и учитывает каждую вещь',ref:'Мариам 19:94'},
+  {ar:'الْمُبْدِئُ',tr:'Аль-Мубдиʾ',ru:'Первоначальный',desc:'Создаёт впервые, без образца и без предшествующего примера',ref:'Юнус 10:34'},
+  {ar:'الْمُعِيدُ',tr:'Аль-Муид',ru:'Возвращающий',desc:'Воссоздаёт вновь после смерти и уничтожения',ref:'Юнус 10:34'},
+  {ar:'الْمُحْيِي',tr:'Аль-Мухйи',ru:'Оживляющий',desc:'Даёт жизнь — как в этом мире так и в Судный день',ref:'Аль-Хадж 22:6'},
+  {ar:'الْمُمِيتُ',tr:'Аль-Мумит',ru:'Умерщвляющий',desc:'Забирает жизнь когда пожелает по Своей мудрости',ref:'Аль-Имран 3:156'},
+  {ar:'الْحَيُّ',tr:'Аль-Хайй',ru:'Живой',desc:'Вечно Живой, Его жизнь не имеет начала и конца',ref:'Аль-Бакара 2:255'},
+  {ar:'الْقَيُّومُ',tr:'Аль-Каййум',ru:'Вечносущий',desc:'Самодостаточен и поддерживает существование всего сущего',ref:'Аль-Бакара 2:255'},
+  {ar:'الْوَاجِدُ',tr:'Аль-Ваджид',ru:'Находящий',desc:'Находит и достигает всего что пожелает — ничто не ускользает от Него',ref:'Хадис'},
+  {ar:'الْمَاجِدُ',tr:'Аль-Маджид',ru:'Благородный',desc:'Обладает высшим благородством и великодушием',ref:'Хадис'},
+  {ar:'الْوَاحِدُ',tr:'Аль-Вахид',ru:'Единственный',desc:'Единственный в Своём роде, нет ничего подобного Ему',ref:'Ар-Раад 13:16'},
+  {ar:'الصَّمَدُ',tr:'Ас-Самад',ru:'Вечный',desc:'Самодостаточен, все нуждаются в Нём, а Он ни в чём не нуждается',ref:'Аль-Ихлас 112:2'},
+  {ar:'الْقَادِرُ',tr:'Аль-Кадир',ru:'Всемогущий',desc:'Способен на всё что пожелает — никаких ограничений для Его силы нет',ref:'Аль-Анам 6:65'},
+  {ar:'الْمُقْتَدِرُ',tr:'Аль-Муктадир',ru:'Властный',desc:'Обладает полной властью и силой для исполнения любого решения',ref:'Аль-Камар 54:42'},
+  {ar:'الْمُقَدِّمُ',tr:'Аль-Мукаддим',ru:'Выдвигающий вперёд',desc:'Выдвигает кого пожелает и возвышает по Своей мудрости',ref:'Хадис'},
+  {ar:'الْمُؤَخِّرُ',tr:'Аль-Муʾаxxир',ru:'Откладывающий',desc:'Откладывает и задерживает кого пожелает по Своей мудрости',ref:'Хадис'},
+  {ar:'الْأَوَّلُ',tr:'Аль-Авваль',ru:'Первый',desc:'Существовал до всего сущего — нет ничего прежде Него',ref:'Аль-Хадид 57:3'},
+  {ar:'الْآخِرُ',tr:'Аль-Ахир',ru:'Последний',desc:'Остаётся после уничтожения всего — нет ничего после Него',ref:'Аль-Хадид 57:3'},
+  {ar:'الظَّاهِرُ',tr:'Аз-Захир',ru:'Явный',desc:'Явен через знамения и доказательства Своего существования',ref:'Аль-Хадид 57:3'},
+  {ar:'الْبَاطِنُ',tr:'Аль-Батин',ru:'Скрытый',desc:'Скрыт от взоров в Своей сущности, постичь Его невозможно',ref:'Аль-Хадид 57:3'},
+  {ar:'الْوَالِي',tr:'Аль-Вали',ru:'Управляющий',desc:'Управляет всеми делами вселенной Один',ref:'Ар-Раад 13:11'},
+  {ar:'الْمُتَعَالِي',tr:'Аль-Мутаали',ru:'Превознесённый',desc:'Превыше всего что приписывают Ему — Его величие безгранично',ref:'Ар-Раад 13:9'},
+  {ar:'الْبَرُّ',tr:'Аль-Барр',ru:'Благой',desc:'Добр к Своим рабам, Его доброта безгранична',ref:'Ат-Тур 52:28'},
+  {ar:'التَّوَّابُ',tr:'Ат-Таввaб',ru:'Принимающий покаяние',desc:'Снова и снова принимает покаяние и прощает',ref:'Аль-Бакара 2:37'},
+  {ar:'الْمُنْتَقِمُ',tr:'Аль-Мунтаким',ru:'Мстящий',desc:'Наказывает упорных грешников и тех кто переступает Его границы',ref:'Ас-Саджда 32:22'},
+  {ar:'الْعَفُوُّ',tr:'Аль-Афувв',ru:'Снисходительный',desc:'Полностью стирает грехи, не просто прощает — а уничтожает след',ref:'Ан-Ниса 4:99'},
+  {ar:'الرَّؤُوفُ',tr:'Ар-Рауф',ru:'Сострадательный',desc:'Проявляет мягкость и снисходительность к слабым и страдающим',ref:'Аль-Бакара 2:143'},
+  {ar:'مَالِكُ الْمُلْكِ',tr:'Малик аль-Мульк',ru:'Владелец владычества',desc:'Абсолютный Владелец всего царства — даёт власть кому пожелает',ref:'Аль-Имран 3:26'},
+  {ar:'ذُو الْجَلَالِ',tr:'Зу-ль-Джалаль',ru:'Обладатель величия',desc:'Обладает величием и великодушием, которые заслуживают поклонения',ref:'Ар-Рахман 55:27'},
+  {ar:'الْمُقْسِطُ',tr:'Аль-Муксит',ru:'Справедливый',desc:'Устанавливает справедливость между людьми в этом мире и в ином',ref:'Аль-Анбийа 21:47'},
+  {ar:'الْجَامِعُ',tr:'Аль-Джамиʿ',ru:'Собирающий',desc:'Соберёт всё человечество в Судный день для отчёта',ref:'Аль-Имран 3:9'},
+  {ar:'الْغَنِيُّ',tr:'Аль-Ганийй',ru:'Богатый',desc:'Абсолютно самодостаточен, не нуждается ни в чём из созданного',ref:'Аль-Имран 3:97'},
+  {ar:'الْمُغْنِي',tr:'Аль-Мугни',ru:'Обогащающий',desc:'Обогащает кого пожелает из Своей безграничной щедрости',ref:'Ат-Тауба 9:28'},
+  {ar:'الْمَانِعُ',tr:'Аль-Маниʿ',ru:'Удерживающий',desc:'Удерживает и защищает кого пожелает от вреда',ref:'Хадис'},
+  {ar:'الضَّارُّ',tr:'Ад-Дарр',ru:'Причиняющий вред',desc:'Только Он может причинить вред — всё происходит по Его воле',ref:'Хадис'},
+  {ar:'النَّافِعُ',tr:'Ан-Нафиʿ',ru:'Приносящий пользу',desc:'Только Он даёт пользу — всё благо исходит только от Него',ref:'Хадис'},
+  {ar:'النُّورُ',tr:'Ан-Нур',ru:'Свет',desc:'Свет небес и земли — всё освещается Его светом',ref:'Ан-Нур 24:35'},
+  {ar:'الْهَادِي',tr:'Аль-Хади',ru:'Ведущий прямым путём',desc:'Ведёт кого пожелает к прямому пути и истине',ref:'Аль-Хадж 22:54'},
+  {ar:'الْبَدِيعُ',tr:'Аль-Бадиʿ',ru:'Несравненный Создатель',desc:'Создаёт невиданные вещи без образца — Его творения уникальны',ref:'Аль-Бакара 2:117'},
+  {ar:'الْبَاقِي',tr:'Аль-Баки',ru:'Вечный',desc:'Вечно пребывает — никогда не исчезнет и не прекратит существования',ref:'Ар-Рахман 55:27'},
+  {ar:'الْوَارِثُ',tr:'Аль-Варис',ru:'Наследующий',desc:'После гибели всего сущего остаётся лишь Он — истинный Наследник',ref:'Аль-Хиджр 15:23'},
+  {ar:'الرَّشِيدُ',tr:'Ар-Рашид',ru:'Направляющий',desc:'Направляет дела мудро и правильно к их цели',ref:'Хадис'},
+  {ar:'الصَّبُورُ',tr:'Ас-Сабур',ru:'Терпеливый',desc:'Терпит грехи рабов и не спешит с наказанием давая время покаяться',ref:'Хадис'},
+  {ar:'الْخَافِضُ',tr:'Аль-Хафид',ru:'Унижающий',desc:'Унижает гордецов и тех кто преступает границы Аллаха по Своей справедливости',ref:'Хадис'},
+  {ar:'الرَّافِعُ',tr:'Ар-Рафиʿ',ru:'Возвышающий',desc:'Возвышает верующих и праведников над остальными в обоих мирах',ref:'Хадис'},
+  {ar:'الْمُعِزُّ',tr:'Аль-Муизз',ru:'Дающий могущество',desc:'Даёт могущество и почёт кому пожелает по Своей мудрости',ref:'Аль-Имран 3:26'},
+  {ar:'الْمُذِلُّ',tr:'Аль-Музилл',ru:'Унижающий',desc:'Унижает кого пожелает — это право принадлежит только Ему',ref:'Аль-Имран 3:26'},
+  {ar:'السَّمِيعُ',tr:'Ас-Самиʿ',ru:'Всеслышащий',desc:'Слышит всё — явное и тайное, громкое и тихое',ref:'Аль-Бакара 2:127'},
+  {ar:'الْبَصِيرُ',tr:'Аль-Басир',ru:'Всевидящий',desc:'Видит всё — явное и скрытое, в темноте и на свету',ref:'Аль-Хадж 22:61'},
+  {ar:'الْحَكَمُ',tr:'Аль-Хакам',ru:'Судья',desc:'Единственный истинный Судья — Его суждение абсолютно справедливо',ref:'Аль-Анам 6:114'},
+  {ar:'الْعَدْلُ',tr:'Аль-Адль',ru:'Справедливый',desc:'Абсолютно справедлив во всём — не притесняет никого ни на йоту',ref:'Хадис'},
+];
 
 const SOUND_Q=[
   {ar:'بَ',correct:'Фатха — «а»',choices:['Фатха — «а»','Касра — «и»','Дамма — «у»','Сукун']},
@@ -796,6 +949,7 @@ let S=(()=>{try{return JSON.parse(localStorage.getItem(STORE))||mkState();}catch
 if(!S.tjSeen)S.tjSeen=[];
 if(!S.achUnlocked)S.achUnlocked=[];
 if(!S.rasmSeen)S.rasmSeen=[];
+if(!S.asmaKnown)S.asmaKnown=[];
 if(S.newDayKey!==todayStr()){S.newDayKey=todayStr();S.newToday=0;}
 (()=>{
   // Вычисляем вчерашний день (тоже со сдвигом 4 утра)
@@ -810,11 +964,14 @@ function save(){localStorage.setItem(STORE,JSON.stringify(S));}
 // ═══ SRS ═══
 // Возвращает timestamp следующего сброса в 4:00 через N дней
 function nextResetMs(days){
+  const now=Date.now();
   const d=new Date();
   d.setHours(RESET_HOUR,0,0,0);
-  // Если 4:00 сегодня уже прошло — базируемся от завтра
-  if(d.getTime()<=Date.now()) d.setDate(d.getDate()+1);
-  // Добавляем нужное количество дней
+  d.setSeconds(0,0);
+  // Если 4:00 сегодня уже прошло (или сейчас ровно 4:00) — берём завтра как базу
+  if(d.getTime()<=now) d.setDate(d.getDate()+1);
+  // days=1 → следующие 4:00 (уже установлено выше)
+  // days=3 → через 3 дня: +2 дня к "следующим 4:00"
   d.setDate(d.getDate()+(days-1));
   return d.getTime();
 }
@@ -841,6 +998,8 @@ function srsUpdate(i,q){
 }
 
 function buildQueue(){
+  // Сброс лимита если день сменился (пользователь не перезагружал с 4:00)
+  if(S.newDayKey!==todayStr()){S.newDayKey=todayStr();S.newToday=0;save();}
   const now=Date.now(),rev=[],nw=[];
   S.cards.forEach((c,i)=>{if(c.introduced){if(c.nextReview<=now)rev.push(i);}else nw.push(i);});
   return[...rev,...nw.slice(0,Math.max(0,NEW_PER_DAY-S.newToday))];
@@ -863,7 +1022,6 @@ function showToast(msg){
 }
 
 // ═══ NAV ═══
-const TABS=['home','sound','words','quran','progress'];
 function goTab(name,idx){
   document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
@@ -873,8 +1031,26 @@ function goTab(name,idx){
   if(name==='sound')renderSound();
   if(name==='words')initWords();
   if(name==='quran'){renderSurahTabs();renderSurah(curSurah);}
+  if(name==='asma')renderAsma();
   if(name==='progress')renderProgress();
 }
+
+// ═══ ТЕМА ═══
+function toggleTheme(){
+  const isLight=document.documentElement.classList.toggle('light');
+  document.getElementById('themeBtn').textContent=isLight?'🌙':'☀️';
+  // Update theme-color meta for browser UI
+  document.querySelector('meta[name="theme-color"]').content=isLight?'#f0f4f8':'#0c0e14';
+  localStorage.setItem('qurani_theme',isLight?'light':'dark');
+}
+// Применить сохранённую тему
+(()=>{
+  if(localStorage.getItem('qurani_theme')==='light'){
+    document.documentElement.classList.add('light');
+    document.getElementById('themeBtn').textContent='🌙';
+    document.querySelector('meta[name="theme-color"]').content='#f0f4f8';
+  }
+})();
 
 // ═══ HOME ═══
 function renderHome(){
@@ -985,7 +1161,12 @@ function toggleRasm(i){
 }
 
 function closeMov(e){if(e.target===document.getElementById('modal'))closeModal();}
-function closeModal(){document.getElementById('modal').classList.add('hidden');}
+function closeModal(){
+  document.getElementById('modal').classList.add('hidden');
+  // Restore default close button for harakat/tajweed modals
+  const btn=document.querySelector('.mcl');
+  if(btn){btn.textContent='Понятно ✓';btn.className='mcl';btn.onclick=closeModal;}
+}
 
 // Sound exercise
 let sexOk=false;
@@ -1011,7 +1192,14 @@ function nextSex(){S.sexIdx++;save();initSex();}
 // ═══ СЛОВА ═══
 let wQ=[],wPos=0,wFlipped=false,wLocked=false,touchX=0;
 
-function initWords(){wQ=buildQueue();wPos=0;updateWordStats();renderWordCard();}
+function initWords(){
+  const newQ=buildQueue();
+  // Only reset position if queue changed (new day or different words)
+  if(JSON.stringify(newQ)!==JSON.stringify(wQ)||wPos>=newQ.length)wPos=0;
+  wQ=newQ;
+  updateWordStats();
+  renderWordCard();
+}
 
 function updateWordStats(){
   const now=Date.now();
@@ -1168,7 +1356,7 @@ function answer(q){
   document.getElementById('xv').textContent=S.xp;
   const fc=document.getElementById('fc');
   fc.classList.add(q>=3?'sr':'sl');
-  setTimeout(()=>{fc.classList.remove('sl','sr');wPos++;renderWordCard();},220);
+  setTimeout(()=>{fc.classList.remove('sl','sr');wPos++;if(wPos>=buildQueue().length)wPos=0;renderWordCard();},220);
 }
 
 // Аудио через Web Speech API
@@ -1213,7 +1401,9 @@ function renderSurah(i){
     html+=`<div class="ayah-block fi"><div class="ayah-num-row"><div class="ayah-badge">${a.num}</div><div class="ayah-ref">${s.name} · ${a.num}</div></div><div class="ayah-full">${a.ar}</div><div class="wchips">${chips}</div><div class="ayah-ru">${a.ru}</div></div>`;
   });
   document.getElementById('surahContent').innerHTML=html;
-  S.studiedAyahs=Math.max(S.studiedAyahs,s.ayahs.length+(curSurah*5));
+  // Count total ayahs across all visited surahs
+  const visitedTotal=SURAHS.slice(0,curSurah+1).reduce((acc,s)=>acc+s.ayahs.length,0);
+  S.studiedAyahs=Math.max(S.studiedAyahs,visitedTotal);
   checkAchievements();save();
 }
 
@@ -1227,7 +1417,55 @@ function showWpop(el){
   clearTimeout(popT);popT=setTimeout(()=>{p.classList.add('hidden');el.classList.remove('on');},2400);
 }
 
-// ═══ ПРОГРЕСС ═══
+// ═══ ИМЕНА АЛЛАХА ═══
+function renderAsma(){
+  const known=S.asmaKnown||[];
+  const pct=Math.round((known.length/ASMA.length)*100);
+  document.getElementById('asmaProgFill').style.width=pct+'%';
+  document.getElementById('asmaProgN').textContent=known.length;
+  document.getElementById('asmaGrid').innerHTML=ASMA.map((a,i)=>`
+    <div class="asma-card${known.includes(i)?' known':''}" onclick="openAsmaModal(${i})">
+      <div class="asma-ar">${a.ar}</div>
+      <div class="asma-tr">${a.tr}</div>
+      <div class="asma-ru">${a.ru}</div>
+    </div>`).join('');
+}
+
+function openAsmaModal(i){
+  const a=ASMA[i];
+  const known=(S.asmaKnown||[]).includes(i);
+  document.getElementById('mTl').textContent='';
+  document.getElementById('mDc').textContent='';
+  document.getElementById('mAr').innerHTML=`
+    <div class="asma-modal-ar">${a.ar}</div>
+    <div class="asma-modal-tr">${a.tr}</div>
+    <div class="asma-modal-ru">${a.ru}</div>
+    <div class="asma-modal-desc">${a.desc}</div>
+    <div class="asma-modal-ref">📖 ${a.ref}</div>`;
+  document.getElementById('mEx').innerHTML='';
+  // Replace close button with know/unlearn
+  document.querySelector('.mcl').innerHTML=known
+    ?'✓ Знаю — убрать из изученных'
+    :'Знаю наизусть ✓';
+  document.querySelector('.mcl').className=known?'mcl asma-know-btn known':'mcl asma-know-btn';
+  document.querySelector('.mcl').onclick=()=>toggleAsmaKnown(i);
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function toggleAsmaKnown(i){
+  if(!S.asmaKnown)S.asmaKnown=[];
+  const idx=S.asmaKnown.indexOf(i);
+  if(idx===-1){
+    S.asmaKnown.push(i);
+    S.xp+=3;
+    showToast('✨ '+ASMA[i].tr+' — выучено!');
+  } else {
+    S.asmaKnown.splice(idx,1);
+  }
+  checkAchievements();save();
+  closeModal();
+  renderAsma();
+}
 function renderProgress(){
   const learned=S.cards.filter(c=>c.introduced).length;
   const pct=Math.round((learned/300)*100);
@@ -1235,7 +1473,7 @@ function renderProgress(){
   document.getElementById('pBar').style.width=pct+'%';
   document.getElementById('pSub').textContent=learned+' из 300 ключевых слов';
   // Week
-  const days=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],dow=new Date().getDay(),mx=Math.max(...S.weekData,1);
+  const days=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],dow=new Date(Date.now()-RESET_HOUR*3600000).getDay(),mx=Math.max(...S.weekData,1);
   document.getElementById('wBars').innerHTML=S.weekData.map((v,i)=>`<div class="bc"><div class="bar${i===dow?' td':''}" style="height:${Math.max(4,Math.round((v/mx)*50))}px"></div></div>`).join('');
   document.getElementById('wDays').innerHTML=days.map((d,i)=>`<div style="flex:1;text-align:center;font-size:9px;color:${i===dow?'var(--gold2)':'var(--mu)'}">${d}</div>`).join('');
   // Known words
@@ -1254,6 +1492,9 @@ function renderProgress(){
 // ═══ BACK BUTTON ═══
 window.addEventListener('popstate',e=>{
   e.preventDefault();
+  // Close modal first if open
+  const modal=document.getElementById('modal');
+  if(!modal.classList.contains('hidden')){closeModal();history.pushState(null,'','');return;}
   const a=document.querySelector('.sc.active');
   if(a&&a.id!=='sc-home'){goTab('home',0);history.pushState(null,'','');}
 });
