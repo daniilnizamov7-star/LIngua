@@ -1543,11 +1543,22 @@ function renderAsmaTest(){
   asmaTestAnswered=false;
   const list=ASMA;
   if(!list.length) return;
-  const correct=list[asmaTestIdx%list.length];
-  // 3 random wrong answers
-  const others=list.filter((_,i)=>i!==asmaTestIdx%list.length);
-  const wrong=others.sort(()=>Math.random()-.5).slice(0,3);
-  const choices=[correct,...wrong].sort(()=>Math.random()-.5);
+  const correctIdx=asmaTestIdx%list.length;
+  const correct=list[correctIdx];
+  // FIX: не мутируем ASMA — делаем копию для перемешивания
+  const others=list.filter((_,i)=>i!==correctIdx).slice();
+  // FIX: перемешиваем копию, не оригинал
+  for(let i=others.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [others[i],others[j]]=[others[j],others[i]];
+  }
+  const wrong=others.slice(0,3);
+  const choices=[correct,...wrong];
+  // Перемешиваем варианты ответа
+  for(let i=choices.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [choices[i],choices[j]]=[choices[j],choices[i]];
+  }
   document.getElementById('asmaTestDesc').textContent=correct.desc;
   document.getElementById('asmaTestChoices').innerHTML=choices.map(c=>`
     <button class="atc" onclick="ansAsmaTest(this,${ASMA.indexOf(c)},${ASMA.indexOf(correct)})">
@@ -1580,7 +1591,10 @@ function ansAsmaTest(btn,chosen,correct){
       S.xp+=3;
     }
     checkAchievements();save();
-    renderAsma();
+    // FIX: обновляем только прогресс-бар, не перерисовываем весь экран
+    const known=S.asmaKnown.length;
+    document.getElementById('asmaProgFill').style.width=Math.round((known/ASMA.length)*100)+'%';
+    document.getElementById('asmaProgN').textContent=known;
   }
 }
 
