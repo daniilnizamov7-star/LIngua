@@ -1003,10 +1003,12 @@ function mkState(){
     weekData:[0,0,0,0,0,0,0],
     studiedAyahs:0,sexIdx:0,
     achUnlocked:[],
+    asmaTestIdx: 0,
   };
 }
 
 let S=(()=>{try{return JSON.parse(localStorage.getItem(STORE))||mkState();}catch(e){return mkState();}})();
+if(typeof S.asmaTestIdx !== 'number') S.asmaTestIdx = 0;
 if(!S.tjSeen)S.tjSeen=[];
 if(!S.achUnlocked)S.achUnlocked=[];
 if(!S.rasmSeen)S.rasmSeen=[];
@@ -1481,7 +1483,6 @@ function showWpop(el){
 // ═══ ИМЕНА АЛЛАХА ═══
 let asmaMode='browse';
 let asmaCatFilter='Все';
-let asmaTestIdx=0;
 let asmaTestAnswered=false;
 
 function renderAsma(){
@@ -1543,7 +1544,7 @@ function renderAsmaTest(){
   asmaTestAnswered=false;
   const list=ASMA;
   if(!list.length) return;
-  const correctIdx=asmaTestIdx%list.length;
+  const correctIdx=S.asmaTestIdx%list.length; // ← ИСПОЛЬЗУЙ S
   const correct=list[correctIdx];
   // FIX: не мутируем ASMA — делаем копию для перемешивания
   const others=list.filter((_,i)=>i!==correctIdx).slice();
@@ -1599,7 +1600,8 @@ function ansAsmaTest(btn,chosen,correct){
 }
 
 function nextAsmaTest(){
-  asmaTestIdx++;
+  S.asmaTestIdx++;
+  save(); // ← СОХРАНЯЕМ В LOCALSTORAGE
   renderAsmaTest();
 }
 
