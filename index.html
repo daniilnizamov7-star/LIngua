@@ -98,6 +98,7 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
 .hero{margin:18px 20px 0;background:linear-gradient(135deg,#1a2240,#0f1624);border:1px solid var(--bd2);border-radius:20px;padding:22px;position:relative;overflow:hidden}
 .light .hero{background:linear-gradient(135deg,#e8f0fe,#dce8ff);border-color:#c5d5f0}
 .hero::before{content:'بِسْمِ اللَّهِ';position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-family:'Scheherazade New',serif;font-size:78px;color:rgba(212,168,67,.05);pointer-events:none;line-height:1}
+.en-hero::before{content:'' !important}
 .hgreet{font-size:13px;color:var(--mu);margin-bottom:4px}
 .htitle{font-size:20px;font-weight:600;margin-bottom:14px;line-height:1.35}
 .pbar-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--mu);margin-bottom:5px}
@@ -2510,7 +2511,7 @@ function goEnTab(name,idx){
   if(name==='home')renderEnHome();
   else if(name==='phon')renderEnPhon();
   else if(name==='words')initEnWords();
-  else if(name==='texts')renderEnТексты();
+  else if(name==='texts')renderEnTexts();
   else if(name==='progress')renderEnProgress();
 }
 
@@ -2532,7 +2533,7 @@ function buildEnScreens(){
     el.className='sc';el.id='sc-en-home';
     el.innerHTML=`
       <div style="padding:16px 20px 0">
-        <div class="hero" style="background:linear-gradient(135deg,#0d1f3c,#0a0f1a)">
+        <div class="hero en-hero" style="background:linear-gradient(135deg,#0d1f3c,#0a0f1a)">
           <div class="hgreet">Привет!</div>
           <div class="htitle" style="color:#e8f0ff">Твой путь к<br>английскому языку</div>
           <div class="pbar-lbl"><span>Словарный запас</span><span id="en-pl">0 / ${EN_WORDS.length}</span></div>
@@ -2555,7 +2556,7 @@ function buildEnScreens(){
           </div>
           <div class="task" onclick="goEnTab('texts',3)">
             <div class="ticon g">📄</div>
-            <div><div class="ttl">Texts</div><div class="tsb">Диалоги, новости, цитаты</div></div>
+            <div><div class="ttl">Тексты</div><div class="tsb">Диалоги, новости, цитаты</div></div>
           </div>
           <div class="task" onclick="goEnTab('progress',4)">
             <div class="ticon pu">📊</div>
