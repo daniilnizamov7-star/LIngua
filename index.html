@@ -1149,7 +1149,7 @@ function goTab(name,idx){
   if(name==='words')initWords();
   if(name==='quran'){renderSurahTabs();renderSurah(curSurah);}
   if(name==='asma')renderAsma();
-  if(name==='progress')renderProgress();
+  if(name==='progress')renderПрогресс();
 }
 
 // ═══ ТЕМА ═══
@@ -2416,7 +2416,7 @@ function showEnDone(){
   if(next4.getTime()<=now)next4.setDate(next4.getDate()+1);
   const hrs=Math.floor((next4-now)/3600000),mins=Math.round(((next4-now)%3600000)/60000);
   const fc=document.getElementById('en-fc');
-  if(fc)fc.innerHTML=`<div class="done-wrap"><div class="done-icon">🌙</div><div class="done-tl" style="color:var(--green2)">Well done!</div><div class="done-sb">New words in ${hrs}h ${mins}m (at 4:00)</div><div style="font-size:13px;color:var(--mu);margin-top:12px;font-style:italic">"Every expert was once a beginner."</div></div>`;
+  if(fc)fc.innerHTML=`<div class="done-wrap"><div class="done-icon">🌙</div><div class="done-tl" style="color:var(--green2)">Отлично!</div><div class="done-sb">Новые слова через ${hrs}h ${mins}m (в 4:00)</div><div style="font-size:13px;color:var(--mu);margin-top:12px;font-style:italic">"Каждый эксперт когда-то был новичком."</div></div>`;
   document.getElementById('en-ansRow')?.classList.add('hidden');
   document.getElementById('en-swHint')?.classList.add('hidden');
   enFlipped=true;
@@ -2467,7 +2467,7 @@ function renderEnProgress(){
   g('en-wDays')&&(g('en-wDays').innerHTML=days.map((d,i)=>`<div style="flex:1;text-align:center;font-size:9px;color:${i===dow?'#60a5fa':'var(--mu)'}">${d}</div>`).join(''));
   const kw=enState.cards.map((c,i)=>c.introduced?EN_WORDS[i]:null).filter(Boolean);
   g('en-kCnt')&&(g('en-kCnt').textContent=kw.length);
-  g('en-kChips')&&(g('en-kChips').innerHTML=kw.length?kw.map(w=>`<span class="kchip"><span style="color:#60a5fa;font-weight:500">${w.en}</span><span class="kc-ru">${w.ru}</span></span>`).join(''):'<span style="font-size:12px;color:var(--bd2)">Start learning!</span>');
+  g('en-kChips')&&(g('en-kChips').innerHTML=kw.length?kw.map(w=>`<span class="kchip"><span style="color:#60a5fa;font-weight:500">${w.en}</span><span class="kc-ru">${w.ru}</span></span>`).join(''):'<span style="font-size:12px;color:var(--bd2)">Начни учить слова!</span>');
   g('en-achGrid')&&(g('en-achGrid').innerHTML=EN_ACHIEV.map(a=>`<div class="ach${(enState.achUnlocked||[]).includes(a.id)?' unlocked':''}"><div class="ach-icon">${a.icon}</div><div class="ach-name">${a.name}</div></div>`).join(''));
 }
 
@@ -2477,11 +2477,11 @@ function initEnglish(){
 
   // Навбар — 5 вкладок как в арабском
   document.querySelector('.bnav').innerHTML=`
-    <button class="bn active" onclick="goEnTab('home',0)"><span class="bni">🏠</span>Home</button>
-    <button class="bn" onclick="goEnTab('phon',1)"><span class="bni">🔊</span>Sounds</button>
-    <button class="bn" onclick="goEnTab('words',2)"><span class="bni">📖</span>Words</button>
-    <button class="bn" onclick="goEnTab('texts',3)"><span class="bni">📄</span>Texts</button>
-    <button class="bn" onclick="goEnTab('progress',4)"><span class="bni">📊</span>Progress</button>`;
+    <button class="bn active" onclick="goEnTab('home',0)"><span class="bni">🏠</span>Главная</button>
+    <button class="bn" onclick="goEnTab('phon',1)"><span class="bni">🔊</span>Звуки</button>
+    <button class="bn" onclick="goEnTab('words',2)"><span class="bni">📖</span>Слова</button>
+    <button class="bn" onclick="goEnTab('texts',3)"><span class="bni">📄</span>Тексты</button>
+    <button class="bn" onclick="goEnTab('progress',4)"><span class="bni">📊</span>Итоги</button>`;
 
   // Скрываем арабские экраны (только арабские, не английские)
   document.querySelectorAll('.sc').forEach(s=>{
@@ -2510,7 +2510,7 @@ function goEnTab(name,idx){
   if(name==='home')renderEnHome();
   else if(name==='phon')renderEnPhon();
   else if(name==='words')initEnWords();
-  else if(name==='texts')renderEnTexts();
+  else if(name==='texts')renderEnТексты();
   else if(name==='progress')renderEnProgress();
 }
 
@@ -2533,9 +2533,9 @@ function buildEnScreens(){
     el.innerHTML=`
       <div style="padding:16px 20px 0">
         <div class="hero" style="background:linear-gradient(135deg,#0d1f3c,#0a0f1a)">
-          <div class="hgreet">Good day! 👋</div>
-          <div class="htitle">Your path to<br>English language</div>
-          <div class="pbar-lbl"><span>Vocabulary</span><span id="en-pl">0 / ${EN_WORDS.length}</span></div>
+          <div class="hgreet">Привет!</div>
+          <div class="htitle" style="color:#e8f0ff">Твой путь к<br>английскому языку</div>
+          <div class="pbar-lbl"><span>Словарный запас</span><span id="en-pl">0 / ${EN_WORDS.length}</span></div>
           <div class="pbar"><div class="pbar-f" id="en-pf" style="width:0%;background:linear-gradient(90deg,#1e3a6e,#60a5fa)"></div></div>
         </div>
         <div class="hstats" style="margin:12px 0 0">
@@ -2544,26 +2544,26 @@ function buildEnScreens(){
           <div class="hs"><div class="hsn" style="color:var(--gold2)" id="en-xp">0</div><div class="hsl">XP</div></div>
         </div>
         <div class="tasks" style="margin:12px 0 0">
-          <div class="stitle">Tasks for today</div>
+          <div class="stitle">Задачи дня</div>
           <div class="task" onclick="goEnTab('phon',1)">
             <div class="ticon b">🔊</div>
-            <div><div class="ttl">Phonetics</div><div class="tsb">English sounds and reading rules</div></div>
+            <div><div class="ttl">Фонетика</div><div class="tsb">Звуки английского и правила чтения</div></div>
           </div>
           <div class="task" onclick="goEnTab('words',2)">
             <div class="ticon gr">📖</div>
-            <div><div class="ttl">Vocabulary</div><div class="tsb" id="en-ws">10 new + SRS reviews</div></div>
+            <div><div class="ttl">Vocabulary</div><div class="tsb" id="en-ws">10 новых + повторения SRS</div></div>
           </div>
           <div class="task" onclick="goEnTab('texts',3)">
             <div class="ticon g">📄</div>
-            <div><div class="ttl">Texts</div><div class="tsb">Dialogues, news, quotes</div></div>
+            <div><div class="ttl">Texts</div><div class="tsb">Диалоги, новости, цитаты</div></div>
           </div>
           <div class="task" onclick="goEnTab('progress',4)">
             <div class="ticon pu">📊</div>
-            <div><div class="ttl">Progress</div><div class="tsb">Stats, achievements, streak</div></div>
+            <div><div class="ttl">Progress</div><div class="tsb">Достижения и статистика</div></div>
           </div>
         </div>
         <div class="aod" style="margin:12px 0 20px">
-          <div class="aod-lbl" style="color:#60a5fa">Quote of the day</div>
+          <div class="aod-lbl" style="color:#60a5fa">Цитата дня</div>
           <div id="en-qotd-en" style="font-size:16px;color:var(--tx);line-height:1.6;margin-bottom:6px;font-style:italic"></div>
           <div id="en-qotd-ru" style="font-size:12px;color:var(--mu);line-height:1.5"></div>
           <div id="en-qotd-src" style="font-size:10px;color:var(--mu);margin-top:4px;opacity:.6"></div>
@@ -2578,21 +2578,21 @@ function buildEnScreens(){
     el.className='sc';el.id='sc-en-phon';
     el.innerHTML=`
       <div style="padding:14px 20px 20px">
-        <div class="stitle">Vowel sounds — Гласные</div>
+        <div class="stitle">Гласные звуки</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px" id="en-vowels"></div>
-        <div class="stitle">Consonants — Согласные</div>
+        <div class="stitle">Согласные звуки</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px" id="en-cons"></div>
-        <div class="stitle">Reading rules — Правила чтения</div>
+        <div class="stitle">Правила чтения</div>
         <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px" id="en-rules"></div>
-        <div class="sex-lbl" style="color:#60a5fa;font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px;font-weight:600">Sound trainer — Тренажёр</div>
+        <div class="sex-lbl" style="color:#60a5fa;font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px;font-weight:600">Тренажёр звуков</div>
         <div style="background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:22px 18px;text-align:center;margin-bottom:10px">
-          <div style="font-size:11px;color:var(--mu);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">How is the highlighted sound read?</div>
+          <div style="font-size:11px;color:var(--mu);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Как читается этот звук?</div>
           <div style="font-size:40px;font-weight:700;color:var(--tx);margin-bottom:5px;letter-spacing:-1px" id="en-sWord"></div>
           <div style="font-size:17px;color:var(--mu);margin-bottom:14px" id="en-sIpa"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="en-sCh"></div>
           <div class="hidden sex-res" id="en-sRes"></div>
         </div>
-        <button class="next-btn hidden" id="en-sNext" onclick="enNextSound()" style="background:var(--blue,#3b82f6)">Next →</button>
+        <button class="next-btn hidden" id="en-sNext" onclick="enNextSound()" style="background:var(--blue,#3b82f6)">Следующее →</button>
       </div>`;
     screens.appendChild(el);
   }
@@ -2616,25 +2616,25 @@ function buildEnScreens(){
           <div class="fc-front">
             <div style="font-size:52px;font-weight:700;color:var(--tx);letter-spacing:-1px;text-align:center;line-height:1.1" id="en-wEn">hello</div>
             <div style="font-size:15px;color:var(--mu);letter-spacing:.5px" id="en-wIpa">/həˈloʊ/</div>
-            <div class="tap-h">tap to reveal</div>
+            <div class="tap-h">нажми — открыть</div>
           </div>
           <div class="fc-back">
             <div style="font-size:24px;font-weight:500" id="en-wRu">привет</div>
             <div class="w-pos" id="en-wPos">excl.</div>
             <div class="qs">
-              <div class="qs-lbl" style="color:#60a5fa">Example</div>
+              <div class="qs-lbl" style="color:#60a5fa">Пример</div>
               <div style="font-size:14px;color:var(--tx);line-height:1.6;text-align:left" id="en-wEx"></div>
               <div class="qs-tr" id="en-wExRu"></div>
             </div>
-            <button class="audio-btn" id="en-audioBtn" onclick="enSpeakWord(event)">🔊 Listen</button>
+            <button class="audio-btn" id="en-audioBtn" onclick="enSpeakWord(event)">🔊 Произнести</button>
           </div>
         </div>
       </div>
       <div class="sw-hint hidden" id="en-swHint"><span>← again</span><span>know →</span></div>
       <div class="ans-row hidden" id="en-ansRow">
-        <button class="ans ans-a" onclick="enAnswer(1)">Again<br><small style="font-size:9px;opacity:.7">tomorrow</small></button>
-        <button class="ans ans-h" onclick="enAnswer(2)">Hard<br><small style="font-size:9px;opacity:.7">3 days</small></button>
-        <button class="ans ans-g" onclick="enAnswer(4)">Know ✓<br><small style="font-size:9px;opacity:.7">7 days</small></button>
+        <button class="ans ans-a" onclick="enAnswer(1)">Снова<br><small style="font-size:9px;opacity:.7">завтра</small></button>
+        <button class="ans ans-h" onclick="enAnswer(2)">Трудно<br><small style="font-size:9px;opacity:.7">3 дня</small></button>
+        <button class="ans ans-g" onclick="enAnswer(4)">Знаю ✓<br><small style="font-size:9px;opacity:.7">7 дней</small></button>
       </div>`;
     screens.appendChild(el);
     document.getElementById('en-fc').addEventListener('touchstart',e=>{enTouchX=e.touches[0].clientX;},{passive:true});
@@ -2667,7 +2667,7 @@ function buildEnScreens(){
           <div class="prh-bar"><div class="prh-fill" id="en-pBar" style="width:0%;background:linear-gradient(90deg,#1e3a6e,#60a5fa)"></div></div>
         </div>
         <div class="week-box">
-          <div class="wb-tl">Weekly activity</div>
+          <div class="wb-tl">Активность за неделю</div>
           <div class="bars" id="en-wBars"></div>
           <div style="display:flex;gap:5px;margin-top:5px" id="en-wDays"></div>
         </div>
@@ -2951,7 +2951,7 @@ function renderEnCatContent(idx){
       <div class="en-text-content" style="font-size:14px;line-height:1.8;color:var(--tx2)">${t.en.replace(/\n/g,'<br>')}</div>
       <div id="en-tr-${idx}-${i}" style="font-size:12px;color:var(--mu);line-height:1.6;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);font-style:italic;display:none">${t.ru.replace(/\n/g,'<br>')}</div>
       <div style="display:flex;gap:8px;margin-top:12px">
-        <button style="flex:1;padding:9px;border-radius:10px;border:1px solid var(--bd2);background:var(--sf2);color:var(--mu);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="toggleEnTr(${idx},${i})">🇷🇺 Translation</button>
+        <button style="flex:1;padding:9px;border-radius:10px;border:1px solid var(--bd2);background:var(--sf2);color:var(--mu);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="toggleEnTr(${idx},${i})">🇷🇺 Перевод</button>
       </div>
     </div>`).join('');
 }
