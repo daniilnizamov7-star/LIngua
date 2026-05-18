@@ -1,4 +1,4 @@
-const VERSION = 'arabic-v20';
+const VERSION = 'arabic-v22';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
