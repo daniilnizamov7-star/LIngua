@@ -1,13 +1,14 @@
 {
-  "name": "Знание",
-  "short_name": "Знание",
-  "description": "Изучай арабский через слова и аяты Корана",
+  "name": "Lingua — Изучай языки",
+  "short_name": "Lingua",
+  "description": "Арабский, английский и другие языки через интервальное повторение",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0c0e14",
   "theme_color": "#0c0e14",
   "orientation": "portrait",
   "lang": "ru",
+  "categories": ["education", "language"],
   "icons": [
     {
       "src": "icons/icon-192.svg",
@@ -21,5 +22,7 @@
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
 }
