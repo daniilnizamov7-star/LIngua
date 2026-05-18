@@ -1,4 +1,4 @@
-const VERSION = 'lingua-v7';
+const VERSION = 'lingua-v8';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
