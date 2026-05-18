@@ -1902,8 +1902,17 @@ function goLangScreen(){
 
 // ── Инициализация арабского (текущая логика) ──
 function initArabic(){
-  // Восстанавливаем навбар для арабского
-  document.querySelector('.bnav').innerHTML=`
+  // Прячем английские экраны, показываем арабские
+  document.querySelectorAll('.sc').forEach(s=>{
+    const id=s.id||'';
+    if(id.startsWith('sc-en-')){
+      s.classList.remove('active');
+      s.style.display='none';
+    } else {
+      s.style.display='';
+      s.classList.remove('active');
+    }
+  });  document.querySelector('.bnav').innerHTML=`
     <button class="bn active" onclick="goTab('home',0)"><span class="bni">🏠</span>Дом</button>
     <button class="bn" onclick="goTab('sound',1)"><span class="bni">🔊</span>Звук</button>
     <button class="bn" onclick="goTab('words',2)"><span class="bni">📖</span>Слова</button>
@@ -2369,63 +2378,230 @@ function mkEnState(){
 }
 function saveEn(){localStorage.setItem(EN_STORE,JSON.stringify(enState));}
 
+// ─── EN Words / SRS ───
+function buildEnQueue(){
+  if(enState.newDayKey!==todayStr()){enState.newDayKey=todayStr();enState.newToday=0;}
+  const now=Date.now(),rev=[],nw=[];
+  enState.cards.forEach((c,i)=>{if(c.introduced){if(c.nextReview<=now)rev.push(i);}else nw.push(i);});
+  return[...rev,...nw.slice(0,Math.max(0,NEW_PER_DAY-enState.newToday))];
+}
+function initEnWords(){enQ=buildEnQueue();enPos=0;updateEnStats();renderEnCard();}
+function updateEnStats(){
+  const now=Date.now(),intro=enState.cards.filter(c=>c.introduced).length,due=enState.cards.filter(c=>c.introduced&&c.nextReview<=now).length,canN=Math.max(0,NEW_PER_DAY-enState.newToday);
+  const qN=document.getElementById('en-qN');if(qN)qN.textContent=canN;
+  const qR=document.getElementById('en-qR');if(qR)qR.textContent=due;
+  const qD=document.getElementById('en-qD');if(qD)qD.textContent=intro;
+}
+function renderEnCard(){
+  enQ=buildEnQueue();
+  if(enQ.length===0){showEnDone();return;}
+  if(enPos>=enQ.length)enPos=0;
+  const idx=enQ[enPos],w=EN_WORDS[idx],c=enState.cards[idx],isNew=!c.introduced;
+  const g=id=>document.getElementById(id);
+  g('en-wEn')&&(g('en-wEn').textContent=w.en);
+  g('en-wIpa')&&(g('en-wIpa').textContent=w.ipa);
+  g('en-wRu')&&(g('en-wRu').textContent=w.ru);
+  g('en-wPos')&&(g('en-wPos').textContent=w.pos);
+  g('en-wEx')&&(g('en-wEx').innerHTML=w.ex);
+  g('en-wExRu')&&(g('en-wExRu').textContent=w.exRu);
+  g('en-fcTag')&&(g('en-fcTag').textContent=(enPos+1)+' / '+enQ.length);
+  if(g('en-fcType')){g('en-fcType').textContent=isNew?'🆕 new':'🔁 review · '+c.interval+'d';g('en-fcType').style.background=isNew?'rgba(96,165,250,.14)':'rgba(52,211,153,.11)';g('en-fcType').style.color=isNew?'#60a5fa':'var(--green2)';}
+  g('en-fc')&&g('en-fc').classList.remove('flipped');
+  g('en-ansRow')&&g('en-ansRow').classList.add('hidden');
+  g('en-swHint')&&g('en-swHint').classList.add('hidden');
+  enFlipped=false;enLocked=false;
+}
+function showEnDone(){
+  const now=Date.now(),next4=new Date();next4.setHours(4,0,0,0);next4.setSeconds(0,0);
+  if(next4.getTime()<=now)next4.setDate(next4.getDate()+1);
+  const hrs=Math.floor((next4-now)/3600000),mins=Math.round(((next4-now)%3600000)/60000);
+  const fc=document.getElementById('en-fc');
+  if(fc)fc.innerHTML=`<div class="done-wrap"><div class="done-icon">🌙</div><div class="done-tl" style="color:var(--green2)">Well done!</div><div class="done-sb">New words in ${hrs}h ${mins}m (at 4:00)</div><div style="font-size:13px;color:var(--mu);margin-top:12px;font-style:italic">"Every expert was once a beginner."</div></div>`;
+  document.getElementById('en-ansRow')?.classList.add('hidden');
+  document.getElementById('en-swHint')?.classList.add('hidden');
+  enFlipped=true;
+}
+function enFlipCard(){
+  if(enFlipped||enLocked)return;
+  document.getElementById('en-fc')?.classList.add('flipped');
+  document.getElementById('en-ansRow')?.classList.remove('hidden');
+  document.getElementById('en-swHint')?.classList.remove('hidden');
+  enFlipped=true;
+}
+function enAnswer(q){
+  if(!enFlipped||enLocked)return;enLocked=true;
+  const idx=enQ[enPos],wasNew=!enState.cards[idx].introduced;
+  enState.cards[idx].introduced=true;if(wasNew)enState.newToday++;
+  const c=enState.cards[idx];
+  if(q===1){c.interval=1;c.nextReview=nextResetMs(1);}
+  else if(q===2){c.interval=Math.max(1,Math.round((c.interval||1)*1.2));c.ef=Math.max(1.3,c.ef-.15);c.nextReview=nextResetMs(Math.max(2,c.interval));}
+  else{if(!c.interval)c.interval=1;else if(c.interval===1)c.interval=3;else c.interval=Math.round(c.interval*c.ef);c.ef=Math.max(1.3,c.ef+.1);c.nextReview=nextResetMs(c.interval);}
+  if(enState.lastDay!==todayStr()){enState.lastDay=todayStr();enState.streak++;}
+  const sn=new Date(Date.now()-RESET_HOUR*3600000);
+  enState.weekData[sn.getDay()]=(enState.weekData[sn.getDay()]||0)+1;
+  enState.xp+=q>=3?10:2;
+  enCheckAchievements();saveEn();updateEnStats();
+  document.getElementById('sv').textContent=enState.streak;
+  document.getElementById('xv').textContent=enState.xp;
+  const fc=document.getElementById('en-fc');
+  if(fc){fc.classList.add(q>=3?'sr':'sl');setTimeout(()=>{fc.classList.remove('sl','sr');enPos++;renderEnCard();},220);}
+}
+function enSpeakWord(e){
+  e.stopPropagation();
+  const txt=document.getElementById('en-wEn')?.textContent?.trim();
+  if(txt)speakText(txt,'en-GB');
+}
+function enCheckAchievements(){
+  if(!enState.achUnlocked)enState.achUnlocked=[];
+  EN_ACHIEV.forEach(a=>{if(!enState.achUnlocked.includes(a.id)&&a.cond(enState)){enState.achUnlocked.push(a.id);showToast('🏆 '+a.name);}});
+}
+function renderEnProgress(){
+  if(!enState)return;
+  const learned=enState.cards.filter(c=>c.introduced).length,pct=Math.round((learned/EN_WORDS.length)*100);
+  const g=id=>document.getElementById(id);
+  g('en-pPct')&&(g('en-pPct').textContent=pct+'%');
+  g('en-pBar')&&(g('en-pBar').style.width=pct+'%');
+  g('en-pSub')&&(g('en-pSub').textContent=learned+' из '+EN_WORDS.length+' слов');
+  const days=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],dow=new Date().getDay(),mx=Math.max(...enState.weekData,1);
+  g('en-wBars')&&(g('en-wBars').innerHTML=enState.weekData.map((v,i)=>`<div class="bc"><div class="bar${i===dow?' td':''}" style="height:${Math.max(4,Math.round((v/mx)*48))}px;${i===dow?'background:linear-gradient(180deg,#60a5fa,#1e3a6e)':''}"></div></div>`).join(''));
+  g('en-wDays')&&(g('en-wDays').innerHTML=days.map((d,i)=>`<div style="flex:1;text-align:center;font-size:9px;color:${i===dow?'#60a5fa':'var(--mu)'}">${d}</div>`).join(''));
+  const kw=enState.cards.map((c,i)=>c.introduced?EN_WORDS[i]:null).filter(Boolean);
+  g('en-kCnt')&&(g('en-kCnt').textContent=kw.length);
+  g('en-kChips')&&(g('en-kChips').innerHTML=kw.length?kw.map(w=>`<span class="kchip"><span style="color:#60a5fa;font-weight:500">${w.en}</span><span class="kc-ru">${w.ru}</span></span>`).join(''):'<span style="font-size:12px;color:var(--bd2)">Start learning!</span>');
+  g('en-achGrid')&&(g('en-achGrid').innerHTML=EN_ACHIEV.map(a=>`<div class="ach${(enState.achUnlocked||[]).includes(a.id)?' unlocked':''}"><div class="ach-icon">${a.icon}</div><div class="ach-name">${a.name}</div></div>`).join(''));
+}
+
 function initEnglish(){
   enState=getEnState()||mkEnState();
   if(enState.newDayKey!==todayStr()){enState.newDayKey=todayStr();enState.newToday=0;}
-  // Меняем навбар на английский
+
+  // Навбар — 5 вкладок как в арабском
   document.querySelector('.bnav').innerHTML=`
     <button class="bn active" onclick="goEnTab('home',0)"><span class="bni">🏠</span>Home</button>
-    <button class="bn" onclick="goEnTab('words',1)"><span class="bni">📖</span>Words</button>
-    <button class="bn" onclick="goEnTab('progress',2)"><span class="bni">📊</span>Progress</button>`;
-  // Скрываем арабские экраны, показываем английские
-  document.querySelectorAll('.sc').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+    <button class="bn" onclick="goEnTab('phon',1)"><span class="bni">🔊</span>Sounds</button>
+    <button class="bn" onclick="goEnTab('words',2)"><span class="bni">📖</span>Words</button>
+    <button class="bn" onclick="goEnTab('texts',3)"><span class="bni">📄</span>Texts</button>
+    <button class="bn" onclick="goEnTab('progress',4)"><span class="bni">📊</span>Progress</button>`;
+
+  // Скрываем арабские экраны (только арабские, не английские)
+  document.querySelectorAll('.sc').forEach(s=>{
+    const id=s.id||'';
+    if(!id.startsWith('sc-en-')){
+      s.classList.remove('active');
+      s.style.display='none';
+    } else {
+      // Английские экраны — сбрасываем display:none если был
+      s.style.display='';
+      s.classList.remove('active');
+    }
+  });
+
+  // Создаём английские экраны (или показываем если уже есть)
+  buildEnScreens();
+
+  // Показываем нужный экран
+  showEnScreen('home');
   renderEnHome();
-  // Вставляем английские экраны динамически
-  renderEnScreens();
 }
 
 function goEnTab(name,idx){
-  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
-  const sc=document.getElementById('sc-en-'+name);
-  if(sc)sc.classList.add('active');
-  document.querySelectorAll('.bn')[idx]?.classList.add('active');
+  showEnScreen(name);
+  document.querySelectorAll('.bn').forEach((b,i)=>b.classList.toggle('active',i===idx));
   if(name==='home')renderEnHome();
-  if(name==='words')initEnWords();
-  if(name==='progress')renderEnProgress();
+  else if(name==='phon')renderEnPhon();
+  else if(name==='words')initEnWords();
+  else if(name==='texts')renderEnTexts();
+  else if(name==='progress')renderEnProgress();
 }
 
-function renderEnScreens(){
-  // Создаём экраны английского если их нет
-  const screens=document.querySelector('.screens');
-  if(!document.getElementById('sc-en-home')){
-    const homeEl=document.createElement('div');
-    homeEl.className='sc active';homeEl.id='sc-en-home';
-    homeEl.innerHTML=`<div style="padding:16px 20px 0">
-      <div class="hero" style="background:linear-gradient(135deg,#0d1f3c,#0a0f1a)">
-        <div class="hgreet" style="font-size:13px;color:var(--mu);margin-bottom:4px">Good day!</div>
-        <div class="htitle" style="font-size:20px;font-weight:600;margin-bottom:14px;line-height:1.35">Your path to<br>English language</div>
-        <div class="pbar-lbl" id="en-pl-lbl"><span>Vocabulary</span><span id="en-pl">0 / ${EN_WORDS.length}</span></div>
-        <div class="pbar"><div class="pbar-f" id="en-pf" style="width:0%;background:linear-gradient(90deg,#1e3a6e,#60a5fa)"></div></div>
-      </div>
-      <div class="hstats" style="margin:12px 20px 0">
-        <div class="hs"><div class="hsn" style="color:#60a5fa" id="en-hw">0</div><div class="hsl">words</div></div>
-        <div class="hs"><div class="hsn" style="color:var(--green2)" id="en-hd">1</div><div class="hsl">streak</div></div>
-        <div class="hs"><div class="hsn" style="color:var(--gold2)" id="en-xp">0</div><div class="hsl">XP</div></div>
-      </div>
-      <div class="tasks" style="margin:12px 20px 20px">
-        <div class="stitle">Tasks for today</div>
-        <div class="task" onclick="goEnTab('words',1)" style="margin-bottom:8px">
-          <div class="ticon gr">📖</div>
-          <div><div class="ttl">Words</div><div class="tsb">10 new + SRS reviews</div></div>
-        </div>
-      </div>
-    </div>`;
-    screens.appendChild(homeEl);
+function showEnScreen(name){
+  ['home','phon','words','texts','progress'].forEach(n=>{
+    const el=document.getElementById('sc-en-'+n);
+    if(el){el.classList.remove('active');el.style.display='';}
+  });
+  const target=document.getElementById('sc-en-'+name);
+  if(target)target.classList.add('active');
+}
 
-    const wordsEl=document.createElement('div');
-    wordsEl.className='sc';wordsEl.id='sc-en-words';
-    wordsEl.innerHTML=`
+function buildEnScreens(){
+  const screens=document.querySelector('.screens');
+
+  // HOME
+  if(!document.getElementById('sc-en-home')){
+    const el=document.createElement('div');
+    el.className='sc';el.id='sc-en-home';
+    el.innerHTML=`
+      <div style="padding:16px 20px 0">
+        <div class="hero" style="background:linear-gradient(135deg,#0d1f3c,#0a0f1a)">
+          <div class="hgreet">Good day! 👋</div>
+          <div class="htitle">Your path to<br>English language</div>
+          <div class="pbar-lbl"><span>Vocabulary</span><span id="en-pl">0 / ${EN_WORDS.length}</span></div>
+          <div class="pbar"><div class="pbar-f" id="en-pf" style="width:0%;background:linear-gradient(90deg,#1e3a6e,#60a5fa)"></div></div>
+        </div>
+        <div class="hstats" style="margin:12px 0 0">
+          <div class="hs"><div class="hsn" style="color:#60a5fa" id="en-hw">0</div><div class="hsl">words</div></div>
+          <div class="hs"><div class="hsn" style="color:var(--green2)" id="en-hd">1</div><div class="hsl">streak</div></div>
+          <div class="hs"><div class="hsn" style="color:var(--gold2)" id="en-xp">0</div><div class="hsl">XP</div></div>
+        </div>
+        <div class="tasks" style="margin:12px 0 0">
+          <div class="stitle">Tasks for today</div>
+          <div class="task" onclick="goEnTab('phon',1)">
+            <div class="ticon b">🔊</div>
+            <div><div class="ttl">Phonetics</div><div class="tsb">English sounds and reading rules</div></div>
+          </div>
+          <div class="task" onclick="goEnTab('words',2)">
+            <div class="ticon gr">📖</div>
+            <div><div class="ttl">Vocabulary</div><div class="tsb" id="en-ws">10 new + SRS reviews</div></div>
+          </div>
+          <div class="task" onclick="goEnTab('texts',3)">
+            <div class="ticon g">📄</div>
+            <div><div class="ttl">Texts</div><div class="tsb">Dialogues, news, quotes</div></div>
+          </div>
+          <div class="task" onclick="goEnTab('progress',4)">
+            <div class="ticon pu">📊</div>
+            <div><div class="ttl">Progress</div><div class="tsb">Stats, achievements, streak</div></div>
+          </div>
+        </div>
+        <div class="aod" style="margin:12px 0 20px">
+          <div class="aod-lbl" style="color:#60a5fa">Quote of the day</div>
+          <div id="en-qotd-en" style="font-size:16px;color:var(--tx);line-height:1.6;margin-bottom:6px;font-style:italic"></div>
+          <div id="en-qotd-ru" style="font-size:12px;color:var(--mu);line-height:1.5"></div>
+          <div id="en-qotd-src" style="font-size:10px;color:var(--mu);margin-top:4px;opacity:.6"></div>
+        </div>
+      </div>`;
+    screens.appendChild(el);
+  }
+
+  // PHONETICS
+  if(!document.getElementById('sc-en-phon')){
+    const el=document.createElement('div');
+    el.className='sc';el.id='sc-en-phon';
+    el.innerHTML=`
+      <div style="padding:14px 20px 20px">
+        <div class="stitle">Vowel sounds — Гласные</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px" id="en-vowels"></div>
+        <div class="stitle">Consonants — Согласные</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px" id="en-cons"></div>
+        <div class="stitle">Reading rules — Правила чтения</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px" id="en-rules"></div>
+        <div class="sex-lbl" style="color:#60a5fa;font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px;font-weight:600">Sound trainer — Тренажёр</div>
+        <div style="background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:22px 18px;text-align:center;margin-bottom:10px">
+          <div style="font-size:11px;color:var(--mu);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">How is the highlighted sound read?</div>
+          <div style="font-size:40px;font-weight:700;color:var(--tx);margin-bottom:5px;letter-spacing:-1px" id="en-sWord"></div>
+          <div style="font-size:17px;color:var(--mu);margin-bottom:14px" id="en-sIpa"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="en-sCh"></div>
+          <div class="hidden sex-res" id="en-sRes"></div>
+        </div>
+        <button class="next-btn hidden" id="en-sNext" onclick="enNextSound()" style="background:var(--blue,#3b82f6)">Next →</button>
+      </div>`;
+    screens.appendChild(el);
+  }
+
+  // WORDS
+  if(!document.getElementById('sc-en-words')){
+    const el=document.createElement('div');
+    el.className='sc';el.id='sc-en-words';
+    el.innerHTML=`
       <div style="padding:14px 20px 10px">
         <div class="quota">
           <div class="qt"><div class="qtn" style="color:#60a5fa" id="en-qN">10</div><div class="qtl">New</div></div>
@@ -2434,11 +2610,11 @@ function renderEnScreens(){
         </div>
       </div>
       <div class="card-wrap">
-        <div class="fc" id="en-fc" onclick="enFlipCard()" style="border-color:#253047">
+        <div class="fc" id="en-fc" onclick="enFlipCard()">
           <div class="fc-tag" id="en-fcTag">1/10</div>
           <div class="fc-type nt" id="en-fcType">🆕 new</div>
           <div class="fc-front">
-            <div style="font-size:52px;font-weight:700;color:var(--tx);letter-spacing:-1px;text-align:center" id="en-wEn">hello</div>
+            <div style="font-size:52px;font-weight:700;color:var(--tx);letter-spacing:-1px;text-align:center;line-height:1.1" id="en-wEn">hello</div>
             <div style="font-size:15px;color:var(--mu);letter-spacing:.5px" id="en-wIpa">/həˈloʊ/</div>
             <div class="tap-h">tap to reveal</div>
           </div>
@@ -2447,7 +2623,7 @@ function renderEnScreens(){
             <div class="w-pos" id="en-wPos">excl.</div>
             <div class="qs">
               <div class="qs-lbl" style="color:#60a5fa">Example</div>
-              <div class="qs-ar" style="font-family:'DM Sans',sans-serif;font-size:15px;direction:ltr;text-align:left" id="en-wEx"></div>
+              <div style="font-size:14px;color:var(--tx);line-height:1.6;text-align:left" id="en-wEx"></div>
               <div class="qs-tr" id="en-wExRu"></div>
             </div>
             <button class="audio-btn" id="en-audioBtn" onclick="enSpeakWord(event)">🔊 Listen</button>
@@ -2460,152 +2636,333 @@ function renderEnScreens(){
         <button class="ans ans-h" onclick="enAnswer(2)">Hard<br><small style="font-size:9px;opacity:.7">3 days</small></button>
         <button class="ans ans-g" onclick="enAnswer(4)">Know ✓<br><small style="font-size:9px;opacity:.7">7 days</small></button>
       </div>`;
-    screens.appendChild(wordsEl);
-
-    const progEl=document.createElement('div');
-    progEl.className='sc';progEl.id='sc-en-progress';
-    progEl.innerHTML=`<div class="pr-wrap">
-      <div class="pr-hero">
-        <div class="prh-lbl">Vocabulary</div>
-        <div class="prh-pct" id="en-pPct">0%</div>
-        <div class="prh-sub" id="en-pSub">из ${EN_WORDS.length} слов</div>
-        <div class="prh-bar"><div class="prh-fill" id="en-pBar" style="width:0%;background:linear-gradient(90deg,#1e3a6e,#60a5fa)"></div></div>
-      </div>
-      <div class="week-box">
-        <div class="wb-tl">Weekly activity</div>
-        <div class="bars" id="en-wBars"></div>
-        <div style="display:flex;gap:5px;margin-top:5px" id="en-wDays"></div>
-      </div>
-      <div class="kn-box">
-        <div class="kn-tl">Learned words (<span id="en-kCnt">0</span>)</div>
-        <div class="kchips" id="en-kChips"><span style="font-size:12px;color:var(--bd2)">Start learning!</span></div>
-      </div>
-    </div>`;
-    screens.appendChild(progEl);
-
-    // touch for en card
+    screens.appendChild(el);
     document.getElementById('en-fc').addEventListener('touchstart',e=>{enTouchX=e.touches[0].clientX;},{passive:true});
     document.getElementById('en-fc').addEventListener('touchend',e=>{if(!enFlipped||enLocked)return;const dx=e.changedTouches[0].clientX-enTouchX;if(Math.abs(dx)>55)enAnswer(dx>0?4:1);},{passive:true});
   }
 
-  // Активируем home
-  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
-  document.getElementById('sc-en-home').classList.add('active');
-  document.querySelectorAll('.bn')[0]?.classList.add('active');
-  renderEnHome();
+  // TEXTS
+  if(!document.getElementById('sc-en-texts')){
+    const el=document.createElement('div');
+    el.className='sc';el.id='sc-en-texts';
+    el.innerHTML=`
+      <div style="padding:14px 20px 20px">
+        <div style="display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none;padding-bottom:2px" id="en-tTabs"></div>
+        <div id="en-tContent"></div>
+      </div>
+      <div style="position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:var(--blue,#3b82f6);color:#fff;border-radius:11px;padding:8px 16px;font-size:13px;font-weight:600;z-index:100;pointer-events:none;transition:opacity .22s;white-space:nowrap;max-width:90vw;text-align:center" class="hidden" id="en-wPop"></div>`;
+    screens.appendChild(el);
+  }
+
+  // PROGRESS
+  if(!document.getElementById('sc-en-progress')){
+    const el=document.createElement('div');
+    el.className='sc';el.id='sc-en-progress';
+    el.innerHTML=`
+      <div class="pr-wrap">
+        <div class="pr-hero">
+          <div class="prh-lbl">Vocabulary</div>
+          <div class="prh-pct" id="en-pPct" style="color:#60a5fa">0%</div>
+          <div class="prh-sub" id="en-pSub">из ${EN_WORDS.length} слов</div>
+          <div class="prh-bar"><div class="prh-fill" id="en-pBar" style="width:0%;background:linear-gradient(90deg,#1e3a6e,#60a5fa)"></div></div>
+        </div>
+        <div class="week-box">
+          <div class="wb-tl">Weekly activity</div>
+          <div class="bars" id="en-wBars"></div>
+          <div style="display:flex;gap:5px;margin-top:5px" id="en-wDays"></div>
+        </div>
+        <div class="kn-box">
+          <div class="kn-tl">Learned words (<span id="en-kCnt">0</span>)</div>
+          <div class="kchips" id="en-kChips"><span style="font-size:12px;color:var(--bd2)">Start learning!</span></div>
+        </div>
+        <div class="achiev-box">
+          <div class="stitle">Achievements</div>
+          <div class="ach-grid" id="en-achGrid"></div>
+        </div>
+      </div>`;
+    screens.appendChild(el);
+  }
 }
 
+// ── English phonetics data ──
+const EN_VOWELS=[
+  {ipa:'/iː/',ex:'see',ru:'долгое «и»',words:['see','me','tree']},
+  {ipa:'/ɪ/',ex:'sit',ru:'краткое «и»',words:['sit','big','this']},
+  {ipa:'/e/',ex:'ten',ru:'«э»',words:['ten','bed','red']},
+  {ipa:'/æ/',ex:'cat',ru:'«э» широкое',words:['cat','man','bad']},
+  {ipa:'/ɑː/',ex:'car',ru:'долгое «а»',words:['car','far','art']},
+  {ipa:'/ɒ/',ex:'got',ru:'краткое «о»',words:['got','hot','not']},
+  {ipa:'/ɔː/',ex:'saw',ru:'долгое «о»',words:['saw','all','more']},
+  {ipa:'/ʊ/',ex:'book',ru:'краткое «у»',words:['book','good','look']},
+  {ipa:'/uː/',ex:'food',ru:'долгое «у»',words:['food','too','moon']},
+  {ipa:'/ʌ/',ex:'cup',ru:'«а» неударное',words:['cup','but','run']},
+  {ipa:'/ɜː/',ex:'bird',ru:'«ё» долгое',words:['bird','her','work']},
+  {ipa:'/ə/',ex:'about',ru:'нейтральное (schwa)',words:['about','again','teacher']},
+];
+const EN_CONS=[
+  {ipa:'/θ/',ex:'think',ru:'«с» межзубное',words:['think','three','bath']},
+  {ipa:'/ð/',ex:'this',ru:'«з» межзубное',words:['this','that','breathe']},
+  {ipa:'/ʃ/',ex:'ship',ru:'«ш»',words:['ship','she','fish']},
+  {ipa:'/ʒ/',ex:'measure',ru:'«ж»',words:['measure','vision','Asia']},
+  {ipa:'/tʃ/',ex:'chair',ru:'«ч»',words:['chair','check','lunch']},
+  {ipa:'/dʒ/',ex:'job',ru:'«дж»',words:['job','age','bridge']},
+  {ipa:'/ŋ/',ex:'sing',ru:'«н» носовое',words:['sing','ring','long']},
+  {ipa:'/r/',ex:'red',ru:'«р» английское',words:['red','run','right']},
+  {ipa:'/w/',ex:'wet',ru:'«уэ»',words:['wet','win','sweet']},
+  {ipa:'/j/',ex:'yes',ru:'«й»',words:['yes','year','you']},
+  {ipa:'/h/',ex:'hot',ru:'«х» придыхательное',words:['hot','home','hello']},
+  {ipa:'/l/',ex:'love',ru:'«л» светлое/тёмное',words:['love','let','full']},
+];
+const EN_RULES=[
+  {name:'Silent E — немое «e»',color:'#3b82f6',ex:'make/meɪk/ • time/taɪm/ • home/hoʊm/',desc:'Когда слово оканчивается на «e», эта буква не читается, но делает предыдущую гласную долгой. Mad→made, bit→bite, hop→hope.',tip:'CVC+e = долгая гласная'},
+  {name:'TH — два звука',color:'#8b5cf6',ex:'think/θ/ • this/ð/ • bath • breathe',desc:'«th» даёт два звука: глухой /θ/ (think, three) и звонкий /ð/ (this, the). Оба межзубные — кончик языка между зубами.',tip:'think/thank/three → /θ/  |  the/this/that → /ð/'},
+  {name:'OO — долгий или краткий',color:'#10b981',ex:'food/fuːd/ • book/bʊk/ • moon • good',desc:'"oo" чаще даёт /uː/ (долгое у), но в некоторых словах /ʊ/ (краткое у).',tip:'food/moon/cool → долгое  |  book/look/good → краткое'},
+  {name:'-TION / -SION = «шн»',color:'#ef4444',ex:'nation/ˈneɪʃən/ • question • version',desc:'Окончания -tion и -sion всегда читаются как /ʃən/ («шн»).',tip:'Любое -tion читается «шн» — nation, station, question'},
+  {name:'Артикли a / an / the',color:'#f59e0b',ex:'a book • an apple • the sun',desc:'"a/an" — первое упоминание. "the" — конкретный известный предмет. "an" перед гласным звуком.',tip:'a + согласный  |  an + гласный  |  the = конкретный'},
+  {name:'Неправильные глаголы',color:'#14b8a6',ex:'go→went • have→had • say→said • get→got',desc:'~200 глаголов меняют форму в прошедшем. Учи тройками: go/went/gone, have/had/had.',tip:'Топ-10: be/was, have/had, do/did, go/went, say/said, get/got, make/made, come/came, take/took, know/knew'},
+  {name:'Ударение — смотри IPA',color:'#ec4899',ex:"ˈtable • toˈday • imˈportant • beˈgin",desc:'В английском ударение не имеет правил. Знак ˈ в транскрипции стоит ПЕРЕД ударным слогом.',tip:'Всегда смотри транскрипцию. ˈta-ble = ударение на первый слог'},
+];
+
+// English texts data
+const EN_TEXT_CATS=['Dialogues','Quotes','Stories'];
+const EN_TEXTS={
+  'Dialogues':[
+    {level:'A1',title:'At the coffee shop',
+     en:'<b>Sarah:</b> Good morning! Can I get a coffee, please?\n<b>Barista:</b> Of course. What size?\n<b>Sarah:</b> A medium. Can I add milk?\n<b>Barista:</b> Sure. That will be three fifty.',
+     ru:'Сара: Доброе утро! Можно мне кофе?\nБариста: Конечно. Какой размер?\nСара: Средний. Можно добавить молоко?\nБариста: Конечно. С вас три пятьдесят.'},
+    {level:'A1',title:'Meeting someone new',
+     en:'<b>Tom:</b> Hi! I am Tom. Nice to meet you.\n<b>Lisa:</b> Hello Tom. I am Lisa. Nice to meet you too.\n<b>Tom:</b> Where are you from?\n<b>Lisa:</b> I am from Russia. And you?\n<b>Tom:</b> I am from the UK.',
+     ru:'Том: Привет! Я Том. Рад познакомиться.\nЛиза: Привет Том. Я Лиза. Тоже рада.\nТом: Откуда ты?\nЛиза: Я из России. А ты?\nТом: Я из Великобритании.'},
+    {level:'A2',title:'Making plans',
+     en:'<b>Alex:</b> What are you doing this weekend?\n<b>Maya:</b> Nothing special. Why?\n<b>Alex:</b> Let us go to the cinema.\n<b>Maya:</b> Sounds great! What film?\n<b>Alex:</b> There is a new action movie. I heard it is really good.\n<b>Maya:</b> Perfect. What time?\n<b>Alex:</b> The evening show starts at seven.',
+     ru:'Алекс: Что делаешь на выходных?\nМайя: Ничего особенного. Почему?\nАлекс: Давай пойдём в кино.\nМайя: Звучит отлично! Какой фильм?\nАлекс: Там новый боевик. Говорят очень хороший.\nМайя: Отлично. Во сколько?\nАлекс: Вечерний сеанс в семь.'},
+  ],
+  'Quotes':[
+    {level:'A1',title:'On learning',
+     en:'"The more that you read, the more things you will know. The more that you learn, the more places you will go."',
+     ru:'"Чем больше ты читаешь, тем больше ты узнаёшь. Чем больше ты учишься, тем дальше ты пойдёшь." — Dr. Seuss'},
+    {level:'A1',title:'On action',
+     en:'"Do not wait. The time will never be just right."',
+     ru:'"Не жди. Подходящее время не наступит никогда." — Napoleon Hill'},
+    {level:'A2',title:'On perseverance',
+     en:'"It does not matter how slowly you go as long as you do not stop."',
+     ru:'"Не важно как медленно ты идёшь — главное не останавливаться." — Конфуций'},
+    {level:'A2',title:'On growth',
+     en:'"Every expert was once a beginner. Every pro was once an amateur."',
+     ru:'"Каждый эксперт когда-то был новичком. Каждый профессионал когда-то был любителем."'},
+    {level:'B1',title:'On language',
+     en:'"To have another language is to possess a second soul."',
+     ru:'"Иметь другой язык — значит обладать второй душой." — Карл Великий'},
+    {level:'B1',title:'On difficulty',
+     en:'"In the middle of every difficulty lies opportunity."',
+     ru:'"В середине каждой трудности лежит возможность." — Альберт Эйнштейн'},
+  ],
+  'Stories':[
+    {level:'A1',title:'My morning routine',
+     en:'Every morning I wake up at seven. First, I drink a glass of water. Then I make coffee and have breakfast. After that, I go for a walk. I walk for thirty minutes. It helps me feel good for the rest of the day.',
+     ru:'Каждое утро я просыпаюсь в семь. Сначала выпиваю стакан воды. Потом делаю кофе и завтракаю. После этого иду на прогулку. Хожу тридцать минут. Это помогает мне хорошо чувствовать себя весь день.'},
+    {level:'A2',title:'The lost wallet',
+     en:'One day, Mark was walking to work when he found a wallet on the street. Inside there was money and a card with a name on it. Mark called the number on the card. A woman answered and was very happy — the wallet was hers. She thanked Mark and gave him a reward.',
+     ru:'Однажды Марк шёл на работу когда нашёл кошелёк на улице. Внутри были деньги и карточка с именем. Марк позвонил на номер. Ответила женщина и очень обрадовалась — кошелёк был её. Она поблагодарила Марка и дала ему вознаграждение.'},
+    {level:'B1',title:'The power of habits',
+     en:'Scientists say that about 40% of our daily actions are habits, not decisions. When we do something repeatedly, our brain creates a pattern. This saves energy. Good habits like reading or exercising become automatic over time. The key is to start small and be consistent.',
+     ru:'Учёные говорят что около 40% наших ежедневных действий — это привычки а не решения. Когда мы что-то повторяем мозг создаёт шаблон. Это экономит энергию. Хорошие привычки как чтение или упражнения со временем становятся автоматическими. Ключ — начинать с малого и быть последовательным.'},
+  ],
+};
+
+const EN_QUOTES=[
+  {en:'The best time to plant a tree was twenty years ago. The second best time is now.',ru:'Лучшее время посадить дерево было двадцать лет назад. Второе лучшее — сейчас.',src:'Chinese proverb'},
+  {en:'Every expert was once a beginner.',ru:'Каждый эксперт когда-то был новичком.',src:'Unknown'},
+  {en:'Language is the road map of a culture.',ru:'Язык — это дорожная карта культуры.',src:'Rita Mae Brown'},
+  {en:'To have another language is to possess a second soul.',ru:'Иметь другой язык — значит обладать второй душой.',src:'Charlemagne'},
+  {en:'The limits of my language mean the limits of my world.',ru:'Границы моего языка — это границы моего мира.',src:'Ludwig Wittgenstein'},
+  {en:'A different language is a different vision of life.',ru:'Другой язык — это другое видение жизни.',src:'Federico Fellini'},
+  {en:'You live a new life for every new language you speak.',ru:'Ты живёшь новой жизнью за каждый новый язык которым говоришь.',src:'Czech proverb'},
+];
+
+const EN_ACHIEV=[
+  {id:'en_first',icon:'🌱',name:'First word',cond:s=>s.cards.filter(c=>c.introduced).length>=1},
+  {id:'en_10',icon:'📚',name:'10 words',cond:s=>s.cards.filter(c=>c.introduced).length>=10},
+  {id:'en_50',icon:'⭐',name:'50 words',cond:s=>s.cards.filter(c=>c.introduced).length>=50},
+  {id:'en_100',icon:'🏆',name:'100 words',cond:s=>s.cards.filter(c=>c.introduced).length>=100},
+  {id:'en_200',icon:'💎',name:'200 words',cond:s=>s.cards.filter(c=>c.introduced).length>=200},
+  {id:'en_streak3',icon:'🔥',name:'3-day streak',cond:s=>s.streak>=3},
+  {id:'en_streak7',icon:'💪',name:'7-day streak',cond:s=>s.streak>=7},
+  {id:'en_sounds',icon:'🎵',name:'All sounds',cond:s=>(s.soundsSeen||[]).length>=22},
+  {id:'en_rules',icon:'📐',name:'All rules',cond:s=>(s.rulesSeen||[]).length>=EN_RULES.length},
+  {id:'en_xp100',icon:'💫',name:'100 XP',cond:s=>s.xp>=100},
+  {id:'en_xp500',icon:'🌟',name:'500 XP',cond:s=>s.xp>=500},
+  {id:'en_texts',icon:'📖',name:'Read all texts',cond:s=>(s.textsRead||[]).length>=6},
+];
+
+// ── English render functions ──
 function renderEnHome(){
   if(!enState)return;
   const learned=enState.cards.filter(c=>c.introduced).length;
   const pct=Math.round((learned/EN_WORDS.length)*100);
-  const pf=document.getElementById('en-pf');if(pf)pf.style.width=pct+'%';
-  const pl=document.getElementById('en-pl');if(pl)pl.textContent=learned+' / '+EN_WORDS.length;
-  const hw=document.getElementById('en-hw');if(hw)hw.textContent=learned;
-  const hd=document.getElementById('en-hd');if(hd)hd.textContent=enState.streak;
-  const xp=document.getElementById('en-xp');if(xp)xp.textContent=enState.xp;
+  const el=id=>document.getElementById(id);
+  if(el('en-pf'))el('en-pf').style.width=pct+'%';
+  if(el('en-pl'))el('en-pl').textContent=learned+' / '+EN_WORDS.length;
+  if(el('en-hw'))el('en-hw').textContent=learned;
+  if(el('en-hd'))el('en-hd').textContent=enState.streak;
+  if(el('en-xp'))el('en-xp').textContent=enState.xp;
   document.getElementById('sv').textContent=enState.streak;
   document.getElementById('xv').textContent=enState.xp;
+  // Quote
+  const q=EN_QUOTES[new Date().getDay()%EN_QUOTES.length];
+  if(el('en-qotd-en'))el('en-qotd-en').textContent=q.en;
+  if(el('en-qotd-ru'))el('en-qotd-ru').textContent=q.ru;
+  if(el('en-qotd-src'))el('en-qotd-src').textContent='— '+q.src;
 }
 
-function buildEnQueue(){
-  if(enState.newDayKey!==todayStr()){enState.newDayKey=todayStr();enState.newToday=0;}
-  const now=Date.now(),rev=[],nw=[];
-  enState.cards.forEach((c,i)=>{if(c.introduced){if(c.nextReview<=now)rev.push(i);}else nw.push(i);});
-  return[...rev,...nw.slice(0,Math.max(0,NEW_PER_DAY-enState.newToday))];
+// Phonetics
+let enSoundOk=false;
+function renderEnPhon(){
+  if(!enState)enState=getEnState()||mkEnState();
+  if(!enState.soundsSeen)enState.soundsSeen=[];
+  if(!enState.rulesSeen)enState.rulesSeen=[];
+  // Vowels
+  document.getElementById('en-vowels').innerHTML=EN_VOWELS.map((v,i)=>`
+    <div style="background:var(--sf);border:1px solid ${enState.soundsSeen.includes('v'+i)?'var(--gdim2)':'var(--bd)'};border-radius:13px;padding:12px 8px;cursor:pointer;text-align:center" onclick="openEnSound('v',${i})">
+      <div style="font-size:22px;color:#60a5fa;font-weight:600;margin-bottom:3px">${v.ipa}</div>
+      <div style="font-size:12px;color:var(--tx);font-weight:500">${v.ex}</div>
+      <div style="font-size:10px;color:var(--mu)">${v.ru}</div>
+      ${enState.soundsSeen.includes('v'+i)?'<div style="font-size:9px;color:var(--green2);margin-top:3px">✓</div>':''}
+    </div>`).join('');
+  // Consonants
+  document.getElementById('en-cons').innerHTML=EN_CONS.map((c,i)=>`
+    <div style="background:var(--sf);border:1px solid ${enState.soundsSeen.includes('c'+i)?'var(--gdim2)':'var(--bd)'};border-radius:13px;padding:12px 8px;cursor:pointer;text-align:center" onclick="openEnSound('c',${i})">
+      <div style="font-size:22px;color:#60a5fa;font-weight:600;margin-bottom:3px">${c.ipa}</div>
+      <div style="font-size:12px;color:var(--tx);font-weight:500">${c.ex}</div>
+      <div style="font-size:10px;color:var(--mu)">${c.ru}</div>
+      ${enState.soundsSeen.includes('c'+i)?'<div style="font-size:9px;color:var(--green2);margin-top:3px">✓</div>':''}
+    </div>`).join('');
+  // Rules
+  document.getElementById('en-rules').innerHTML=EN_RULES.map((r,i)=>`
+    <div style="background:var(--sf);border:1px solid ${enState.rulesSeen.includes(i)?'var(--gdim2)':'var(--bd)'};border-radius:13px;padding:13px 14px;cursor:pointer" onclick="toggleEnRule(${i},this)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${r.color};flex-shrink:0"></div>
+        <div style="font-size:13px;font-weight:600;flex:1">${r.name}</div>
+        ${enState.rulesSeen.includes(i)?'<span style="font-size:10px;color:var(--green2)">✓</span>':''}
+      </div>
+      <div style="font-size:11px;color:#60a5fa;font-family:monospace">${r.ex}</div>
+      <div class="rule-desc" style="font-size:12px;color:var(--mu);line-height:1.6;margin-top:8px;display:none">${r.desc}<br><br><b style="color:var(--gold2)">💡 ${r.tip}</b></div>
+    </div>`).join('');
+  // Sound trainer init
+  enInitSoundTrainer();
 }
 
-function initEnWords(){
-  enQ=buildEnQueue();enPos=0;
-  updateEnStats();renderEnCard();
+function openEnSound(type,i){
+  const s=type==='v'?EN_VOWELS[i]:EN_CONS[i];
+  document.getElementById('mTl').textContent=s.ipa+' — '+s.ru;
+  document.getElementById('mDc').textContent='Words with this sound:';
+  document.getElementById('mAr').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px">${s.words.map(w=>`<div style="background:var(--sf);border:1px solid var(--bd);border-radius:11px;padding:10px 7px;text-align:center;cursor:pointer" onclick="speakText('${w}','en-GB')"><div style="font-size:18px;font-weight:700;color:#60a5fa;margin-bottom:3px">${w}</div><div style="font-size:10px;color:var(--mu)">🔊 tap</div></div>`).join('')}</div>`;
+  document.getElementById('mEx').innerHTML='';
+  document.getElementById('modal').classList.remove('hidden');
+  const key=type+i;
+  if(!(enState.soundsSeen||[]).includes(key)){
+    if(!enState.soundsSeen)enState.soundsSeen=[];
+    enState.soundsSeen.push(key);enState.xp+=3;saveEn();
+  }
 }
 
-function updateEnStats(){
-  const now=Date.now();
-  const intro=enState.cards.filter(c=>c.introduced).length;
-  const due=enState.cards.filter(c=>c.introduced&&c.nextReview<=now).length;
-  const canN=Math.max(0,NEW_PER_DAY-enState.newToday);
-  const qN=document.getElementById('en-qN');if(qN)qN.textContent=canN;
-  const qR=document.getElementById('en-qR');if(qR)qR.textContent=due;
-  const qD=document.getElementById('en-qD');if(qD)qD.textContent=intro;
+function toggleEnRule(i,el){
+  const desc=el.querySelector('.rule-desc');
+  const isOpen=desc.style.display==='block';
+  document.querySelectorAll('#en-rules .rule-desc').forEach(d=>d.style.display='none');
+  if(!isOpen){
+    desc.style.display='block';
+    if(!(enState.rulesSeen||[]).includes(i)){
+      if(!enState.rulesSeen)enState.rulesSeen=[];
+      enState.rulesSeen.push(i);enState.xp+=5;saveEn();
+    }
+  }
 }
 
-function renderEnCard(){
-  enQ=buildEnQueue();
-  if(enQ.length===0){showEnDone();return;}
-  if(enPos>=enQ.length)enPos=0;
-  const idx=enQ[enPos],w=EN_WORDS[idx],c=enState.cards[idx],isNew=!c.introduced;
-  document.getElementById('en-wEn').textContent=w.en;
-  document.getElementById('en-wIpa').textContent=w.ipa;
-  document.getElementById('en-wRu').textContent=w.ru;
-  document.getElementById('en-wPos').textContent=w.pos;
-  document.getElementById('en-wEx').innerHTML=w.ex;
-  document.getElementById('en-wExRu').textContent=w.exRu;
-  document.getElementById('en-fcTag').textContent=(enPos+1)+' / '+enQ.length;
-  const t=document.getElementById('en-fcType');
-  t.textContent=isNew?'🆕 new':'🔁 review · '+c.interval+'d';
-  t.style.background=isNew?'rgba(96,165,250,.14)':'rgba(52,211,153,.11)';
-  t.style.color=isNew?'#60a5fa':'var(--green2)';
-  document.getElementById('en-fc').classList.remove('flipped');
-  document.getElementById('en-ansRow').classList.add('hidden');
-  document.getElementById('en-swHint').classList.add('hidden');
-  enFlipped=false;enLocked=false;
+let enSoundIdx=0;
+const EN_ALL_SOUNDS=[...EN_VOWELS,...EN_CONS];
+function enInitSoundTrainer(){
+  enSoundOk=false;
+  const q=EN_ALL_SOUNDS[enSoundIdx%EN_ALL_SOUNDS.length];
+  const sw=document.getElementById('en-sWord');
+  const si=document.getElementById('en-sIpa');
+  const sch=document.getElementById('en-sCh');
+  if(!sw)return;
+  sw.textContent=q.ex;si.textContent=q.ipa;
+  const others=EN_ALL_SOUNDS.filter((_,i)=>i!==enSoundIdx%EN_ALL_SOUNDS.length).slice();
+  for(let i=others.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[others[i],others[j]]=[others[j],others[i]];}
+  const choices=[q,...others.slice(0,3)];
+  for(let i=choices.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[choices[i],choices[j]]=[choices[j],choices[i]];}
+  sch.innerHTML=choices.map(c=>`<button style="padding:11px 7px;border-radius:11px;border:1px solid var(--bd2);background:var(--sf2);color:var(--tx);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s" onclick="enAnsSoundQ(this,'${c.ru}','${q.ru}')">${c.ru}</button>`).join('');
+  const res=document.getElementById('en-sRes');
+  if(res)res.classList.add('hidden');
+  const nxt=document.getElementById('en-sNext');
+  if(nxt)nxt.classList.add('hidden');
+}
+function enAnsSoundQ(btn,c,cor){
+  if(enSoundOk)return;enSoundOk=true;
+  const ok=c===cor;
+  btn.style.background=ok?'rgba(61,186,126,.14)':'rgba(239,68,68,.1)';
+  btn.style.borderColor=ok?'var(--green2)':'var(--red)';
+  btn.style.color=ok?'var(--green2)':'var(--red)';
+  if(!ok){document.querySelectorAll('#en-sCh button').forEach(b=>{if(b.textContent===cor){b.style.background='rgba(61,186,126,.14)';b.style.borderColor='var(--green2)';b.style.color='var(--green2)';}});}
+  const res=document.getElementById('en-sRes');
+  if(res){res.textContent=ok?'✓ Correct!':'✗ '+cor;res.className='sex-res '+(ok?'ok':'no');res.classList.remove('hidden');}
+  const nxt=document.getElementById('en-sNext');
+  if(nxt)nxt.classList.remove('hidden');
+  speakText(EN_ALL_SOUNDS[enSoundIdx%EN_ALL_SOUNDS.length].ex,'en-GB');
+  if(ok){enState.xp+=3;saveEn();}
+}
+function enNextSound(){enSoundIdx++;enInitSoundTrainer();}
+
+// Texts
+let enCurCat=0;
+let enWPopTimer;
+function renderEnTexts(){
+  if(!enState.textsRead)enState.textsRead=[];
+  const cats=EN_TEXT_CATS;
+  const tabsEl=document.getElementById('en-tTabs');
+  if(tabsEl)tabsEl.innerHTML=cats.map((c,i)=>`<button style="flex:none;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid ${i===enCurCat?'var(--blue,#3b82f6)':'var(--bd2)'};background:${i===enCurCat?'var(--blue,#3b82f6)':'transparent'};color:${i===enCurCat?'#fff':'var(--mu)'};font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .2s" onclick="switchEnCat(${i},this)">${c}</button>`).join('');
+  renderEnCatContent(enCurCat);
+}
+function switchEnCat(i,el){
+  enCurCat=i;
+  document.querySelectorAll('#en-tTabs button').forEach((b,idx)=>{
+    const active=idx===i;
+    b.style.background=active?'var(--blue,#3b82f6)':'transparent';
+    b.style.borderColor=active?'var(--blue,#3b82f6)':'var(--bd2)';
+    b.style.color=active?'#fff':'var(--mu)';
+  });
+  renderEnCatContent(i);
+}
+function renderEnCatContent(idx){
+  const cat=EN_TEXT_CATS[idx];
+  const texts=EN_TEXTS[cat]||[];
+  const cont=document.getElementById('en-tContent');
+  if(!cont)return;
+  cont.innerHTML=texts.map((t,i)=>`
+    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:17px;margin-bottom:10px" class="fi">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:10px;font-weight:600;border-radius:6px;padding:3px 8px;background:rgba(59,130,246,.13);color:#60a5fa">${t.level}</span>
+        <span style="font-size:11px;color:var(--mu)">${cat}</span>
+        <button style="margin-left:auto;background:none;border:1px solid var(--bd2);border-radius:20px;padding:3px 10px;color:var(--mu);font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="speakText(this.closest('div').querySelector('.en-text-content').innerText,'en-GB')">🔊</button>
+      </div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:9px;color:var(--tx)">${t.title}</div>
+      <div class="en-text-content" style="font-size:14px;line-height:1.8;color:var(--tx2)">${t.en.replace(/\n/g,'<br>')}</div>
+      <div id="en-tr-${idx}-${i}" style="font-size:12px;color:var(--mu);line-height:1.6;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);font-style:italic;display:none">${t.ru.replace(/\n/g,'<br>')}</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button style="flex:1;padding:9px;border-radius:10px;border:1px solid var(--bd2);background:var(--sf2);color:var(--mu);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="toggleEnTr(${idx},${i})">🇷🇺 Translation</button>
+      </div>
+    </div>`).join('');
+}
+function toggleEnTr(cat,i){
+  const el=document.getElementById('en-tr-'+cat+'-'+i);
+  if(el)el.style.display=el.style.display==='block'?'none':'block';
+  if(!enState.textsRead)enState.textsRead=[];
+  const key=cat+'-'+i;
+  if(!enState.textsRead.includes(key)){enState.textsRead.push(key);saveEn();}
 }
 
-function showEnDone(){
-  const now=Date.now();
-  const next4=new Date();next4.setHours(4,0,0,0);
-  if(next4.getTime()<=now)next4.setDate(next4.getDate()+1);
-  const hrs=Math.floor((next4-now)/3600000),mins=Math.round(((next4-now)%3600000)/60000);
-  document.getElementById('en-fc').innerHTML=`<div class="done-wrap"><div class="done-icon">🌙</div><div class="done-tl" style="color:var(--green2)">Well done!</div><div class="done-sb">New words in ${hrs}h ${mins}m</div><div class="done-q" style="font-size:14px;color:var(--mu);margin-top:12px;font-style:italic">"Every expert was once a beginner."</div></div>`;
-  document.getElementById('en-ansRow').classList.add('hidden');
-  document.getElementById('en-swHint').classList.add('hidden');
-  enFlipped=true;
-}
-
-function enFlipCard(){if(enFlipped||enLocked)return;document.getElementById('en-fc').classList.add('flipped');document.getElementById('en-ansRow').classList.remove('hidden');document.getElementById('en-swHint').classList.remove('hidden');enFlipped=true;}
-
-function enAnswer(q){
-  if(!enFlipped||enLocked)return;enLocked=true;
-  const idx=enQ[enPos],wasNew=!enState.cards[idx].introduced;
-  enState.cards[idx].introduced=true;if(wasNew)enState.newToday++;
-  // SRS — та же логика
-  const c=enState.cards[idx];
-  if(q===1){c.interval=1;c.nextReview=nextResetMs(1);}
-  else if(q===2){c.interval=Math.max(1,Math.round((c.interval||1)*1.2));c.ef=Math.max(1.3,c.ef-.15);c.nextReview=nextResetMs(Math.max(2,c.interval));}
-  else{if(!c.interval)c.interval=1;else if(c.interval===1)c.interval=3;else c.interval=Math.round(c.interval*c.ef);c.ef=Math.max(1.3,c.ef+.1);c.nextReview=nextResetMs(c.interval);}
-  if(enState.lastDay!==todayStr()){enState.lastDay=todayStr();enState.streak++;}
-  const sn=new Date(Date.now()-RESET_HOUR*3600000);
-  enState.weekData[sn.getDay()]=(enState.weekData[sn.getDay()]||0)+1;
-  enState.xp+=q>=3?10:2;
-  saveEn();updateEnStats();
-  document.getElementById('sv').textContent=enState.streak;
-  document.getElementById('xv').textContent=enState.xp;
-  const fc=document.getElementById('en-fc');
-  fc.classList.add(q>=3?'sr':'sl');
-  setTimeout(()=>{fc.classList.remove('sl','sr');enPos++;renderEnCard();},220);
-}
-
-function enSpeakWord(e){
-  e.stopPropagation();
-  const txt=document.getElementById('en-wEn')?.textContent?.trim();
-  if(txt)speakText(txt,'en-GB');
-}
-
-function renderEnProgress(){
-  if(!enState)return;
-  const learned=enState.cards.filter(c=>c.introduced).length;
-  const pct=Math.round((learned/EN_WORDS.length)*100);
-  document.getElementById('en-pPct').textContent=pct+'%';
-  document.getElementById('en-pBar').style.width=pct+'%';
-  document.getElementById('en-pSub').textContent=learned+' из '+EN_WORDS.length+' слов';
-  const days=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],dow=new Date().getDay(),mx=Math.max(...enState.weekData,1);
-  document.getElementById('en-wBars').innerHTML=enState.weekData.map((v,i)=>`<div class="bc"><div class="bar${i===dow?' td':''}" style="height:${Math.max(4,Math.round((v/mx)*48))}px;${i===dow?'background:linear-gradient(180deg,#60a5fa,#1e3a6e)':''}"></div></div>`).join('');
-  document.getElementById('en-wDays').innerHTML=days.map((d,i)=>`<div style="flex:1;text-align:center;font-size:9px;color:${i===dow?'#60a5fa':'var(--mu)'}">${d}</div>`).join('');
-  const kw=enState.cards.map((c,i)=>c.introduced?EN_WORDS[i]:null).filter(Boolean);
-  document.getElementById('en-kCnt').textContent=kw.length;
-  document.getElementById('en-kChips').innerHTML=kw.length?kw.map(w=>`<span class="kchip"><span style="color:#60a5fa;font-weight:500">${w.en}</span><span class="kc-ru">${w.ru}</span></span>`).join(''):'<span style="font-size:12px;color:var(--bd2)">Start learning!</span>';
-}
 
 // ═══ INIT ═══
 renderSurahTabs();
