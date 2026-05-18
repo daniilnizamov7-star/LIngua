@@ -1248,24 +1248,47 @@ function openHarakat(key){
   // Добавляем кнопку произношения в арабский блок
   document.getElementById('mAr').innerHTML=`
     <div style="font-family:'Scheherazade New',serif;font-size:72px;direction:rtl;color:var(--gold2);line-height:1.2;margin-bottom:10px">${h.ar}</div>
-    <button class="audio-btn" style="margin:0 auto" onclick="speakText('${h.exs[0].ar}')">🔊 Послушать пример</button>`;
+    <button class="audio-btn" style="margin:0 auto" onclick="speakText('${h.exs[0].ar}','ar-SA',this,'🔊 Послушать пример')">🔊 Послушать пример</button>`;
   document.getElementById('mEx').innerHTML=h.exs.map(e=>`<div class="mex"><div class="mex-ar">${e.ar}</div><div class="mex-tr">${e.tr}</div></div>`).join('');
   document.getElementById('modal').classList.remove('hidden');
   if(!S.harakatSeen.includes(key)){S.harakatSeen.push(key);document.getElementById('hk-'+key)?.classList.add('done');S.xp+=5;checkAchievements();save();}
 }
 
 // Произнести произвольный текст (для огласовок и аятов)
-function speakText(txt,lang='ar-SA'){
+// ═══ АУДИО ═══
+function speakText(txt,lang,btn,resetLabel){
   if(!('speechSynthesis' in window)||!txt)return;
+  lang=lang||'ar-SA';
+  // Визуальная обратная связь на кнопке
+  if(btn&&btn.tagName){
+    btn.dataset.orig=btn.dataset.orig||btn.textContent;
+    btn.textContent='▶ ...';
+    btn.style.color='var(--gold2)';
+  }
+  function restore(){
+    if(btn&&btn.tagName){
+      btn.textContent=btn.dataset.orig||resetLabel||'🔊';
+      btn.style.color='';
+    }
+  }
   function doSpeak(){
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(txt);
-    u.lang=lang;u.rate=0.7;u.pitch=1;
+    u.lang=lang;u.rate=lang.startsWith('ar')?0.7:0.85;u.pitch=1;
+    u.onend=restore;u.onerror=restore;
     speechSynthesis.speak(u);
   }
-  const voices=speechSynthesis.getVoices();
-  if(voices.length>0){doSpeak();}
-  else{speechSynthesis.onvoiceschanged=()=>{speechSynthesis.onvoiceschanged=null;doSpeak();};setTimeout(doSpeak,300);}
+  // Android: голоса грузятся асинхронно
+  if(speechSynthesis.getVoices().length>0){
+    doSpeak();
+  } else {
+    const tid=setTimeout(doSpeak,400);
+    speechSynthesis.onvoiceschanged=()=>{
+      clearTimeout(tid);
+      speechSynthesis.onvoiceschanged=null;
+      doSpeak();
+    };
+  }
 }
 
 function openTajweed(i){
@@ -1499,30 +1522,13 @@ function answer(q){
 function speak(e){
   e.stopPropagation();
   if(!('speechSynthesis' in window))return;
-  const btn=document.getElementById('audioBtn');
-  const txt=document.getElementById('wAr')?.textContent?.trim();
+  const btn=e.currentTarget||document.getElementById('audioBtn');
+  // Берём текст из арабской карточки (wAr) или из активной модалки (mAr)
+  const txt=(document.getElementById('wAr')?.textContent||
+             document.getElementById('en-wEn')?.textContent||'').trim();
   if(!txt)return;
-
-  function doSpeak(){
-    speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(txt);
-    u.lang='ar-SA';u.rate=0.7;u.pitch=1;
-    // Визуальная обратная связь
-    if(btn){btn.textContent='▶ Читает...';btn.style.color='var(--gold2)';}
-    u.onend=()=>{if(btn){btn.textContent='🔊 Произнести';btn.style.color='';}};
-    u.onerror=()=>{if(btn){btn.textContent='🔊 Произнести';btn.style.color='';}};
-    speechSynthesis.speak(u);
-  }
-
-  // Android: голоса могут не загрузиться сразу
-  const voices=speechSynthesis.getVoices();
-  if(voices.length>0){
-    doSpeak();
-  } else {
-    speechSynthesis.onvoiceschanged=()=>{ speechSynthesis.onvoiceschanged=null; doSpeak(); };
-    // Fallback если onvoiceschanged не срабатывает
-    setTimeout(()=>{ if(speechSynthesis.getVoices().length>0) doSpeak(); },300);
-  }
+  const lang=document.getElementById('wAr')?.textContent?'ar-SA':'en-GB';
+  speakText(txt,lang,btn,'🔊 Произнести');
 }
 
 function bindTouch(){
@@ -1554,7 +1560,7 @@ function renderSurah(i){
       const idx=_wpopData.push({ar:w.ar,ru:w.ru})-1;
       return`<div class="wchip${kn?' kn':''}" data-idx="${idx}" onclick="showWpop(this)"><span class="wc-ar">${w.ar}</span><span class="wc-ru">${w.ru}</span></div>`;
     }).join('');
-    html+=`<div class="ayah-block fi"><div class="ayah-num-row"><div class="ayah-badge">${a.num}</div><div class="ayah-ref">${s.name} · ${a.num}</div><button class="audio-btn" style="margin-left:auto;padding:3px 9px;font-size:10px" onclick="speakText('${a.ar.replace(/'/g,"\\'")}')">🔊</button></div><div class="ayah-full">${a.ar}</div><div class="wchips">${chips}</div><div class="ayah-ru">${a.ru}</div></div>`;
+    html+=`<div class="ayah-block fi"><div class="ayah-num-row"><div class="ayah-badge">${a.num}</div><div class="ayah-ref">${s.name} · ${a.num}</div><button class="audio-btn" data-ar="${a.ar.replace(/"/g,'&quot;')}" style="margin-left:auto;padding:3px 9px;font-size:10px" onclick="speakText(this.dataset.ar,'ar-SA',this,'🔊')">🔊</button></div><div class="ayah-full">${a.ar}</div><div class="wchips">${chips}</div><div class="ayah-ru">${a.ru}</div></div>`;
   });
   document.getElementById('surahContent').innerHTML=html;
   // Count total ayahs across all visited surahs
@@ -2450,7 +2456,7 @@ function enAnswer(q){
 function enSpeakWord(e){
   e.stopPropagation();
   const txt=document.getElementById('en-wEn')?.textContent?.trim();
-  if(txt)speakText(txt,'en-GB');
+  if(txt)speakText(txt,'en-GB',e.currentTarget,'🔊 Произнести');
 }
 function enCheckAchievements(){
   if(!enState.achUnlocked)enState.achUnlocked=[];
@@ -2946,7 +2952,7 @@ function renderEnCatContent(idx){
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
         <span style="font-size:10px;font-weight:600;border-radius:6px;padding:3px 8px;background:rgba(59,130,246,.13);color:#60a5fa">${t.level}</span>
         <span style="font-size:11px;color:var(--mu)">${cat}</span>
-        <button style="margin-left:auto;background:none;border:1px solid var(--bd2);border-radius:20px;padding:3px 10px;color:var(--mu);font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="speakText(this.closest('div').querySelector('.en-text-content').innerText,'en-GB')">🔊</button>
+        <button style="margin-left:auto;background:none;border:1px solid var(--bd2);border-radius:20px;padding:3px 10px;color:var(--mu);font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="speakText(this.closest('.fi').querySelector('.en-text-content').innerText,'en-GB',this,'🔊')">🔊</button>
       </div>
       <div style="font-size:13px;font-weight:600;margin-bottom:9px;color:var(--tx)">${t.title}</div>
       <div class="en-text-content" style="font-size:14px;line-height:1.8;color:var(--tx2)">${t.en.replace(/\n/g,'<br>')}</div>
