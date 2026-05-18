@@ -1,59 +1,82 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="35%" r="65%">
-      <stop offset="0%" stop-color="#1a2240"/>
-      <stop offset="100%" stop-color="#0c0e14"/>
+    <!-- Светлый градиент фона -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#f0f4f8"/>
     </radialGradient>
-    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#d4a843" stop-opacity="0.18"/>
-      <stop offset="100%" stop-color="#d4a843" stop-opacity="0"/>
-    </radialGradient>
-    <filter id="blur">
-      <feGaussianBlur stdDeviation="8"/>
+    <!-- Золотой градиент -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0c46a"/>
+      <stop offset="50%" style="stop-color:#d4a843"/>
+      <stop offset="100%" style="stop-color:#b8962e"/>
+    </linearGradient>
+    <!-- Мягкое свечение -->
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
   </defs>
-
-  <!-- Background rounded rect -->
-  <rect width="192" height="192" rx="38" fill="url(#bg)"/>
-
-  <!-- Subtle border -->
-  <rect width="192" height="192" rx="38" fill="none" stroke="#d4a843" stroke-opacity="0.18" stroke-width="1.5"/>
-
-  <!-- Glow behind text -->
-  <ellipse cx="96" cy="88" rx="70" ry="55" fill="url(#glow)" filter="url(#blur)"/>
-
-  <!-- Decorative top arc -->
-  <path d="M 44 52 Q 96 32 148 52" stroke="#d4a843" stroke-opacity="0.25" stroke-width="1" fill="none"/>
-
-  <!-- Arabic text قرآني -->
-  <text
-    x="96"
-    y="112"
-    font-family="Scheherazade New, Amiri, serif"
-    font-size="64"
-    fill="#f0c46a"
-    text-anchor="middle"
-    direction="rtl"
-    unicode-bidi="bidi-override"
-  >قرآني</text>
-
-  <!-- Subtitle -->
-  <text
-    x="96"
-    y="142"
-    font-family="DM Sans, sans-serif"
-    font-size="13"
-    font-weight="500"
-    fill="#7a859e"
-    text-anchor="middle"
-    letter-spacing="2"
-  >ПУТЬ К КОРАНУ</text>
-
-  <!-- Bottom decorative line -->
-  <line x1="56" y1="152" x2="136" y2="152" stroke="#d4a843" stroke-opacity="0.2" stroke-width="1"/>
-
-  <!-- Corner dots -->
-  <circle cx="56" cy="152" r="2" fill="#d4a843" fill-opacity="0.35"/>
-  <circle cx="136" cy="152" r="2" fill="#d4a843" fill-opacity="0.35"/>
-  <circle cx="96" cy="152" r="1.5" fill="#d4a843" fill-opacity="0.2"/>
+  
+  <!-- Фон -->
+  <circle cx="256" cy="256" r="256" fill="url(#bgGrad)"/>
+  
+  <!-- Универсальный геометрический паттерн -->
+  <g stroke="rgba(184,134,11,0.08)" stroke-width="1" fill="none">
+    <circle cx="256" cy="256" r="240"/>
+    <circle cx="256" cy="256" r="200"/>
+    <circle cx="256" cy="256" r="160"/>
+    <path d="M256 16 L256 496 M16 256 L496 256 M85 85 L427 427 M427 85 L85 427"/>
+  </g>
+  
+  <!-- Центральный символ: открытая книга + свет -->
+  <g transform="translate(256,256)">
+    <!-- Свечение за книгой -->
+    <circle r="100" fill="url(#goldGrad)" opacity="0.12" filter="url(#softGlow)"/>
+    
+    <!-- Открытая книга -->
+    <path d="M-70,30 Q-70,-30 0,-30 Q70,-30 70,30 L50,30 Q50,-10 0,-10 Q-50,-10 -50,30 Z" 
+          fill="none" stroke="url(#goldGrad)" stroke-width="3.5" opacity="0.95"/>
+    
+    <!-- Лучи света -->
+    <g stroke="url(#goldGrad)" stroke-width="2.5" opacity="0.7" stroke-linecap="round">
+      <line x1="0" y1="-30" x2="0" y2="-85"/>
+      <line x1="-30" y1="-25" x2="-45" y2="-70"/>
+      <line x1="30" y1="-25" x2="45" y2="-70"/>
+      <line x1="-55" y1="-10" x2="-75" y2="-45"/>
+      <line x1="55" y1="-10" x2="75" y2="-45"/>
+    </g>
+    
+    <!-- Центральная точка -->
+    <circle r="5" fill="url(#goldGrad)"/>
+  </g>
+  
+  <!-- Внешняя рамка -->
+  <circle cx="256" cy="256" r="250" 
+          fill="none" 
+          stroke="url(#goldGrad)" 
+          stroke-width="1.5" 
+          opacity="0.25"/>
+  
+  <!-- Внутренняя пунктирная рамка -->
+  <circle cx="256" cy="256" r="245" 
+          fill="none" 
+          stroke="rgba(184,134,11,0.1)" 
+          stroke-width="1" 
+          stroke-dasharray="5,10"/>
+  
+  <!-- Точки по кругу (символ множественности/языков) -->
+  <g fill="url(#goldGrad)" opacity="0.5">
+    <circle cx="256" cy="40" r="3"/>
+    <circle cx="472" cy="256" r="3"/>
+    <circle cx="256" cy="472" r="3"/>
+    <circle cx="40" cy="256" r="3"/>
+    <circle cx="380" cy="132" r="2.5"/>
+    <circle cx="380" cy="380" r="2.5"/>
+    <circle cx="132" cy="380" r="2.5"/>
+    <circle cx="132" cy="132" r="2.5"/>
+  </g>
 </svg>
