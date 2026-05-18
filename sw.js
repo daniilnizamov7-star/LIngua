@@ -1,7 +1,4 @@
-const VERSION = 'arabic-v22';
-const ASSETS = ['/', '/index.html', '/manifest.json'];
-
-const VERSION = 'lingua-v2';
+const VERSION = 'lingua-v3';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
@@ -23,34 +20,6 @@ self.addEventListener('activate', e => {
 });
 
 // Network-first: всегда берём свежую версию, кэш только как запасной офлайн
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    fetch(e.request)
-      .then(r => {
-        const clone = r.clone();
-        caches.open(VERSION).then(c => c.put(e.request, clone));
-        return r;
-      })
-      .catch(() => caches.match(e.request))
-  );
-});', e => {
-  e.waitUntil(
-    caches.open(VERSION)
-      .then(c => c.addAll(ASSETS))
-      .then(() => self.skipWaiting())
-  );
-});
-
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(
-        keys.filter(k => k !== VERSION).map(k => caches.delete(k))
-      ))
-      .then(() => self.clients.claim())
-  );
-});
-
 self.addEventListener('fetch', e => {
   e.respondWith(
     fetch(e.request)
