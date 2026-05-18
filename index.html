@@ -33,6 +33,32 @@
 html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;overflow:hidden}
 
 .app{height:100%;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative}
+#main-app{display:flex;flex-direction:column;flex:1;overflow:hidden}
+#main-app.hidden{display:none!important}
+/* Экран выбора языка */
+.lang-screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;background:var(--bg);z-index:10;overflow-y:auto}
+.lang-screen.hidden{display:none!important}
+.lang-logo{font-size:52px;margin-bottom:14px}
+.lang-title{font-size:26px;font-weight:600;color:var(--tx);margin-bottom:5px}
+.lang-sub{font-size:13px;color:var(--mu);margin-bottom:28px;text-align:center}
+.lang-list{width:100%;display:flex;flex-direction:column;gap:11px;margin-bottom:20px}
+.lang-card{background:var(--sf);border:1px solid var(--bd);border-radius:18px;padding:17px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s}
+.lang-card:active{transform:scale(.98)}
+.lang-card.active-lang{border-color:var(--gold);background:rgba(212,168,67,.05)}
+.lang-flag{font-size:34px;flex-shrink:0}
+.lang-info{flex:1}
+.lang-name{font-size:17px;font-weight:600;color:var(--tx);margin-bottom:2px}
+.lang-desc{font-size:11px;color:var(--mu)}
+.lang-progress{text-align:right;flex-shrink:0}
+.lang-pct{font-size:15px;font-weight:600}
+.lang-pct-lbl{font-size:9px;color:var(--mu)}
+.lang-pbar{height:3px;background:var(--sf2);border-radius:2px;overflow:hidden;margin-top:6px;width:56px;margin-left:auto}
+.lang-pbar-f{height:100%;border-radius:2px;transition:width .4s}
+.lang-add{text-align:center;padding-bottom:20px}
+.lang-add-txt{font-size:12px;color:var(--bd2);font-style:italic}
+/* Кнопка назад */
+.back-lang-btn{background:var(--sf2);border:1px solid var(--bd2);border-radius:20px;width:32px;height:32px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s}
+.back-lang-btn:active{border-color:var(--gold)}
 #upd{display:none;background:var(--gold);color:#000;font-size:13px;font-weight:600;padding:10px;text-align:center;cursor:pointer;flex-shrink:0}
 /* Header */
 .hdr{padding:calc(var(--st)+14px) 20px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-bottom:1px solid var(--bd)}
@@ -318,10 +344,27 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
 <body>
 <div class="app">
   <div id="upd" onclick="location.reload()">🔄 Обновление — нажми</div>
+
+  <!-- ЭКРАН ВЫБОРА ЯЗЫКА -->
+  <div id="lang-screen" class="lang-screen">
+    <div class="lang-logo">🌍</div>
+    <div class="lang-title">Языки</div>
+    <div class="lang-sub">Выбери что изучаешь сегодня</div>
+    <div class="lang-list" id="langList"></div>
+    <div class="lang-add">
+      <div class="lang-add-txt">Скоро: Турецкий, Урду, Французский...</div>
+    </div>
+  </div>
+
+  <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
+  <div id="main-app" class="hidden">
   <div class="hdr">
-    <div>
-      <div class="logo">قرآني</div>
-      <div class="logo-sub">Путь к Корану</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="back-lang-btn" onclick="goLangScreen()" title="Выбор языка">🌍</button>
+      <div>
+        <div class="logo" id="appLogo">قرآني</div>
+        <div class="logo-sub" id="appSub">Путь к Корану</div>
+      </div>
     </div>
     <div class="hdr-right">
       <div class="pills">
@@ -428,6 +471,7 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
               <div class="qs-tr" id="wExTr">Bismillāh</div>
               <div class="qs-ru" id="wExRu"></div>
             </div>
+            <button class="audio-btn" id="audioBtn" onclick="speak(event)">🔊 Произнести</button>
           </div>
         </div>
       </div>
@@ -523,6 +567,7 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
     <button class="bn" onclick="goTab('asma',4)"><span class="bni">✨</span>Имена</button>
     <button class="bn" onclick="goTab('progress',5)"><span class="bni">📊</span>Итоги</button>
   </div>
+  </div><!-- /main-app -->
 </div>
 
 <!-- Modal -->
@@ -1190,10 +1235,27 @@ function openHarakat(key){
   const h=HARAKATS[key];
   document.getElementById('mTl').textContent=h.name;
   document.getElementById('mDc').textContent=h.desc;
-  document.getElementById('mAr').textContent=h.ar;
+  // Добавляем кнопку произношения в арабский блок
+  document.getElementById('mAr').innerHTML=`
+    <div style="font-family:'Scheherazade New',serif;font-size:72px;direction:rtl;color:var(--gold2);line-height:1.2;margin-bottom:10px">${h.ar}</div>
+    <button class="audio-btn" style="margin:0 auto" onclick="speakText('${h.exs[0].ar}')">🔊 Послушать пример</button>`;
   document.getElementById('mEx').innerHTML=h.exs.map(e=>`<div class="mex"><div class="mex-ar">${e.ar}</div><div class="mex-tr">${e.tr}</div></div>`).join('');
   document.getElementById('modal').classList.remove('hidden');
   if(!S.harakatSeen.includes(key)){S.harakatSeen.push(key);document.getElementById('hk-'+key)?.classList.add('done');S.xp+=5;checkAchievements();save();}
+}
+
+// Произнести произвольный текст (для огласовок и аятов)
+function speakText(txt,lang='ar-SA'){
+  if(!('speechSynthesis' in window)||!txt)return;
+  function doSpeak(){
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt);
+    u.lang=lang;u.rate=0.7;u.pitch=1;
+    speechSynthesis.speak(u);
+  }
+  const voices=speechSynthesis.getVoices();
+  if(voices.length>0){doSpeak();}
+  else{speechSynthesis.onvoiceschanged=()=>{speechSynthesis.onvoiceschanged=null;doSpeak();};setTimeout(doSpeak,300);}
 }
 
 function openTajweed(i){
@@ -1295,6 +1357,7 @@ function restoreFC(){
         <div class="qs-tr" id="wExTr"></div>
         <div class="qs-ru" id="wExRu"></div>
       </div>
+      <button class="audio-btn" id="audioBtn" onclick="speak(event)">🔊 Произнести</button>
     </div>`;
   bindTouch();
 }
@@ -1422,14 +1485,34 @@ function answer(q){
   setTimeout(()=>{fc.classList.remove('sl','sr');wPos++;if(wPos>=buildQueue().length)wPos=0;renderWordCard();},220);
 }
 
-// Аудио через Web Speech API
+// Аудио через Web Speech API — с фикс для Android
 function speak(e){
   e.stopPropagation();
   if(!('speechSynthesis' in window))return;
-  const txt=document.getElementById('wAr').textContent;
-  const u=new SpeechSynthesisUtterance(txt);
-  u.lang='ar-SA';u.rate=0.8;u.pitch=1;
-  speechSynthesis.cancel();speechSynthesis.speak(u);
+  const btn=document.getElementById('audioBtn');
+  const txt=document.getElementById('wAr')?.textContent?.trim();
+  if(!txt)return;
+
+  function doSpeak(){
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt);
+    u.lang='ar-SA';u.rate=0.7;u.pitch=1;
+    // Визуальная обратная связь
+    if(btn){btn.textContent='▶ Читает...';btn.style.color='var(--gold2)';}
+    u.onend=()=>{if(btn){btn.textContent='🔊 Произнести';btn.style.color='';}};
+    u.onerror=()=>{if(btn){btn.textContent='🔊 Произнести';btn.style.color='';}};
+    speechSynthesis.speak(u);
+  }
+
+  // Android: голоса могут не загрузиться сразу
+  const voices=speechSynthesis.getVoices();
+  if(voices.length>0){
+    doSpeak();
+  } else {
+    speechSynthesis.onvoiceschanged=()=>{ speechSynthesis.onvoiceschanged=null; doSpeak(); };
+    // Fallback если onvoiceschanged не срабатывает
+    setTimeout(()=>{ if(speechSynthesis.getVoices().length>0) doSpeak(); },300);
+  }
 }
 
 function bindTouch(){
@@ -1461,7 +1544,7 @@ function renderSurah(i){
       const idx=_wpopData.push({ar:w.ar,ru:w.ru})-1;
       return`<div class="wchip${kn?' kn':''}" data-idx="${idx}" onclick="showWpop(this)"><span class="wc-ar">${w.ar}</span><span class="wc-ru">${w.ru}</span></div>`;
     }).join('');
-    html+=`<div class="ayah-block fi"><div class="ayah-num-row"><div class="ayah-badge">${a.num}</div><div class="ayah-ref">${s.name} · ${a.num}</div></div><div class="ayah-full">${a.ar}</div><div class="wchips">${chips}</div><div class="ayah-ru">${a.ru}</div></div>`;
+    html+=`<div class="ayah-block fi"><div class="ayah-num-row"><div class="ayah-badge">${a.num}</div><div class="ayah-ref">${s.name} · ${a.num}</div><button class="audio-btn" style="margin-left:auto;padding:3px 9px;font-size:10px" onclick="speakText('${a.ar.replace(/'/g,"\\'")}')">🔊</button></div><div class="ayah-full">${a.ar}</div><div class="wchips">${chips}</div><div class="ayah-ru">${a.ru}</div></div>`;
   });
   document.getElementById('surahContent').innerHTML=html;
   // Count total ayahs across all visited surahs
@@ -1676,11 +1759,14 @@ function renderProgress(){
 // ═══ BACK BUTTON ═══
 window.addEventListener('popstate',e=>{
   e.preventDefault();
-  // Close modal first if open
   const modal=document.getElementById('modal');
   if(!modal.classList.contains('hidden')){closeModal();history.pushState(null,'','');return;}
-  const a=document.querySelector('.sc.active');
-  if(a&&a.id!=='sc-home'){goTab('home',0);history.pushState(null,'','');}
+  // Если в приложении — вернуться на выбор языка
+  if(!document.getElementById('lang-screen').classList.contains('hidden')===false){
+    const a=document.querySelector('.sc.active');
+    if(a&&a.id!=='sc-home'){goTab('home',0);history.pushState(null,'','');return;}
+    goLangScreen();
+  }
 });
 history.pushState(null,'','');
 
@@ -1696,11 +1782,425 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('controllerchange',()=>location.reload());
 }
 
+// ═══ ЯЗЫКИ ═══
+const LANGUAGES=[
+  {
+    id:'ar',
+    flag:'🕌',
+    name:'Арабский',
+    nameLocal:'العربية',
+    desc:'Путь к Корану — слова, огласовки, аяты, имена Аллаха',
+    color:'var(--gold2)',
+    barColor:'linear-gradient(90deg,var(--gdim),var(--gold2))',
+    storeKey:'qurani_v2',
+    totalWords:100,
+    logo:'قرآني',
+    logoSub:'Путь к Корану',
+  },
+  {
+    id:'en',
+    flag:'🇬🇧',
+    name:'Английский',
+    nameLocal:'English',
+    desc:'Топ-500 слов, фонетика, тексты из жизни',
+    color:'#60a5fa',
+    barColor:'linear-gradient(90deg,#1e3a6e,#60a5fa)',
+    storeKey:'english_v1',
+    totalWords:100,
+    logo:'English',
+    logoSub:'Путь к языку',
+  },
+];
+
+let currentLang='ar';
+
+function getLangProgress(lang){
+  try{
+    const s=JSON.parse(localStorage.getItem(lang.storeKey));
+    if(!s)return 0;
+    const learned=(s.cards||[]).filter(c=>c.introduced).length;
+    return Math.round((learned/lang.totalWords)*100);
+  }catch(e){return 0;}
+}
+
+function renderLangScreen(){
+  const list=document.getElementById('langList');
+  list.innerHTML=LANGUAGES.map(lang=>{
+    const pct=getLangProgress(lang);
+    const isActive=currentLang===lang.id;
+    return`<div class="lang-card${isActive?' active-lang':''}" onclick="selectLang('${lang.id}')">
+      <div class="lang-flag">${lang.flag}</div>
+      <div class="lang-info">
+        <div class="lang-name">${lang.name} <span style="font-size:12px;opacity:.5">${lang.nameLocal}</span></div>
+        <div class="lang-desc">${lang.desc}</div>
+      </div>
+      <div class="lang-progress">
+        <div class="lang-pct" style="color:${lang.color}">${pct}%</div>
+        <div class="lang-pct-lbl">прогресс</div>
+        <div class="lang-pbar"><div class="lang-pbar-f" style="background:${lang.barColor};width:${pct}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectLang(id){
+  currentLang=id;
+  localStorage.setItem('current_lang',id);
+  const lang=LANGUAGES.find(l=>l.id===id);
+  // Обновляем логотип
+  document.getElementById('appLogo').textContent=lang.logo;
+  document.getElementById('appSub').textContent=lang.logoSub;
+  // Скрываем экран языков
+  document.getElementById('lang-screen').classList.add('hidden');
+  document.getElementById('main-app').classList.remove('hidden');
+  // Инициализируем нужный модуль
+  if(id==='ar'){
+    initArabic();
+  } else if(id==='en'){
+    initEnglish();
+  }
+}
+
+function goLangScreen(){
+  document.getElementById('lang-screen').classList.remove('hidden');
+  document.getElementById('main-app').classList.add('hidden');
+  renderLangScreen();
+}
+
+// ── Инициализация арабского (текущая логика) ──
+function initArabic(){
+  // Восстанавливаем навбар для арабского
+  document.querySelector('.bnav').innerHTML=`
+    <button class="bn active" onclick="goTab('home',0)"><span class="bni">🏠</span>Дом</button>
+    <button class="bn" onclick="goTab('sound',1)"><span class="bni">🔊</span>Звук</button>
+    <button class="bn" onclick="goTab('words',2)"><span class="bni">📖</span>Слова</button>
+    <button class="bn" onclick="goTab('quran',3)"><span class="bni">🕌</span>Коран</button>
+    <button class="bn" onclick="goTab('asma',4)"><span class="bni">✨</span>Имена</button>
+    <button class="bn" onclick="goTab('progress',5)"><span class="bni">📊</span>Итоги</button>`;
+  // Показываем арабские экраны
+  document.querySelectorAll('.sc').forEach(s=>s.style.display='');
+  document.getElementById('sc-home').classList.add('active');
+  renderSurahTabs();
+  renderSound();
+  initSex();
+  renderHome();
+  goTab('home',0);
+}
+
+// ── Инициализация английского ──
+// Данные английского
+const EN_WORDS=[
+  {en:'hello',ipa:'/həˈloʊ/',ru:'привет',pos:'excl.',ex:'Say <b>hello</b> to everyone.',exRu:'Поздоровайся со всеми.',src:'разговорный'},
+  {en:'good',ipa:'/ɡʊd/',ru:'хороший / добрый',pos:'adj.',ex:'That\'s a <b>good</b> idea.',exRu:'Это хорошая идея.',src:'повседневный'},
+  {en:'time',ipa:'/taɪm/',ru:'время',pos:'n.',ex:'<b>Time</b> flies.',exRu:'Время летит.',src:'пословица'},
+  {en:'know',ipa:'/noʊ/',ru:'знать',pos:'v.',ex:'I <b>know</b> what you mean.',exRu:'Я понимаю что ты имеешь в виду.',src:'разговорный'},
+  {en:'think',ipa:'/θɪŋk/',ru:'думать',pos:'v.',ex:'I <b>think</b> you are right.',exRu:'Я думаю ты прав.',src:'разговорный'},
+  {en:'want',ipa:'/wɒnt/',ru:'хотеть',pos:'v.',ex:'What do you <b>want</b>?',exRu:'Чего ты хочешь?',src:'разговорный'},
+  {en:'come',ipa:'/kʌm/',ru:'приходить',pos:'v.',ex:'Please <b>come</b> in.',exRu:'Пожалуйста, входите.',src:'повседневный'},
+  {en:'get',ipa:'/ɡet/',ru:'получать / становиться',pos:'v.',ex:'Let\'s <b>get</b> started.',exRu:'Давайте начнём.',src:'разговорный'},
+  {en:'make',ipa:'/meɪk/',ru:'делать / создавать',pos:'v.',ex:'I will <b>make</b> dinner.',exRu:'Я приготовлю ужин.',src:'повседневный'},
+  {en:'go',ipa:'/ɡoʊ/',ru:'идти / ехать',pos:'v.',ex:'Where do you want to <b>go</b>?',exRu:'Куда ты хочешь пойти?',src:'повседневный'},
+  {en:'work',ipa:'/wɜːrk/',ru:'работать / работа',pos:'v./n.',ex:'How does this <b>work</b>?',exRu:'Как это работает?',src:'повседневный'},
+  {en:'look',ipa:'/lʊk/',ru:'смотреть / выглядеть',pos:'v.',ex:'You <b>look</b> great today.',exRu:'Ты отлично выглядишь.',src:'разговорный'},
+  {en:'need',ipa:'/niːd/',ru:'нуждаться / нужно',pos:'v.',ex:'I <b>need</b> more time.',exRu:'Мне нужно больше времени.',src:'повседневный'},
+  {en:'feel',ipa:'/fiːl/',ru:'чувствовать',pos:'v.',ex:'How do you <b>feel</b>?',exRu:'Как ты себя чувствуешь?',src:'повседневный'},
+  {en:'keep',ipa:'/kiːp/',ru:'продолжать / хранить',pos:'v.',ex:'<b>Keep</b> going.',exRu:'Продолжай.',src:'разговорный'},
+  {en:'people',ipa:'/ˈpiːpəl/',ru:'люди',pos:'n.',ex:'Many <b>people</b> use phones.',exRu:'Многие люди используют телефоны.',src:'повседневный'},
+  {en:'day',ipa:'/deɪ/',ru:'день',pos:'n.',ex:'Have a great <b>day</b>!',exRu:'Хорошего дня!',src:'разговорный'},
+  {en:'life',ipa:'/laɪf/',ru:'жизнь',pos:'n.',ex:'<b>Life</b> is beautiful.',exRu:'Жизнь прекрасна.',src:'повседневный'},
+  {en:'world',ipa:'/wɜːrld/',ru:'мир',pos:'n.',ex:'Travel the <b>world</b>.',exRu:'Путешествуй по миру.',src:'разговорный'},
+  {en:'home',ipa:'/hoʊm/',ru:'дом / домой',pos:'n.',ex:'There\'s no place like <b>home</b>.',exRu:'В гостях хорошо, а дома лучше.',src:'пословица'},
+  {en:'family',ipa:'/ˈfæməli/',ru:'семья',pos:'n.',ex:'<b>Family</b> comes first.',exRu:'Семья — прежде всего.',src:'разговорный'},
+  {en:'money',ipa:'/ˈmʌni/',ru:'деньги',pos:'n.',ex:'<b>Time</b> is money.',exRu:'Время — деньги.',src:'пословица'},
+  {en:'right',ipa:'/raɪt/',ru:'правильный / верно',pos:'adj.',ex:'You are absolutely <b>right</b>.',exRu:'Ты абсолютно прав.',src:'разговорный'},
+  {en:'great',ipa:'/ɡreɪt/',ru:'отличный / великий',pos:'adj.',ex:'You\'re doing <b>great</b>.',exRu:'У тебя отлично получается.',src:'разговорный'},
+  {en:'new',ipa:'/njuː/',ru:'новый',pos:'adj.',ex:'I got a <b>new</b> job.',exRu:'Я нашёл новую работу.',src:'повседневный'},
+  {en:'never',ipa:'/ˈnevər/',ru:'никогда',pos:'adv.',ex:'<b>Never</b> give up.',exRu:'Никогда не сдавайся.',src:'мотивационный'},
+  {en:'always',ipa:'/ˈɔːlweɪz/',ru:'всегда',pos:'adv.',ex:'<b>Always</b> be yourself.',exRu:'Всегда будь собой.',src:'разговорный'},
+  {en:'maybe',ipa:'/ˈmeɪbi/',ru:'может быть',pos:'adv.',ex:'<b>Maybe</b> I was wrong.',exRu:'Может быть я ошибался.',src:'разговорный'},
+  {en:'really',ipa:'/ˈrɪəli/',ru:'действительно',pos:'adv.',ex:'Are you <b>really</b> sure?',exRu:'Ты действительно уверен?',src:'разговорный'},
+  {en:'still',ipa:'/stɪl/',ru:'всё ещё',pos:'adv.',ex:'Are you <b>still</b> there?',exRu:'Ты всё ещё здесь?',src:'разговорный'},
+];
+
+const EN_STORE='english_v1';
+let enState=null;
+let enQ=[],enPos=0,enFlipped=false,enLocked=false,enTouchX=0;
+
+function getEnState(){
+  try{return JSON.parse(localStorage.getItem(EN_STORE))||null;}catch(e){return null;}
+}
+function mkEnState(){
+  return{cards:EN_WORDS.map(()=>({interval:0,ef:2.5,nextReview:0,introduced:false})),streak:1,xp:0,lastDay:todayStr(),newToday:0,newDayKey:todayStr(),weekData:[0,0,0,0,0,0,0],achUnlocked:[]};
+}
+function saveEn(){localStorage.setItem(EN_STORE,JSON.stringify(enState));}
+
+function initEnglish(){
+  enState=getEnState()||mkEnState();
+  if(enState.newDayKey!==todayStr()){enState.newDayKey=todayStr();enState.newToday=0;}
+  // Меняем навбар на английский
+  document.querySelector('.bnav').innerHTML=`
+    <button class="bn active" onclick="goEnTab('home',0)"><span class="bni">🏠</span>Home</button>
+    <button class="bn" onclick="goEnTab('words',1)"><span class="bni">📖</span>Words</button>
+    <button class="bn" onclick="goEnTab('progress',2)"><span class="bni">📊</span>Progress</button>`;
+  // Скрываем арабские экраны, показываем английские
+  document.querySelectorAll('.sc').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  renderEnHome();
+  // Вставляем английские экраны динамически
+  renderEnScreens();
+}
+
+function goEnTab(name,idx){
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
+  const sc=document.getElementById('sc-en-'+name);
+  if(sc)sc.classList.add('active');
+  document.querySelectorAll('.bn')[idx]?.classList.add('active');
+  if(name==='home')renderEnHome();
+  if(name==='words')initEnWords();
+  if(name==='progress')renderEnProgress();
+}
+
+function renderEnScreens(){
+  // Создаём экраны английского если их нет
+  const screens=document.querySelector('.screens');
+  if(!document.getElementById('sc-en-home')){
+    const homeEl=document.createElement('div');
+    homeEl.className='sc active';homeEl.id='sc-en-home';
+    homeEl.innerHTML=`<div style="padding:16px 20px 0">
+      <div class="hero" style="background:linear-gradient(135deg,#0d1f3c,#0a0f1a)">
+        <div class="hgreet" style="font-size:13px;color:var(--mu);margin-bottom:4px">Good day!</div>
+        <div class="htitle" style="font-size:20px;font-weight:600;margin-bottom:14px;line-height:1.35">Your path to<br>English language</div>
+        <div class="pbar-lbl" id="en-pl-lbl"><span>Vocabulary</span><span id="en-pl">0 / ${EN_WORDS.length}</span></div>
+        <div class="pbar"><div class="pbar-f" id="en-pf" style="width:0%;background:linear-gradient(90deg,#1e3a6e,#60a5fa)"></div></div>
+      </div>
+      <div class="hstats" style="margin:12px 20px 0">
+        <div class="hs"><div class="hsn" style="color:#60a5fa" id="en-hw">0</div><div class="hsl">words</div></div>
+        <div class="hs"><div class="hsn" style="color:var(--green2)" id="en-hd">1</div><div class="hsl">streak</div></div>
+        <div class="hs"><div class="hsn" style="color:var(--gold2)" id="en-xp">0</div><div class="hsl">XP</div></div>
+      </div>
+      <div class="tasks" style="margin:12px 20px 20px">
+        <div class="stitle">Tasks for today</div>
+        <div class="task" onclick="goEnTab('words',1)" style="margin-bottom:8px">
+          <div class="ticon gr">📖</div>
+          <div><div class="ttl">Words</div><div class="tsb">10 new + SRS reviews</div></div>
+        </div>
+      </div>
+    </div>`;
+    screens.appendChild(homeEl);
+
+    const wordsEl=document.createElement('div');
+    wordsEl.className='sc';wordsEl.id='sc-en-words';
+    wordsEl.innerHTML=`
+      <div style="padding:14px 20px 10px">
+        <div class="quota">
+          <div class="qt"><div class="qtn" style="color:#60a5fa" id="en-qN">10</div><div class="qtl">New</div></div>
+          <div class="qt"><div class="qtn" style="color:var(--green2)" id="en-qR">0</div><div class="qtl">Review</div></div>
+          <div class="qt"><div class="qtn" style="color:var(--gold2)" id="en-qD">0</div><div class="qtl">Done</div></div>
+        </div>
+      </div>
+      <div class="card-wrap">
+        <div class="fc" id="en-fc" onclick="enFlipCard()" style="border-color:#253047">
+          <div class="fc-tag" id="en-fcTag">1/10</div>
+          <div class="fc-type nt" id="en-fcType">🆕 new</div>
+          <div class="fc-front">
+            <div style="font-size:52px;font-weight:700;color:var(--tx);letter-spacing:-1px;text-align:center" id="en-wEn">hello</div>
+            <div style="font-size:15px;color:var(--mu);letter-spacing:.5px" id="en-wIpa">/həˈloʊ/</div>
+            <div class="tap-h">tap to reveal</div>
+          </div>
+          <div class="fc-back">
+            <div style="font-size:24px;font-weight:500" id="en-wRu">привет</div>
+            <div class="w-pos" id="en-wPos">excl.</div>
+            <div class="qs">
+              <div class="qs-lbl" style="color:#60a5fa">Example</div>
+              <div class="qs-ar" style="font-family:'DM Sans',sans-serif;font-size:15px;direction:ltr;text-align:left" id="en-wEx"></div>
+              <div class="qs-tr" id="en-wExRu"></div>
+            </div>
+            <button class="audio-btn" id="en-audioBtn" onclick="enSpeakWord(event)">🔊 Listen</button>
+          </div>
+        </div>
+      </div>
+      <div class="sw-hint hidden" id="en-swHint"><span>← again</span><span>know →</span></div>
+      <div class="ans-row hidden" id="en-ansRow">
+        <button class="ans ans-a" onclick="enAnswer(1)">Again<br><small style="font-size:9px;opacity:.7">tomorrow</small></button>
+        <button class="ans ans-h" onclick="enAnswer(2)">Hard<br><small style="font-size:9px;opacity:.7">3 days</small></button>
+        <button class="ans ans-g" onclick="enAnswer(4)">Know ✓<br><small style="font-size:9px;opacity:.7">7 days</small></button>
+      </div>`;
+    screens.appendChild(wordsEl);
+
+    const progEl=document.createElement('div');
+    progEl.className='sc';progEl.id='sc-en-progress';
+    progEl.innerHTML=`<div class="pr-wrap">
+      <div class="pr-hero">
+        <div class="prh-lbl">Vocabulary</div>
+        <div class="prh-pct" id="en-pPct">0%</div>
+        <div class="prh-sub" id="en-pSub">из ${EN_WORDS.length} слов</div>
+        <div class="prh-bar"><div class="prh-fill" id="en-pBar" style="width:0%;background:linear-gradient(90deg,#1e3a6e,#60a5fa)"></div></div>
+      </div>
+      <div class="week-box">
+        <div class="wb-tl">Weekly activity</div>
+        <div class="bars" id="en-wBars"></div>
+        <div style="display:flex;gap:5px;margin-top:5px" id="en-wDays"></div>
+      </div>
+      <div class="kn-box">
+        <div class="kn-tl">Learned words (<span id="en-kCnt">0</span>)</div>
+        <div class="kchips" id="en-kChips"><span style="font-size:12px;color:var(--bd2)">Start learning!</span></div>
+      </div>
+    </div>`;
+    screens.appendChild(progEl);
+
+    // touch for en card
+    document.getElementById('en-fc').addEventListener('touchstart',e=>{enTouchX=e.touches[0].clientX;},{passive:true});
+    document.getElementById('en-fc').addEventListener('touchend',e=>{if(!enFlipped||enLocked)return;const dx=e.changedTouches[0].clientX-enTouchX;if(Math.abs(dx)>55)enAnswer(dx>0?4:1);},{passive:true});
+  }
+
+  // Активируем home
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sc-en-home').classList.add('active');
+  document.querySelectorAll('.bn')[0]?.classList.add('active');
+  renderEnHome();
+}
+
+function renderEnHome(){
+  if(!enState)return;
+  const learned=enState.cards.filter(c=>c.introduced).length;
+  const pct=Math.round((learned/EN_WORDS.length)*100);
+  const pf=document.getElementById('en-pf');if(pf)pf.style.width=pct+'%';
+  const pl=document.getElementById('en-pl');if(pl)pl.textContent=learned+' / '+EN_WORDS.length;
+  const hw=document.getElementById('en-hw');if(hw)hw.textContent=learned;
+  const hd=document.getElementById('en-hd');if(hd)hd.textContent=enState.streak;
+  const xp=document.getElementById('en-xp');if(xp)xp.textContent=enState.xp;
+  document.getElementById('sv').textContent=enState.streak;
+  document.getElementById('xv').textContent=enState.xp;
+}
+
+function buildEnQueue(){
+  if(enState.newDayKey!==todayStr()){enState.newDayKey=todayStr();enState.newToday=0;}
+  const now=Date.now(),rev=[],nw=[];
+  enState.cards.forEach((c,i)=>{if(c.introduced){if(c.nextReview<=now)rev.push(i);}else nw.push(i);});
+  return[...rev,...nw.slice(0,Math.max(0,NEW_PER_DAY-enState.newToday))];
+}
+
+function initEnWords(){
+  enQ=buildEnQueue();enPos=0;
+  updateEnStats();renderEnCard();
+}
+
+function updateEnStats(){
+  const now=Date.now();
+  const intro=enState.cards.filter(c=>c.introduced).length;
+  const due=enState.cards.filter(c=>c.introduced&&c.nextReview<=now).length;
+  const canN=Math.max(0,NEW_PER_DAY-enState.newToday);
+  const qN=document.getElementById('en-qN');if(qN)qN.textContent=canN;
+  const qR=document.getElementById('en-qR');if(qR)qR.textContent=due;
+  const qD=document.getElementById('en-qD');if(qD)qD.textContent=intro;
+}
+
+function renderEnCard(){
+  enQ=buildEnQueue();
+  if(enQ.length===0){showEnDone();return;}
+  if(enPos>=enQ.length)enPos=0;
+  const idx=enQ[enPos],w=EN_WORDS[idx],c=enState.cards[idx],isNew=!c.introduced;
+  document.getElementById('en-wEn').textContent=w.en;
+  document.getElementById('en-wIpa').textContent=w.ipa;
+  document.getElementById('en-wRu').textContent=w.ru;
+  document.getElementById('en-wPos').textContent=w.pos;
+  document.getElementById('en-wEx').innerHTML=w.ex;
+  document.getElementById('en-wExRu').textContent=w.exRu;
+  document.getElementById('en-fcTag').textContent=(enPos+1)+' / '+enQ.length;
+  const t=document.getElementById('en-fcType');
+  t.textContent=isNew?'🆕 new':'🔁 review · '+c.interval+'d';
+  t.style.background=isNew?'rgba(96,165,250,.14)':'rgba(52,211,153,.11)';
+  t.style.color=isNew?'#60a5fa':'var(--green2)';
+  document.getElementById('en-fc').classList.remove('flipped');
+  document.getElementById('en-ansRow').classList.add('hidden');
+  document.getElementById('en-swHint').classList.add('hidden');
+  enFlipped=false;enLocked=false;
+}
+
+function showEnDone(){
+  const now=Date.now();
+  const next4=new Date();next4.setHours(4,0,0,0);
+  if(next4.getTime()<=now)next4.setDate(next4.getDate()+1);
+  const hrs=Math.floor((next4-now)/3600000),mins=Math.round(((next4-now)%3600000)/60000);
+  document.getElementById('en-fc').innerHTML=`<div class="done-wrap"><div class="done-icon">🌙</div><div class="done-tl" style="color:var(--green2)">Well done!</div><div class="done-sb">New words in ${hrs}h ${mins}m</div><div class="done-q" style="font-size:14px;color:var(--mu);margin-top:12px;font-style:italic">"Every expert was once a beginner."</div></div>`;
+  document.getElementById('en-ansRow').classList.add('hidden');
+  document.getElementById('en-swHint').classList.add('hidden');
+  enFlipped=true;
+}
+
+function enFlipCard(){if(enFlipped||enLocked)return;document.getElementById('en-fc').classList.add('flipped');document.getElementById('en-ansRow').classList.remove('hidden');document.getElementById('en-swHint').classList.remove('hidden');enFlipped=true;}
+
+function enAnswer(q){
+  if(!enFlipped||enLocked)return;enLocked=true;
+  const idx=enQ[enPos],wasNew=!enState.cards[idx].introduced;
+  enState.cards[idx].introduced=true;if(wasNew)enState.newToday++;
+  // SRS — та же логика
+  const c=enState.cards[idx];
+  if(q===1){c.interval=1;c.nextReview=nextResetMs(1);}
+  else if(q===2){c.interval=Math.max(1,Math.round((c.interval||1)*1.2));c.ef=Math.max(1.3,c.ef-.15);c.nextReview=nextResetMs(Math.max(2,c.interval));}
+  else{if(!c.interval)c.interval=1;else if(c.interval===1)c.interval=3;else c.interval=Math.round(c.interval*c.ef);c.ef=Math.max(1.3,c.ef+.1);c.nextReview=nextResetMs(c.interval);}
+  if(enState.lastDay!==todayStr()){enState.lastDay=todayStr();enState.streak++;}
+  const sn=new Date(Date.now()-RESET_HOUR*3600000);
+  enState.weekData[sn.getDay()]=(enState.weekData[sn.getDay()]||0)+1;
+  enState.xp+=q>=3?10:2;
+  saveEn();updateEnStats();
+  document.getElementById('sv').textContent=enState.streak;
+  document.getElementById('xv').textContent=enState.xp;
+  const fc=document.getElementById('en-fc');
+  fc.classList.add(q>=3?'sr':'sl');
+  setTimeout(()=>{fc.classList.remove('sl','sr');enPos++;renderEnCard();},220);
+}
+
+function enSpeakWord(e){
+  e.stopPropagation();
+  const txt=document.getElementById('en-wEn')?.textContent?.trim();
+  if(txt)speakText(txt,'en-GB');
+}
+
+function speakText(txt,lang='ar-SA'){
+  if(!('speechSynthesis' in window)||!txt)return;
+  function doSpeak(){
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt);
+    u.lang=lang;u.rate=0.8;u.pitch=1;
+    speechSynthesis.speak(u);
+  }
+  const voices=speechSynthesis.getVoices();
+  if(voices.length>0){doSpeak();}
+  else{speechSynthesis.onvoiceschanged=()=>{speechSynthesis.onvoiceschanged=null;doSpeak();};setTimeout(doSpeak,300);}
+}
+
+function renderEnProgress(){
+  if(!enState)return;
+  const learned=enState.cards.filter(c=>c.introduced).length;
+  const pct=Math.round((learned/EN_WORDS.length)*100);
+  document.getElementById('en-pPct').textContent=pct+'%';
+  document.getElementById('en-pBar').style.width=pct+'%';
+  document.getElementById('en-pSub').textContent=learned+' из '+EN_WORDS.length+' слов';
+  const days=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],dow=new Date().getDay(),mx=Math.max(...enState.weekData,1);
+  document.getElementById('en-wBars').innerHTML=enState.weekData.map((v,i)=>`<div class="bc"><div class="bar${i===dow?' td':''}" style="height:${Math.max(4,Math.round((v/mx)*48))}px;${i===dow?'background:linear-gradient(180deg,#60a5fa,#1e3a6e)':''}"></div></div>`).join('');
+  document.getElementById('en-wDays').innerHTML=days.map((d,i)=>`<div style="flex:1;text-align:center;font-size:9px;color:${i===dow?'#60a5fa':'var(--mu)'}">${d}</div>`).join('');
+  const kw=enState.cards.map((c,i)=>c.introduced?EN_WORDS[i]:null).filter(Boolean);
+  document.getElementById('en-kCnt').textContent=kw.length;
+  document.getElementById('en-kChips').innerHTML=kw.length?kw.map(w=>`<span class="kchip"><span style="color:#60a5fa;font-weight:500">${w.en}</span><span class="kc-ru">${w.ru}</span></span>`).join(''):'<span style="font-size:12px;color:var(--bd2)">Start learning!</span>';
+}
+
 // ═══ INIT ═══
 renderSurahTabs();
 renderSound();
 initSex();
-renderHome();
+
+// Показываем экран языков первым
+const savedLang=localStorage.getItem('current_lang')||'ar';
+currentLang=savedLang;
+renderLangScreen();
+// Применяем тему до показа
+(()=>{
+  if(localStorage.getItem('qurani_theme')==='light'){
+    document.documentElement.classList.add('light');
+    document.getElementById('themeBtn').textContent='🌙';
+  }
+})();
 </script>
 </body>
 </html>
