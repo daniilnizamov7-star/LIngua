@@ -394,22 +394,22 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
 
   <!-- ЭКРАН ВЫБОРА ВОЗРАСТА (только для EN) -->
   <div id="age-screen" class="age-screen hidden">
-    <div class="lang-logo">🇬🇧</div>
+    <div class="lang-logo" id="age-screen-logo">🇬🇧</div>
     <div class="lang-title">Кто будет учиться?</div>
     <div class="lang-sub">Выберем подходящую программу</div>
     <div class="age-cards">
       <div class="age-card age-child" onclick="selectAge('child')">
         <div class="age-card-icon">🧒</div>
         <div class="age-card-info">
-          <div class="age-card-name" style="color:#60a5fa">Ребёнок 6–10 лет</div>
-          <div class="age-card-desc">Тело, еда, животные, цвета, цифры — 60 слов. 3 новых слова в день, крупный шрифт, игровой формат</div>
+          <div class="age-card-name" style="color:#60a5fa" id="age-child-title">Ребёнок 6–10 лет</div>
+          <div class="age-card-desc" id="age-child-desc">Тело, еда, животные, цвета, цифры — 60 слов. 3 новых слова в день, крупный шрифт, игровой формат</div>
         </div>
       </div>
       <div class="age-card age-adult" onclick="selectAge('adult')">
         <div class="age-card-icon">👤</div>
         <div class="age-card-info">
-          <div class="age-card-name" style="color:var(--gold2)">Взрослый</div>
-          <div class="age-card-desc">Топ-431 слово, фонетика, тексты из жизни. 10 новых слов в день, полная программа</div>
+          <div class="age-card-name" style="color:var(--gold2)" id="age-adult-title">Взрослый</div>
+          <div class="age-card-desc" id="age-adult-desc">Топ-431 слово, фонетика, тексты из жизни. 10 новых слов в день, полная программа</div>
         </div>
       </div>
     </div>
@@ -1233,9 +1233,8 @@ function renderHome(){
   document.getElementById('h-pl').textContent=learned+' / 300';
   document.getElementById('h-w').textContent=learned;
   document.getElementById('h-s').textContent=S.harakatSeen.length;
-  // Восстанавливаем подпись (могла быть изменена детским режимом)
-  const hsEl=document.getElementById('h-s');
-  if(hsEl){const l=hsEl.parentElement?.querySelector('.hsl');if(l)l.textContent='знаков';}
+  const _hsEl=document.getElementById('h-s');
+  if(_hsEl){const _l=_hsEl.parentElement?.querySelector('.hsl');if(_l)_l.textContent='знаков';}
   document.getElementById('h-a').textContent=S.studiedAyahs;
   document.getElementById('h-d').textContent=S.streak;
   document.getElementById('sv').textContent=S.streak;
@@ -2175,12 +2174,7 @@ function renderArChildHome(){
   if(g('h-pl'))g('h-pl').textContent=learned+' / '+words.length;
   if(g('h-w'))g('h-w').textContent=learned;
   if(g('h-s'))g('h-s').textContent=S.streak;
-  // Для детского режима меняем подпись h-s с "знаков" на "стрик"
-  const hsEl=g('h-s');
-  if(hsEl){
-    const hsLabel=hsEl.parentElement?.querySelector('.hsl');
-    if(hsLabel)hsLabel.textContent='стрик';
-  }
+  const _hsElC=g('h-s');if(_hsElC){const _lC=_hsElC.parentElement?.querySelector('.hsl');if(_lC)_lC.textContent='стрик';}
   if(g('h-a'))g('h-a').textContent=pct+'%';
   if(g('h-d'))g('h-d').textContent=S.streak;
   g('sv').textContent=S.streak;
