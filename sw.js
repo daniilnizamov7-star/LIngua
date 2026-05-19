@@ -1,4 +1,4 @@
-const VERSION = 'lingua-v11';
+const VERSION = 'lingua-v12';
 const ASSETS = [
   '/',
   '/index.html',
