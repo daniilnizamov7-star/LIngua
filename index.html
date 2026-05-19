@@ -58,6 +58,32 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
 .lang-qr-lbl{font-size:12px;color:var(--mu);margin-bottom:10px}
 .lang-qr-wrap{display:inline-block;background:#fff;border-radius:12px;padding:8px;margin-bottom:6px}
 .lang-qr-url{font-size:11px;color:var(--mu);word-break:break-all}
+/* Экран выбора возраста */
+.age-screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;background:var(--bg);z-index:11;overflow-y:auto}
+.age-screen.hidden{display:none!important}
+.age-cards{width:100%;display:flex;flex-direction:column;gap:11px;margin-bottom:16px}
+.age-card{background:var(--sf);border:2px solid var(--bd);border-radius:18px;padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s}
+.age-card:active{transform:scale(.98)}
+.age-card.age-child{border-color:rgba(96,165,250,.4)}
+.age-card.age-adult{border-color:rgba(212,168,67,.4)}
+.age-card-icon{font-size:36px;flex-shrink:0}
+.age-card-info{flex:1}
+.age-card-name{font-size:17px;font-weight:600;margin-bottom:3px}
+.age-card-desc{font-size:12px;color:var(--mu);line-height:1.5}
+.age-back-btn{background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;padding:8px;font-family:'DM Sans',sans-serif}
+/* Детская карточка */
+.child-emoji{font-size:72px;line-height:1;margin-bottom:8px;display:block;text-align:center}
+.child-word{font-weight:700;color:var(--tx);letter-spacing:-1px;text-align:center;line-height:1.1}
+.child-ruphone{font-size:18px;color:var(--mu);text-align:center;margin-top:4px;letter-spacing:.5px}
+.child-cat-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(96,165,250,.13);border-radius:20px;padding:5px 12px;font-size:13px;font-weight:600;color:#60a5fa;margin-bottom:10px}
+.child-ru-big{font-size:32px;font-weight:600;text-align:center;margin-bottom:6px}
+.child-ex{font-size:15px;color:var(--tx);line-height:1.6;text-align:center;padding:0 8px}
+.child-exru{font-size:13px;color:var(--mu);text-align:center;margin-top:4px}
+/* Звуковое подтверждение */
+@keyframes popBounce{0%{transform:scale(1)}40%{transform:scale(1.18)}70%{transform:scale(.94)}100%{transform:scale(1)}}
+.answer-ok-flash{animation:popBounce .35s ease}
+.child-answer-ok{background:rgba(52,211,153,.18)!important;border-color:var(--green2)!important;}
+.child-answer-no{background:rgba(224,85,85,.15)!important;border-color:var(--red)!important;}
 /* Кнопка назад */
 .back-lang-btn{background:var(--sf2);border:1px solid var(--bd2);border-radius:20px;width:32px;height:32px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s}
 .back-lang-btn:active{border-color:var(--gold)}
@@ -364,6 +390,30 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
       </div>
       <div class="lang-qr-url" id="qrUrl"></div>
     </div>
+  </div>
+
+  <!-- ЭКРАН ВЫБОРА ВОЗРАСТА (только для EN) -->
+  <div id="age-screen" class="age-screen hidden">
+    <div class="lang-logo">🇬🇧</div>
+    <div class="lang-title">Кто будет учиться?</div>
+    <div class="lang-sub">Выберем подходящую программу</div>
+    <div class="age-cards">
+      <div class="age-card age-child" onclick="selectAge('child')">
+        <div class="age-card-icon">🧒</div>
+        <div class="age-card-info">
+          <div class="age-card-name" style="color:#60a5fa">Ребёнок 6–10 лет</div>
+          <div class="age-card-desc">Тело, еда, животные, цвета, цифры — 60 слов. 3 новых слова в день, крупный шрифт, игровой формат</div>
+        </div>
+      </div>
+      <div class="age-card age-adult" onclick="selectAge('adult')">
+        <div class="age-card-icon">👤</div>
+        <div class="age-card-info">
+          <div class="age-card-name" style="color:var(--gold2)">Взрослый</div>
+          <div class="age-card-desc">Топ-431 слово, фонетика, тексты из жизни. 10 новых слов в день, полная программа</div>
+        </div>
+      </div>
+    </div>
+    <button class="age-back-btn" onclick="showAgeBack()">← Назад к выбору языка</button>
   </div>
 
   <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
@@ -1898,22 +1948,45 @@ function selectLang(id){
   currentLang=id;
   localStorage.setItem('current_lang',id);
   const lang=LANGUAGES.find(l=>l.id===id);
+
+  if(id==='en'){
+    // Показываем экран выбора возраста
+    document.getElementById('lang-screen').classList.add('hidden');
+    document.getElementById('age-screen').classList.remove('hidden');
+    return;
+  }
+
   // Обновляем логотип
   document.getElementById('appLogo').textContent=lang.logo;
   document.getElementById('appSub').textContent=lang.logoSub;
   // Скрываем экран языков
   document.getElementById('lang-screen').classList.add('hidden');
   document.getElementById('main-app').classList.remove('hidden');
-  // Инициализируем нужный модуль
   if(id==='ar'){
     initArabic();
-  } else if(id==='en'){
-    initEnglish();
   }
+}
+
+function selectAge(age){
+  currentAge=age;
+  localStorage.setItem('lingua_age',age);
+  const lang=LANGUAGES.find(l=>l.id==='en');
+  document.getElementById('appLogo').textContent=age==='child'?'English Kids':lang.logo;
+  document.getElementById('appSub').textContent=age==='child'?'для Вадима 🧒':lang.logoSub;
+  document.getElementById('age-screen').classList.add('hidden');
+  document.getElementById('main-app').classList.remove('hidden');
+  initEnglish();
+}
+
+function showAgeBack(){
+  document.getElementById('age-screen').classList.add('hidden');
+  document.getElementById('lang-screen').classList.remove('hidden');
+  renderLangScreen();
 }
 
 function goLangScreen(){
   document.getElementById('lang-screen').classList.remove('hidden');
+  document.getElementById('age-screen').classList.add('hidden');
   document.getElementById('main-app').classList.add('hidden');
   renderLangScreen();
 }
@@ -2384,28 +2457,132 @@ const EN_WORDS=[
 
 ];
 
+// ══════════════════════════════════════════
+// ДЕТСКИЙ СЛОВАРЬ — для Вадима (8 лет)
+// ══════════════════════════════════════════
+const EN_WORDS_CHILD=[
+  // Тело
+  {en:'head',ipa:'/hed/',ru:'голова',pos:'n.',ex:'Touch your <b>head</b>!',exRu:'Потрогай голову!',cat:'тело'},
+  {en:'eye',ipa:'/aɪ/',ru:'глаз',pos:'n.',ex:'Close your <b>eyes</b>.',exRu:'Закрой глаза.',cat:'тело'},
+  {en:'nose',ipa:'/noʊz/',ru:'нос',pos:'n.',ex:'My <b>nose</b> is cold.',exRu:'Мой нос холодный.',cat:'тело'},
+  {en:'mouth',ipa:'/maʊθ/',ru:'рот',pos:'n.',ex:'Open your <b>mouth</b>.',exRu:'Открой рот.',cat:'тело'},
+  {en:'ear',ipa:'/ɪər/',ru:'ухо',pos:'n.',ex:'I hear with my <b>ears</b>.',exRu:'Я слышу ушами.',cat:'тело'},
+  {en:'hand',ipa:'/hænd/',ru:'рука (кисть)',pos:'n.',ex:'Wash your <b>hands</b>!',exRu:'Помой руки!',cat:'тело'},
+  {en:'leg',ipa:'/leɡ/',ru:'нога',pos:'n.',ex:'I run with my <b>legs</b>.',exRu:'Я бегаю ногами.',cat:'тело'},
+  {en:'foot',ipa:'/fʊt/',ru:'стопа',pos:'n.',ex:'My <b>foot</b> is big.',exRu:'Моя стопа большая.',cat:'тело'},
+  {en:'finger',ipa:'/ˈfɪŋɡər/',ru:'палец',pos:'n.',ex:'Ten <b>fingers</b>!',exRu:'Десять пальцев!',cat:'тело'},
+  {en:'hair',ipa:'/heər/',ru:'волосы',pos:'n.',ex:'My <b>hair</b> is short.',exRu:'Мои волосы короткие.',cat:'тело'},
+  {en:'tooth',ipa:'/tuːθ/',ru:'зуб',pos:'n.',ex:'Brush your <b>teeth</b>!',exRu:'Чисти зубы!',cat:'тело'},
+  {en:'back',ipa:'/bæk/',ru:'спина',pos:'n.',ex:'My <b>back</b> hurts.',exRu:'У меня болит спина.',cat:'тело'},
+  // Еда
+  {en:'apple',ipa:'/ˈæpəl/',ru:'яблоко',pos:'n.',ex:'I eat an <b>apple</b>.',exRu:'Я ем яблоко.',cat:'еда'},
+  {en:'banana',ipa:'/bəˈnɑːnə/',ru:'банан',pos:'n.',ex:'A yellow <b>banana</b>.',exRu:'Жёлтый банан.',cat:'еда'},
+  {en:'bread',ipa:'/bred/',ru:'хлеб',pos:'n.',ex:'I like <b>bread</b>.',exRu:'Мне нравится хлеб.',cat:'еда'},
+  {en:'milk',ipa:'/mɪlk/',ru:'молоко',pos:'n.',ex:'Drink your <b>milk</b>!',exRu:'Выпей молоко!',cat:'еда'},
+  {en:'water',ipa:'/ˈwɔːtər/',ru:'вода',pos:'n.',ex:'I drink <b>water</b>.',exRu:'Я пью воду.',cat:'еда'},
+  {en:'egg',ipa:'/eɡ/',ru:'яйцо',pos:'n.',ex:'One <b>egg</b> please.',exRu:'Одно яйцо пожалуйста.',cat:'еда'},
+  {en:'rice',ipa:'/raɪs/',ru:'рис',pos:'n.',ex:'I like <b>rice</b>.',exRu:'Мне нравится рис.',cat:'еда'},
+  {en:'soup',ipa:'/suːp/',ru:'суп',pos:'n.',ex:'Hot <b>soup</b>!',exRu:'Горячий суп!',cat:'еда'},
+  {en:'cake',ipa:'/keɪk/',ru:'торт',pos:'n.',ex:'Birthday <b>cake</b>!',exRu:'Торт на день рождения!',cat:'еда'},
+  {en:'pizza',ipa:'/ˈpiːtsə/',ru:'пицца',pos:'n.',ex:'I love <b>pizza</b>!',exRu:'Я люблю пиццу!',cat:'еда'},
+  {en:'fish',ipa:'/fɪʃ/',ru:'рыба',pos:'n.',ex:'I see a <b>fish</b>.',exRu:'Я вижу рыбу.',cat:'еда'},
+  {en:'chicken',ipa:'/ˈtʃɪkɪn/',ru:'курица',pos:'n.',ex:'I eat <b>chicken</b>.',exRu:'Я ем курицу.',cat:'еда'},
+  // Животные
+  {en:'cat',ipa:'/kæt/',ru:'кошка',pos:'n.',ex:'My <b>cat</b> is fluffy.',exRu:'Моя кошка пушистая.',cat:'животные'},
+  {en:'dog',ipa:'/dɒɡ/',ru:'собака',pos:'n.',ex:'My <b>dog</b> is happy.',exRu:'Моя собака радостная.',cat:'животные'},
+  {en:'bird',ipa:'/bɜːrd/',ru:'птица',pos:'n.',ex:'A <b>bird</b> can fly.',exRu:'Птица умеет летать.',cat:'животные'},
+  {en:'rabbit',ipa:'/ˈræbɪt/',ru:'кролик',pos:'n.',ex:'A white <b>rabbit</b>.',exRu:'Белый кролик.',cat:'животные'},
+  {en:'cow',ipa:'/kaʊ/',ru:'корова',pos:'n.',ex:'The <b>cow</b> says moo.',exRu:'Корова говорит му.',cat:'животные'},
+  {en:'horse',ipa:'/hɔːrs/',ru:'лошадь',pos:'n.',ex:'A fast <b>horse</b>.',exRu:'Быстрая лошадь.',cat:'животные'},
+  {en:'elephant',ipa:'/ˈelɪfənt/',ru:'слон',pos:'n.',ex:'A big <b>elephant</b>.',exRu:'Большой слон.',cat:'животные'},
+  {en:'lion',ipa:'/ˈlaɪən/',ru:'лев',pos:'n.',ex:'The <b>lion</b> is strong.',exRu:'Лев сильный.',cat:'животные'},
+  {en:'frog',ipa:'/frɒɡ/',ru:'лягушка',pos:'n.',ex:'A green <b>frog</b>.',exRu:'Зелёная лягушка.',cat:'животные'},
+  {en:'duck',ipa:'/dʌk/',ru:'утка',pos:'n.',ex:'The <b>duck</b> swims.',exRu:'Утка плавает.',cat:'животные'},
+  {en:'bear',ipa:'/beər/',ru:'медведь',pos:'n.',ex:'A big brown <b>bear</b>.',exRu:'Большой бурый медведь.',cat:'животные'},
+  {en:'monkey',ipa:'/ˈmʌŋki/',ru:'обезьяна',pos:'n.',ex:'A funny <b>monkey</b>.',exRu:'Смешная обезьяна.',cat:'животные'},
+  // Цвета
+  {en:'red',ipa:'/red/',ru:'красный',pos:'adj.',ex:'A <b>red</b> apple.',exRu:'Красное яблоко.',cat:'цвета'},
+  {en:'blue',ipa:'/bluː/',ru:'синий',pos:'adj.',ex:'Blue sky.',exRu:'Синее небо.',cat:'цвета'},
+  {en:'green',ipa:'/ɡriːn/',ru:'зелёный',pos:'adj.',ex:'Green grass.',exRu:'Зелёная трава.',cat:'цвета'},
+  {en:'yellow',ipa:'/ˈjeloʊ/',ru:'жёлтый',pos:'adj.',ex:'Yellow sun.',exRu:'Жёлтое солнце.',cat:'цвета'},
+  {en:'orange',ipa:'/ˈɒrɪndʒ/',ru:'оранжевый',pos:'adj.',ex:'Orange flower.',exRu:'Оранжевый цветок.',cat:'цвета'},
+  {en:'pink',ipa:'/pɪŋk/',ru:'розовый',pos:'adj.',ex:'Pink flamingo.',exRu:'Розовый фламинго.',cat:'цвета'},
+  {en:'white',ipa:'/waɪt/',ru:'белый',pos:'adj.',ex:'White snow.',exRu:'Белый снег.',cat:'цвета'},
+  {en:'black',ipa:'/blæk/',ru:'чёрный',pos:'adj.',ex:'Black night.',exRu:'Чёрная ночь.',cat:'цвета'},
+  {en:'brown',ipa:'/braʊn/',ru:'коричневый',pos:'adj.',ex:'Brown bear.',exRu:'Коричневый медведь.',cat:'цвета'},
+  {en:'purple',ipa:'/ˈpɜːrpəl/',ru:'фиолетовый',pos:'adj.',ex:'Purple grapes.',exRu:'Фиолетовый виноград.',cat:'цвета'},
+  // Цифры
+  {en:'one',ipa:'/wʌn/',ru:'один',pos:'num.',ex:'I have <b>one</b> cat.',exRu:'У меня одна кошка.',cat:'цифры'},
+  {en:'two',ipa:'/tuː/',ru:'два',pos:'num.',ex:'<b>Two</b> eyes.',exRu:'Два глаза.',cat:'цифры'},
+  {en:'three',ipa:'/θriː/',ru:'три',pos:'num.',ex:'<b>Three</b> apples.',exRu:'Три яблока.',cat:'цифры'},
+  {en:'four',ipa:'/fɔːr/',ru:'четыре',pos:'num.',ex:'<b>Four</b> legs.',exRu:'Четыре ноги.',cat:'цифры'},
+  {en:'five',ipa:'/faɪv/',ru:'пять',pos:'num.',ex:'<b>Five</b> fingers.',exRu:'Пять пальцев.',cat:'цифры'},
+  {en:'six',ipa:'/sɪks/',ru:'шесть',pos:'num.',ex:'<b>Six</b> birds.',exRu:'Шесть птиц.',cat:'цифры'},
+  {en:'seven',ipa:'/ˈsevən/',ru:'семь',pos:'num.',ex:'<b>Seven</b> days.',exRu:'Семь дней.',cat:'цифры'},
+  {en:'eight',ipa:'/eɪt/',ru:'восемь',pos:'num.',ex:'<b>Eight</b> legs — spider!',exRu:'Восемь ног — паук!',cat:'цифры'},
+  {en:'nine',ipa:'/naɪn/',ru:'девять',pos:'num.',ex:'<b>Nine</b> stars.',exRu:'Девять звёзд.',cat:'цифры'},
+  {en:'ten',ipa:'/ten/',ru:'десять',pos:'num.',ex:'<b>Ten</b> fingers!',exRu:'Десять пальцев!',cat:'цифры'},
+];
+
+// ══ Конфиг по возрасту ══
+const AGE_CONFIG={
+  child:{newPerDay:3,wordFontSize:'72px',storeKey:'english_child_v1',totalLabel:'60 слов',label:'Дети 6–10'},
+  adult:{newPerDay:10,wordFontSize:'44px',storeKey:'english_v1',totalLabel:EN_WORDS.length+' слов',label:'Взрослый'},
+};
+
+// ── Emoji по категориям (детский режим) ──
+const CHILD_CAT_EMOJI={
+  'тело':'👤','еда':'🍎','животные':'🐾','цвета':'🎨','цифры':'🔢'
+};
+
+// ── Простая русская фонетика для детей ──
+// Добавляем поле ruPhone в EN_WORDS_CHILD через маппинг
+const CHILD_RUPHONE={
+  head:'хэд',eye:'ай',nose:'ноуз',mouth:'маут',ear:'иэ',hand:'хэнд',
+  leg:'лэг',foot:'фут',finger:'фингэ',hair:'хэа',tooth:'туːс',back:'бэк',
+  apple:'эпл',banana:'бэнаːнэ',bread:'брэд',milk:'милк',water:'воːтэ',
+  egg:'эг',rice:'раис',soup:'суːп',cake:'кэйк',pizza:'пиːцэ',
+  fish:'фиш',chicken:'чикин',
+  cat:'кэт',dog:'дог',bird:'бёːд',rabbit:'рэбит',cow:'кау',
+  horse:'хоːс',elephant:'элифэнт',lion:'лайэн',frog:'фрог',
+  duck:'дак',bear:'бэа',monkey:'манки',
+  red:'рэд',blue:'блуː',green:'гриːн',yellow:'йэлоу',orange:'оринч',
+  pink:'пинк',white:'уайт',black:'блэк',brown:'браун',purple:'пёːпл',
+  one:'уан',two:'туː',three:'сриː',four:'фоː',five:'файв',
+  six:'сикс',seven:'сэвэн',eight:'эйт',nine:'найн',ten:'тэн',
+};
+
+// ── текущий возраст ──
+let currentAge=localStorage.getItem('lingua_age')||'adult';
+
+// ── активный словарь (зависит от возраста) ──
+function getActiveEnWords(){return currentAge==='child'?EN_WORDS_CHILD:EN_WORDS;}
+function getActiveEnStore(){return AGE_CONFIG[currentAge].storeKey;}
+function getActiveNewPerDay(){return AGE_CONFIG[currentAge].newPerDay;}
+
 const EN_STORE='english_v1';
 let enState=null;
 let enQ=[],enPos=0,enFlipped=false,enLocked=false,enTouchX=0;
 
 function getEnState(){
-  try{return JSON.parse(localStorage.getItem(EN_STORE))||null;}catch(e){return null;}
+  try{return JSON.parse(localStorage.getItem(getActiveEnStore()))||null;}catch(e){return null;}
 }
 function mkEnState(){
-  return{cards:EN_WORDS.map(()=>({interval:0,ef:2.5,nextReview:0,introduced:false})),streak:1,xp:0,lastDay:todayStr(),newToday:0,newDayKey:todayStr(),weekData:[0,0,0,0,0,0,0],achUnlocked:[]};
+  const w=getActiveEnWords();
+  return{cards:w.map(()=>({interval:0,ef:2.5,nextReview:0,introduced:false})),streak:1,xp:0,lastDay:todayStr(),newToday:0,newDayKey:todayStr(),weekData:[0,0,0,0,0,0,0],achUnlocked:[]};
 }
-function saveEn(){localStorage.setItem(EN_STORE,JSON.stringify(enState));}
+function saveEn(){localStorage.setItem(getActiveEnStore(),JSON.stringify(enState));}
 
 // ─── EN Words / SRS ───
 function buildEnQueue(){
   if(enState.newDayKey!==todayStr()){enState.newDayKey=todayStr();enState.newToday=0;}
-  const now=Date.now(),rev=[],nw=[];
+  const now=Date.now(),rev=[],nw=[],npd=getActiveNewPerDay();
   enState.cards.forEach((c,i)=>{if(c.introduced){if(c.nextReview<=now)rev.push(i);}else nw.push(i);});
-  return[...rev,...nw.slice(0,Math.max(0,NEW_PER_DAY-enState.newToday))];
+  return[...rev,...nw.slice(0,Math.max(0,npd-enState.newToday))];
 }
 function initEnWords(){enQ=buildEnQueue();enPos=0;updateEnStats();renderEnCard();}
 function updateEnStats(){
-  const now=Date.now(),intro=enState.cards.filter(c=>c.introduced).length,due=enState.cards.filter(c=>c.introduced&&c.nextReview<=now).length,canN=Math.max(0,NEW_PER_DAY-enState.newToday);
+  const now=Date.now(),intro=enState.cards.filter(c=>c.introduced).length,due=enState.cards.filter(c=>c.introduced&&c.nextReview<=now).length,canN=Math.max(0,getActiveNewPerDay()-enState.newToday);
   const qN=document.getElementById('en-qN');if(qN)qN.textContent=canN;
   const qR=document.getElementById('en-qR');if(qR)qR.textContent=due;
   const qD=document.getElementById('en-qD');if(qD)qD.textContent=intro;
@@ -2414,18 +2591,84 @@ function renderEnCard(){
   enQ=buildEnQueue();
   if(enQ.length===0){showEnDone();return;}
   if(enPos>=enQ.length)enPos=0;
-  const idx=enQ[enPos],w=EN_WORDS[idx],c=enState.cards[idx],isNew=!c.introduced;
+  const words=getActiveEnWords();
+  const idx=enQ[enPos],w=words[idx],c=enState.cards[idx],isNew=!c.introduced;
   const g=id=>document.getElementById(id);
-  g('en-wEn')&&(g('en-wEn').textContent=w.en);
-  g('en-wIpa')&&(g('en-wIpa').textContent=w.ipa);
-  g('en-wRu')&&(g('en-wRu').textContent=w.ru);
-  g('en-wPos')&&(g('en-wPos').textContent=w.pos);
-  g('en-wEx')&&(g('en-wEx').innerHTML=w.ex);
-  g('en-wExRu')&&(g('en-wExRu').textContent=w.exRu);
-  g('en-fcTag')&&(g('en-fcTag').textContent=(enPos+1)+' / '+enQ.length);
-  if(g('en-fcType')){g('en-fcType').textContent=isNew?'🆕 new':'🔁 review · '+c.interval+'d';g('en-fcType').style.background=isNew?'rgba(96,165,250,.14)':'rgba(52,211,153,.11)';g('en-fcType').style.color=isNew?'#60a5fa':'var(--green2)';}
-  g('en-fc')&&g('en-fc').classList.remove('flipped');
+
+  if(currentAge==='child'){
+    // ── ДЕТСКАЯ КАРТОЧКА ──
+    const emoji=CHILD_CAT_EMOJI[w.cat]||'📖';
+    const ruPhone=CHILD_RUPHONE[w.en]||'';
+    const catLabel=(CHILD_CAT_EMOJI[w.cat]||'')+(w.cat?' '+w.cat:'');
+    const fc=g('en-fc');
+    if(fc){
+      fc.classList.remove('flipped');
+      // Перерисовываем внутренности карточки под детский формат
+      fc.innerHTML=`
+        <div class="fc-tag" id="en-fcTag">${enPos+1} / ${enQ.length}</div>
+        <div class="fc-type nt" id="en-fcType" style="background:${isNew?'rgba(96,165,250,.14)':'rgba(52,211,153,.11)'};color:${isNew?'#60a5fa':'var(--green2)'}">
+          ${isNew?'🆕 новое':'🔁 повтор'}
+        </div>
+        <div class="fc-front">
+          <span class="child-emoji">${emoji}</span>
+          <div class="child-word" id="en-wEn" style="font-size:${AGE_CONFIG.child.wordFontSize}">${w.en}</div>
+          <div class="child-ruphone" id="en-wIpa">${ruPhone}</div>
+          <div class="tap-h">нажми — узнать перевод</div>
+        </div>
+        <div class="fc-back">
+          <div class="child-cat-badge">${catLabel}</div>
+          <div class="child-ru-big" id="en-wRu">${w.ru}</div>
+          <div class="child-ex" id="en-wEx">${w.ex.replace(/<\/?b>/g,'')}</div>
+          <div class="child-exru" id="en-wExRu">${w.exRu}</div>
+          <button class="audio-btn" style="margin-top:10px" onclick="enSpeakWord(event)">🔊 Послушать ещё раз</button>
+        </div>`;
+      // Свайп для детей
+      fc.onclick=enFlipCard;
+      fc.ontouchstart=e=>{enTouchX=e.touches[0].clientX;};
+      fc.ontouchend=e=>{if(!enFlipped||enLocked)return;const dx=e.changedTouches[0].clientX-enTouchX;if(Math.abs(dx)>55)enChildAnswer(dx>0?'know':'again');};
+    }
+    // Автоматический TTS при показе карточки (после небольшой задержки)
+    setTimeout(()=>speakText(w.en,'en-GB'),350);
+  } else {
+    // ── ВЗРОСЛАЯ КАРТОЧКА ── восстанавливаем стандартную структуру если она была сломана
+    const fc=g('en-fc');
+    if(fc&&!g('en-wPos')){
+      fc.innerHTML=`
+        <div class="fc-tag" id="en-fcTag"></div>
+        <div class="fc-type nt" id="en-fcType">🆕 new</div>
+        <div class="fc-front">
+          <div style="font-size:52px;font-weight:700;color:var(--tx);letter-spacing:-1px;text-align:center;line-height:1.1" id="en-wEn"></div>
+          <div style="font-size:15px;color:var(--mu);letter-spacing:.5px" id="en-wIpa"></div>
+          <div class="tap-h">нажми — открыть</div>
+        </div>
+        <div class="fc-back">
+          <div style="font-size:24px;font-weight:500" id="en-wRu"></div>
+          <div class="w-pos" id="en-wPos"></div>
+          <div class="qs">
+            <div class="qs-lbl" style="color:#60a5fa">Пример</div>
+            <div style="font-size:14px;color:var(--tx);line-height:1.6;text-align:left" id="en-wEx"></div>
+            <div class="qs-tr" id="en-wExRu"></div>
+          </div>
+          <button class="audio-btn" id="en-audioBtn" onclick="enSpeakWord(event)">🔊 Произнести</button>
+        </div>`;
+      fc.onclick=enFlipCard;
+      fc.ontouchstart=e=>{enTouchX=e.touches[0].clientX;};
+      fc.ontouchend=e=>{if(!enFlipped||enLocked)return;const dx=e.changedTouches[0].clientX-enTouchX;if(Math.abs(dx)>55)enAnswer(dx>0?4:1);};
+    }
+    const wordEl=g('en-wEn');
+    if(wordEl){wordEl.textContent=w.en;wordEl.style.fontSize='';}
+    g('en-wIpa')&&(g('en-wIpa').textContent=w.ipa);
+    g('en-wRu')&&(g('en-wRu').textContent=w.ru);
+    g('en-wPos')&&(g('en-wPos').textContent=w.pos);
+    g('en-wEx')&&(g('en-wEx').innerHTML=w.ex);
+    g('en-wExRu')&&(g('en-wExRu').textContent=w.exRu);
+    g('en-fcTag')&&(g('en-fcTag').textContent=(enPos+1)+' / '+enQ.length);
+    if(g('en-fcType')){g('en-fcType').textContent=isNew?'🆕 new':'🔁 review · '+c.interval+'d';g('en-fcType').style.background=isNew?'rgba(96,165,250,.14)':'rgba(52,211,153,.11)';g('en-fcType').style.color=isNew?'#60a5fa':'var(--green2)';}
+    g('en-fc')&&g('en-fc').classList.remove('flipped');
+  }
+
   g('en-ansRow')&&g('en-ansRow').classList.add('hidden');
+  g('en-ansRow-child')&&g('en-ansRow-child').classList.add('hidden');
   g('en-swHint')&&g('en-swHint').classList.add('hidden');
   enFlipped=false;enLocked=false;
 }
@@ -2436,15 +2679,70 @@ function showEnDone(){
   const fc=document.getElementById('en-fc');
   if(fc)fc.innerHTML=`<div class="done-wrap"><div class="done-icon">🌙</div><div class="done-tl" style="color:var(--green2)">Отлично!</div><div class="done-sb">Новые слова через ${hrs}h ${mins}m (в 4:00)</div><div style="font-size:13px;color:var(--mu);margin-top:12px;font-style:italic">"Каждый эксперт когда-то был новичком."</div></div>`;
   document.getElementById('en-ansRow')?.classList.add('hidden');
+  document.getElementById('en-ansRow-child')?.classList.add('hidden');
   document.getElementById('en-swHint')?.classList.add('hidden');
   enFlipped=true;
+}
+function getEnAnsRow(){
+  return currentAge==='child'
+    ?document.getElementById('en-ansRow-child')
+    :document.getElementById('en-ansRow');
 }
 function enFlipCard(){
   if(enFlipped||enLocked)return;
   document.getElementById('en-fc')?.classList.add('flipped');
-  document.getElementById('en-ansRow')?.classList.remove('hidden');
-  document.getElementById('en-swHint')?.classList.remove('hidden');
+  if(currentAge==='child'){
+    document.getElementById('en-ansRow')?.classList.add('hidden');
+    document.getElementById('en-ansRow-child')?.classList.remove('hidden');
+    document.getElementById('en-swHint')?.classList.remove('hidden');
+    const words=getActiveEnWords();
+    const w=words[enQ[enPos]];
+    if(w)speakText(w.en,'en-GB');
+  } else {
+    document.getElementById('en-ansRow-child')?.classList.add('hidden');
+    document.getElementById('en-ansRow')?.classList.remove('hidden');
+    document.getElementById('en-swHint')?.classList.remove('hidden');
+  }
   enFlipped=true;
+}
+
+// ── Детский ответ: два варианта — знаю / не знаю ──
+// Звуковая обратная связь через Web Audio API (не TTS)
+function playChildSound(ok){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.type='sine';
+    if(ok){
+      // Восходящий аккорд: до → ми → соль
+      osc.frequency.setValueAtTime(523,ctx.currentTime);
+      osc.frequency.setValueAtTime(659,ctx.currentTime+.08);
+      osc.frequency.setValueAtTime(784,ctx.currentTime+.16);
+    } else {
+      // Нисходящий тон
+      osc.frequency.setValueAtTime(330,ctx.currentTime);
+      osc.frequency.setValueAtTime(220,ctx.currentTime+.12);
+    }
+    gain.gain.setValueAtTime(.25,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.4);
+    osc.start(ctx.currentTime);osc.stop(ctx.currentTime+.4);
+  }catch(e){/* нет Web Audio — не страшно */}
+}
+
+function enChildAnswer(result){
+  if(!enFlipped||enLocked)return;enLocked=true;
+  const ok=(result==='know');
+  playChildSound(ok);
+  // Визуальная анимация карточки
+  const fc=document.getElementById('en-fc');
+  if(fc){
+    fc.classList.add(ok?'child-answer-ok':'child-answer-no','answer-ok-flash');
+    setTimeout(()=>fc.classList.remove('child-answer-ok','child-answer-no','answer-ok-flash'),380);
+  }
+  // Передаём в основной enAnswer: знаю=4, не знаю=1
+  enAnswer(ok?4:1);
 }
 function enAnswer(q){
   if(!enFlipped||enLocked)return;enLocked=true;
@@ -2475,31 +2773,43 @@ function enCheckAchievements(){
 }
 function renderEnProgress(){
   if(!enState)return;
-  const learned=enState.cards.filter(c=>c.introduced).length,pct=Math.round((learned/EN_WORDS.length)*100);
+  const words=getActiveEnWords();
+  const learned=enState.cards.filter(c=>c.introduced).length,pct=Math.round((learned/words.length)*100);
   const g=id=>document.getElementById(id);
   g('en-pPct')&&(g('en-pPct').textContent=pct+'%');
   g('en-pBar')&&(g('en-pBar').style.width=pct+'%');
-  g('en-pSub')&&(g('en-pSub').textContent=learned+' из '+EN_WORDS.length+' слов');
+  g('en-pSub')&&(g('en-pSub').textContent=learned+' из '+words.length+' слов');
   const days=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],dow=new Date().getDay(),mx=Math.max(...enState.weekData,1);
   g('en-wBars')&&(g('en-wBars').innerHTML=enState.weekData.map((v,i)=>`<div class="bc"><div class="bar${i===dow?' td':''}" style="height:${Math.max(4,Math.round((v/mx)*48))}px;${i===dow?'background:linear-gradient(180deg,#60a5fa,#1e3a6e)':''}"></div></div>`).join(''));
   g('en-wDays')&&(g('en-wDays').innerHTML=days.map((d,i)=>`<div style="flex:1;text-align:center;font-size:9px;color:${i===dow?'#60a5fa':'var(--mu)'}">${d}</div>`).join(''));
-  const kw=enState.cards.map((c,i)=>c.introduced?EN_WORDS[i]:null).filter(Boolean);
+  const kw=enState.cards.map((c,i)=>c.introduced?words[i]:null).filter(Boolean);
   g('en-kCnt')&&(g('en-kCnt').textContent=kw.length);
   g('en-kChips')&&(g('en-kChips').innerHTML=kw.length?kw.map(w=>`<span class="kchip"><span style="color:#60a5fa;font-weight:500">${w.en}</span><span class="kc-ru">${w.ru}</span></span>`).join(''):'<span style="font-size:12px;color:var(--bd2)">Начни учить слова!</span>');
   g('en-achGrid')&&(g('en-achGrid').innerHTML=EN_ACHIEV.map(a=>`<div class="ach${(enState.achUnlocked||[]).includes(a.id)?' unlocked':''}"><div class="ach-icon">${a.icon}</div><div class="ach-name">${a.name}</div></div>`).join(''));
 }
 
 function initEnglish(){
-  enState=getEnState()||mkEnState();
+  // КРИТИЧНО: проверяем что cards совпадает с активным словарём
+  const words=getActiveEnWords();
+  enState=getEnState();
+  // Если state нет или размер cards не совпадает — создаём заново
+  if(!enState||enState.cards.length!==words.length){enState=mkEnState();}
   if(enState.newDayKey!==todayStr()){enState.newDayKey=todayStr();enState.newToday=0;}
 
-  // Навбар — 5 вкладок как в арабском
-  document.querySelector('.bnav').innerHTML=`
-    <button class="bn active" onclick="goEnTab('home',0)"><span class="bni">🏠</span>Главная</button>
-    <button class="bn" onclick="goEnTab('phon',1)"><span class="bni">🔊</span>Звуки</button>
-    <button class="bn" onclick="goEnTab('words',2)"><span class="bni">📖</span>Слова</button>
-    <button class="bn" onclick="goEnTab('texts',3)"><span class="bni">📄</span>Тексты</button>
-    <button class="bn" onclick="goEnTab('progress',4)"><span class="bni">📊</span>Итоги</button>`;
+  // Навбар — зависит от возраста
+  if(currentAge==='child'){
+    document.querySelector('.bnav').innerHTML=`
+      <button class="bn active" onclick="goEnTab('home',0)"><span class="bni">🏠</span>Главная</button>
+      <button class="bn" onclick="goEnTab('words',1)"><span class="bni">📖</span>Слова</button>
+      <button class="bn" onclick="goEnTab('progress',2)"><span class="bni">📊</span>Итоги</button>`;
+  } else {
+    document.querySelector('.bnav').innerHTML=`
+      <button class="bn active" onclick="goEnTab('home',0)"><span class="bni">🏠</span>Главная</button>
+      <button class="bn" onclick="goEnTab('phon',1)"><span class="bni">🔊</span>Звуки</button>
+      <button class="bn" onclick="goEnTab('words',2)"><span class="bni">📖</span>Слова</button>
+      <button class="bn" onclick="goEnTab('texts',3)"><span class="bni">📄</span>Тексты</button>
+      <button class="bn" onclick="goEnTab('progress',4)"><span class="bni">📊</span>Итоги</button>`;
+  }
 
   // Скрываем арабские экраны (только арабские, не английские)
   document.querySelectorAll('.sc').forEach(s=>{
@@ -2508,7 +2818,6 @@ function initEnglish(){
       s.classList.remove('active');
       s.style.display='none';
     } else {
-      // Английские экраны — сбрасываем display:none если был
       s.style.display='';
       s.classList.remove('active');
     }
@@ -2516,6 +2825,12 @@ function initEnglish(){
 
   // Создаём английские экраны (или показываем если уже есть)
   buildEnScreens();
+
+  // Обновляем лого для детского режима
+  if(currentAge==='child'){
+    document.getElementById('appLogo').textContent='English Kids';
+    document.getElementById('appSub').textContent='для Вадима 🧒';
+  }
 
   // Показываем нужный экран
   showEnScreen('home');
@@ -2530,6 +2845,12 @@ function goEnTab(name,idx){
   else if(name==='words')initEnWords();
   else if(name==='texts')renderEnTexts();
   else if(name==='progress')renderEnProgress();
+}
+
+// ── child mode: words=tab1, progress=tab2 ──
+function goEnChildTab(name){
+  const idxMap={home:0,words:1,progress:2};
+  goEnTab(name,idxMap[name]??0);
 }
 
 function showEnScreen(name){
@@ -2551,9 +2872,9 @@ function buildEnScreens(){
     el.innerHTML=`
       <div style="padding:16px 20px 0">
         <div class="hero en-hero" style="background:linear-gradient(135deg,#0d1f3c,#0a0f1a)">
-          <div class="hgreet">Привет!</div>
-          <div class="htitle" style="color:#e8f0ff">Твой путь к<br>английскому языку</div>
-          <div class="pbar-lbl"><span>Словарный запас</span><span id="en-pl">0 / ${EN_WORDS.length}</span></div>
+          <div class="hgreet" id="en-hgreet">Привет!</div>
+          <div class="htitle" style="color:#e8f0ff" id="en-htitle">Твой путь к<br>английскому языку</div>
+          <div class="pbar-lbl"><span>Словарный запас</span><span id="en-pl">0 / ?</span></div>
           <div class="pbar"><div class="pbar-f" id="en-pf" style="width:0%;background:linear-gradient(90deg,#1e3a6e,#60a5fa)"></div></div>
         </div>
         <div class="hstats" style="margin:12px 0 0">
@@ -2563,22 +2884,7 @@ function buildEnScreens(){
         </div>
         <div class="tasks" style="margin:12px 0 0">
           <div class="stitle">Задачи дня</div>
-          <div class="task" onclick="goEnTab('phon',1)">
-            <div class="ticon b">🔊</div>
-            <div><div class="ttl">Фонетика</div><div class="tsb">Звуки английского и правила чтения</div></div>
-          </div>
-          <div class="task" onclick="goEnTab('words',2)">
-            <div class="ticon gr">📖</div>
-            <div><div class="ttl">Vocabulary</div><div class="tsb" id="en-ws">10 новых + повторения SRS</div></div>
-          </div>
-          <div class="task" onclick="goEnTab('texts',3)">
-            <div class="ticon g">📄</div>
-            <div><div class="ttl">Тексты</div><div class="tsb">Диалоги, новости, цитаты</div></div>
-          </div>
-          <div class="task" onclick="goEnTab('progress',4)">
-            <div class="ticon pu">📊</div>
-            <div><div class="ttl">Progress</div><div class="tsb">Достижения и статистика</div></div>
-          </div>
+          <div id="en-tasks"></div>
         </div>
         <div class="aod" style="margin:12px 0 20px">
           <div class="aod-lbl" style="color:#60a5fa">Цитата дня</div>
@@ -2653,6 +2959,10 @@ function buildEnScreens(){
         <button class="ans ans-a" onclick="enAnswer(1)">Снова<br><small style="font-size:9px;opacity:.7">завтра</small></button>
         <button class="ans ans-h" onclick="enAnswer(2)">Трудно<br><small style="font-size:9px;opacity:.7">3 дня</small></button>
         <button class="ans ans-g" onclick="enAnswer(4)">Знаю ✓<br><small style="font-size:9px;opacity:.7">7 дней</small></button>
+      </div>
+      <div class="ans-row hidden" id="en-ansRow-child" style="gap:12px">
+        <button class="ans ans-a" style="font-size:16px;padding:16px 8px" onclick="enChildAnswer('again')">😕<br>Не знаю</button>
+        <button class="ans ans-g" style="font-size:16px;padding:16px 8px" onclick="enChildAnswer('know')">😊 Знаю!</button>
       </div>`;
     screens.appendChild(el);
     document.getElementById('en-fc').addEventListener('touchstart',e=>{enTouchX=e.touches[0].clientX;},{passive:true});
@@ -2681,7 +2991,7 @@ function buildEnScreens(){
         <div class="pr-hero">
           <div class="prh-lbl">Vocabulary</div>
           <div class="prh-pct" id="en-pPct" style="color:#60a5fa">0%</div>
-          <div class="prh-sub" id="en-pSub">из ${EN_WORDS.length} слов</div>
+          <div class="prh-sub" id="en-pSub">слов</div>
           <div class="prh-bar"><div class="prh-fill" id="en-pBar" style="width:0%;background:linear-gradient(90deg,#1e3a6e,#60a5fa)"></div></div>
         </div>
         <div class="week-box">
@@ -2816,21 +3126,61 @@ const EN_ACHIEV=[
 // ── English render functions ──
 function renderEnHome(){
   if(!enState)return;
+  const words=getActiveEnWords();
   const learned=enState.cards.filter(c=>c.introduced).length;
-  const pct=Math.round((learned/EN_WORDS.length)*100);
+  const pct=Math.round((learned/words.length)*100);
   const el=id=>document.getElementById(id);
   if(el('en-pf'))el('en-pf').style.width=pct+'%';
-  if(el('en-pl'))el('en-pl').textContent=learned+' / '+EN_WORDS.length;
+  if(el('en-pl'))el('en-pl').textContent=learned+' / '+words.length;
   if(el('en-hw'))el('en-hw').textContent=learned;
   if(el('en-hd'))el('en-hd').textContent=enState.streak;
   if(el('en-xp'))el('en-xp').textContent=enState.xp;
   document.getElementById('sv').textContent=enState.streak;
   document.getElementById('xv').textContent=enState.xp;
-  // Quote
-  const q=EN_QUOTES[new Date().getDay()%EN_QUOTES.length];
-  if(el('en-qotd-en'))el('en-qotd-en').textContent=q.en;
-  if(el('en-qotd-ru'))el('en-qotd-ru').textContent=q.ru;
-  if(el('en-qotd-src'))el('en-qotd-src').textContent='— '+q.src;
+  // Задачи дня — зависят от возраста
+  const tasksEl=el('en-tasks');
+  if(tasksEl){
+    if(currentAge==='child'){
+      tasksEl.innerHTML=`
+        <div class="task" onclick="goEnTab('words',1)">
+          <div class="ticon gr">📖</div>
+          <div><div class="ttl">Учим слова</div><div class="tsb">3 новых слова сегодня</div></div>
+        </div>
+        <div class="task" onclick="goEnTab('progress',2)">
+          <div class="ticon pu">📊</div>
+          <div><div class="ttl">Мой прогресс</div><div class="tsb">Слова и достижения</div></div>
+        </div>`;
+    } else {
+      tasksEl.innerHTML=`
+        <div class="task" onclick="goEnTab('phon',1)">
+          <div class="ticon bl">🔊</div>
+          <div><div class="ttl">Фонетика</div><div class="tsb">Звуки английского и правила чтения</div></div>
+        </div>
+        <div class="task" onclick="goEnTab('words',2)">
+          <div class="ticon gr">📖</div>
+          <div><div class="ttl">Vocabulary</div><div class="tsb" id="en-ws">10 новых + повторения SRS</div></div>
+        </div>
+        <div class="task" onclick="goEnTab('texts',3)">
+          <div class="ticon g">📄</div>
+          <div><div class="ttl">Тексты</div><div class="tsb">Диалоги, новости, цитаты</div></div>
+        </div>
+        <div class="task" onclick="goEnTab('progress',4)">
+          <div class="ticon pu">📊</div>
+          <div><div class="ttl">Progress</div><div class="tsb">Достижения и статистика</div></div>
+        </div>`;
+    }
+  }
+  // Quote / child tip
+  if(currentAge==='child'){
+    if(el('en-qotd-en'))el('en-qotd-en').textContent='Keep going! Every word you learn is a superpower 🦸';
+    if(el('en-qotd-ru'))el('en-qotd-ru').textContent='Продолжай! Каждое выученное слово — это суперсила';
+    if(el('en-qotd-src'))el('en-qotd-src').textContent='';
+  } else {
+    const q=EN_QUOTES[new Date().getDay()%EN_QUOTES.length];
+    if(el('en-qotd-en'))el('en-qotd-en').textContent=q.en;
+    if(el('en-qotd-ru'))el('en-qotd-ru').textContent=q.ru;
+    if(el('en-qotd-src'))el('en-qotd-src').textContent='— '+q.src;
+  }
 }
 
 // Phonetics
