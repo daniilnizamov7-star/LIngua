@@ -1789,13 +1789,24 @@ history.pushState(null,'','');
 // ═══ SERVICE WORKER ═══
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').then(reg=>{
+    // Проверяем обновление при каждом запуске
     reg.update();
+    // Новый SW установился — показываем баннер
     reg.addEventListener('updatefound',()=>{
       const nw=reg.installing;
-      nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller)document.getElementById('upd').style.display='block';});
+      nw.addEventListener('statechange',()=>{
+        if(nw.state==='installed'&&navigator.serviceWorker.controller)
+          document.getElementById('upd').style.display='block';
+      });
     });
   });
+  // SW сменился (после нажатия на баннер) — перезагружаем
   navigator.serviceWorker.addEventListener('controllerchange',()=>location.reload());
+  // Сообщение от SW о доступном обновлении контента
+  navigator.serviceWorker.addEventListener('message',e=>{
+    if(e.data?.type==='UPDATE_AVAILABLE')
+      document.getElementById('upd').style.display='block';
+  });
 }
 
 // ═══ ЯЗЫКИ ═══
