@@ -2136,9 +2136,29 @@ function initArabic(){
       <button class="bn active" onclick="goArChildTab('home',0)"><span class="bni">🏠</span>Главная</button>
       <button class="bn" onclick="goArChildTab('words',1)"><span class="bni">📖</span>Слова</button>
       <button class="bn" onclick="goArChildTab('progress',2)"><span class="bni">📊</span>Итоги</button>`;
+
+    // Скрываем взрослые блоки в sc-home
+    document.querySelectorAll('.sc').forEach(s=>s.style.display='');
+    document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
+
+    // sc-home: скрываем взрослые задания (оставляем hero, hstats, aod)
+    document.querySelectorAll('#sc-home .tasks').forEach(el=>el.style.display='none');
+    // sc-progress: надпись "Слова Корана" заменяем
+    const prLbl=document.querySelector('#sc-progress .prh-lbl');
+    if(prLbl)prLbl.textContent='Мой прогресс';
+    const prSub=document.getElementById('pSub');
+    if(prSub)prSub.textContent='слов';
+
     document.getElementById('sc-home').classList.add('active');
     renderArChildHome();
   } else {
+    // Восстанавливаем блоки если были скрыты детским режимом
+    document.querySelectorAll('#sc-home .tasks').forEach(el=>el.style.display='');
+    const childTasksEl=document.getElementById('ar-child-tasks');
+    if(childTasksEl)childTasksEl.style.display='none';
+    const prLblA=document.querySelector('#sc-progress .prh-lbl');
+    if(prLblA)prLblA.textContent='Слова Корана';
+
     document.querySelector('.bnav').innerHTML=`
       <button class="bn active" onclick="goTab('home',0)"><span class="bni">🏠</span>Дом</button>
       <button class="bn" onclick="goTab('sound',1)"><span class="bni">🔊</span>Звук</button>
@@ -2184,6 +2204,30 @@ function renderArChildHome(){
   if(g('aodRu'))g('aodRu').textContent='Именем Аллаха, Милостивого, Милосердного';
   if(g('aodRef'))g('aodRef').textContent='— учим каждый день';
   if(g('h-ws'))g('h-ws').textContent=Math.max(0,getActiveArNewPerDay()-S.newToday)+' новых слов сегодня';
+
+  // Детские задания дня — показываем отдельный блок
+  let childTasks=document.getElementById('ar-child-tasks');
+  if(!childTasks){
+    childTasks=document.createElement('div');
+    childTasks.id='ar-child-tasks';
+    childTasks.className='tasks';
+    childTasks.innerHTML=`
+      <div class="stitle">Задания дня</div>
+      <div class="task" onclick="goArChildTab('words',1)">
+        <div class="ticon gr">📖</div>
+        <div><div class="ttl">Учим слова</div><div class="tsb" id="ar-child-tasks-sub">3 новых слова сегодня</div></div>
+      </div>
+      <div class="task" onclick="goArChildTab('progress',2)">
+        <div class="ticon pu">📊</div>
+        <div><div class="ttl">Мой прогресс</div><div class="tsb">Слова и достижения</div></div>
+      </div>`;
+    // Вставляем после hstats
+    const hstats=document.querySelector('#sc-home .hstats');
+    if(hstats)hstats.insertAdjacentElement('afterend',childTasks);
+  }
+  childTasks.style.display='';
+  const ctSub=document.getElementById('ar-child-tasks-sub');
+  if(ctSub)ctSub.textContent=Math.max(0,getActiveArNewPerDay()-S.newToday)+' новых слов сегодня';
 }
 
 // ══ AR CHILD: WORDS ══
