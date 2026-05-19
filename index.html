@@ -541,6 +541,10 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans'
         <button class="ans ans-h" onclick="answer(2)">Трудно<br><small style="font-size:9px;opacity:.7">3 дня</small></button>
         <button class="ans ans-g" onclick="answer(4)">Знаю ✓<br><small style="font-size:9px;opacity:.7">7 дней</small></button>
       </div>
+      <div class="ans-row hidden" id="ar-ansRow-child" style="gap:12px">
+        <button class="ans ans-a" style="font-size:16px;padding:16px 8px" onclick="arChildAnswer('again')">😕<br>Не знаю</button>
+        <button class="ans ans-g" style="font-size:16px;padding:16px 8px" onclick="arChildAnswer('know')">😊 Знаю!</button>
+      </div>
     </div>
 
     <!-- КОРАН -->
@@ -1195,12 +1199,13 @@ function goTab(name,idx){
   document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
   document.getElementById('sc-'+name).classList.add('active');
   document.querySelectorAll('.bn')[idx].classList.add('active');
-  if(name==='home')renderHome();
+  const arChild=(currentLang==='ar'&&currentAge==='child');
+  if(name==='home'){arChild?renderArChildHome():renderHome();}
   if(name==='sound')renderSound();
-  if(name==='words')initWords();
+  if(name==='words'){arChild?initArChildWords():initWords();}
   if(name==='quran'){renderSurahTabs();renderSurah(curSurah);}
   if(name==='asma')renderAsma();
-  if(name==='progress')renderProgress();
+  if(name==='progress'){arChild?renderArChildProgress():renderProgress();}
 }
 
 // ═══ ТЕМА ═══
@@ -1228,6 +1233,9 @@ function renderHome(){
   document.getElementById('h-pl').textContent=learned+' / 300';
   document.getElementById('h-w').textContent=learned;
   document.getElementById('h-s').textContent=S.harakatSeen.length;
+  // Восстанавливаем подпись (могла быть изменена детским режимом)
+  const hsEl=document.getElementById('h-s');
+  if(hsEl){const l=hsEl.parentElement?.querySelector('.hsl');if(l)l.textContent='знаков';}
   document.getElementById('h-a').textContent=S.studiedAyahs;
   document.getElementById('h-d').textContent=S.streak;
   document.getElementById('sv').textContent=S.streak;
@@ -1902,6 +1910,87 @@ const LANGUAGES=[
 
 let currentLang='ar';
 
+// ══════════════════════════════════════════════════════
+// АРАБСКИЙ ДЕТСКИЙ СЛОВАРЬ — алфавит + бытовые слова
+// ══════════════════════════════════════════════════════
+const AR_WORDS_CHILD=[
+  // Алфавит (28 букв)
+  {ar:'أ',tr:'alif',ru:'А — алиф',cat:'алфавит',ex:'أَحَد — один',exRu:'Один',emoji:'🔤'},
+  {ar:'ب',tr:'ba',ru:'Б — ба',cat:'алфавит',ex:'بَيْت — дом',exRu:'Дом',emoji:'🏠'},
+  {ar:'ت',tr:'ta',ru:'Т — та',cat:'алфавит',ex:'تُفَّاح — яблоко',exRu:'Яблоко',emoji:'🍎'},
+  {ar:'ث',tr:'tha',ru:'Тh — са',cat:'алфавит',ex:'ثَلَاثَة — три',exRu:'Три',emoji:'3️⃣'},
+  {ar:'ج',tr:'jim',ru:'Дж — джим',cat:'алфавит',ex:'جَمَل — верблюд',exRu:'Верблюд',emoji:'🐪'},
+  {ar:'ح',tr:'ha',ru:'Х — ха',cat:'алфавит',ex:'حَلِيب — молоко',exRu:'Молоко',emoji:'🥛'},
+  {ar:'خ',tr:'kha',ru:'Хh — ха',cat:'алфавит',ex:'خُبْز — хлеб',exRu:'Хлеб',emoji:'🍞'},
+  {ar:'د',tr:'dal',ru:'Д — даль',cat:'алфавит',ex:'دَجَاج — курица',exRu:'Курица',emoji:'🐔'},
+  {ar:'ذ',tr:'dhal',ru:'Дh — заль',cat:'алфавит',ex:'ذِئْب — волк',exRu:'Волк',emoji:'🐺'},
+  {ar:'ر',tr:'ra',ru:'Р — ра',cat:'алфавит',ex:'رَأْس — голова',exRu:'Голова',emoji:'👤'},
+  {ar:'ز',tr:'zay',ru:'З — зай',cat:'алфавит',ex:'زَهْرَة — цветок',exRu:'Цветок',emoji:'🌸'},
+  {ar:'س',tr:'sin',ru:'С — син',cat:'алфавит',ex:'سَمَكَة — рыба',exRu:'Рыба',emoji:'🐟'},
+  {ar:'ش',tr:'shin',ru:'Ш — шин',cat:'алфавит',ex:'شَمْس — солнце',exRu:'Солнце',emoji:'☀️'},
+  {ar:'ص',tr:'sad',ru:'С — сад',cat:'алфавит',ex:'صَابُون — мыло',exRu:'Мыло',emoji:'🧼'},
+  {ar:'ض',tr:'dad',ru:'Д — дад',cat:'алфавит',ex:'ضِفْدَع — лягушка',exRu:'Лягушка',emoji:'🐸'},
+  {ar:'ط',tr:'ta',ru:'Т — та',cat:'алфавит',ex:'طَائِر — птица',exRu:'Птица',emoji:'🐦'},
+  {ar:'ظ',tr:'dha',ru:'Дh — за',cat:'алфавит',ex:'ظَبْي — олень',exRu:'Олень',emoji:'🦌'},
+  {ar:'ع',tr:'ayn',ru:'Айн — гортанный',cat:'алфавит',ex:'عَيْن — глаз',exRu:'Глаз',emoji:'👁️'},
+  {ar:'غ',tr:'ghayn',ru:'Гh — гайн',cat:'алфавит',ex:'غَنَم — овца',exRu:'Овца',emoji:'🐑'},
+  {ar:'ف',tr:'fa',ru:'Ф — фа',cat:'алфавит',ex:'فِيل — слон',exRu:'Слон',emoji:'🐘'},
+  {ar:'ق',tr:'qaf',ru:'К — каф',cat:'алфавит',ex:'قَلْب — сердце',exRu:'Сердце',emoji:'❤️'},
+  {ar:'ك',tr:'kaf',ru:'К — кяф',cat:'алфавит',ex:'كَلْب — собака',exRu:'Собака',emoji:'🐕'},
+  {ar:'ل',tr:'lam',ru:'Л — лям',cat:'алфавит',ex:'لَبَن — молоко',exRu:'Молоко',emoji:'🥛'},
+  {ar:'م',tr:'mim',ru:'М — мим',cat:'алфавит',ex:'مَاء — вода',exRu:'Вода',emoji:'💧'},
+  {ar:'ن',tr:'nun',ru:'Н — нун',cat:'алфавит',ex:'نَار — огонь',exRu:'Огонь',emoji:'🔥'},
+  {ar:'ه',tr:'ha',ru:'Х — ха',cat:'алфавит',ex:'هِرَّة — кошка',exRu:'Кошка',emoji:'🐱'},
+  {ar:'و',tr:'waw',ru:'В/У — вав',cat:'алфавит',ex:'وَرْد — роза',exRu:'Роза',emoji:'🌹'},
+  {ar:'ي',tr:'ya',ru:'Й/И — я',cat:'алфавит',ex:'يَد — рука',exRu:'Рука',emoji:'🤚'},
+  // Семья
+  {ar:'أُمّ',tr:'umm',ru:'мама',cat:'семья',ex:'أُمِّي حَبِيبَتِي',exRu:'Моя мама любимая',emoji:'👩'},
+  {ar:'أَبٌ',tr:'ab',ru:'папа',cat:'семья',ex:'أَبِي قَوِيٌّ',exRu:'Мой папа сильный',emoji:'👨'},
+  {ar:'أَخٌ',tr:'akh',ru:'брат',cat:'семья',ex:'أَخِي كَبِير',exRu:'Мой брат большой',emoji:'👦'},
+  {ar:'أُخْت',tr:'ukht',ru:'сестра',cat:'семья',ex:'أُخْتِي صَغِيرَة',exRu:'Моя сестра маленькая',emoji:'👧'},
+  {ar:'بَيْت',tr:'bayt',ru:'дом',cat:'семья',ex:'بَيْتُنَا كَبِير',exRu:'Наш дом большой',emoji:'🏠'},
+  // Еда
+  {ar:'مَاء',tr:'maa',ru:'вода',cat:'еда',ex:'أَشْرَبُ الْمَاء',exRu:'Я пью воду',emoji:'💧'},
+  {ar:'خُبْز',tr:'khubz',ru:'хлеб',cat:'еда',ex:'الْخُبْزُ لَذِيذ',exRu:'Хлеб вкусный',emoji:'🍞'},
+  {ar:'حَلِيب',tr:'halib',ru:'молоко',cat:'еда',ex:'أَشْرَبُ الْحَلِيب',exRu:'Я пью молоко',emoji:'🥛'},
+  {ar:'تُفَّاح',tr:'tuffah',ru:'яблоко',cat:'еда',ex:'التُّفَّاحُ أَحْمَر',exRu:'Яблоко красное',emoji:'🍎'},
+  {ar:'مَوْز',tr:'mawz',ru:'банан',cat:'еда',ex:'الْمَوْزُ أَصْفَر',exRu:'Банан жёлтый',emoji:'🍌'},
+  {ar:'أُرْزٌ',tr:'urz',ru:'рис',cat:'еда',ex:'آكُلُ الْأُرْز',exRu:'Я ем рис',emoji:'🍚'},
+  {ar:'بَيْضَة',tr:'bayda',ru:'яйцо',cat:'еда',ex:'بَيْضَةٌ وَاحِدَة',exRu:'Одно яйцо',emoji:'🥚'},
+  // Животные
+  {ar:'قِطَّة',tr:'qitta',ru:'кошка',cat:'животные',ex:'الْقِطَّةُ صَغِيرَة',exRu:'Кошка маленькая',emoji:'🐱'},
+  {ar:'كَلْب',tr:'kalb',ru:'собака',cat:'животные',ex:'الْكَلْبُ وَفِيّ',exRu:'Собака верная',emoji:'🐕'},
+  {ar:'أَسَد',tr:'asad',ru:'лев',cat:'животные',ex:'الْأَسَدُ قَوِيّ',exRu:'Лев сильный',emoji:'🦁'},
+  {ar:'فِيل',tr:'fil',ru:'слон',cat:'животные',ex:'الْفِيلُ كَبِير',exRu:'Слон большой',emoji:'🐘'},
+  {ar:'سَمَكَة',tr:'samaka',ru:'рыба',cat:'животные',ex:'السَّمَكَةُ تَسْبَح',exRu:'Рыба плавает',emoji:'🐟'},
+  {ar:'طَائِر',tr:'tair',ru:'птица',cat:'животные',ex:'الطَّائِرُ يَطِير',exRu:'Птица летит',emoji:'🐦'},
+  // Тело
+  {ar:'رَأْس',tr:'ras',ru:'голова',cat:'тело',ex:'رَأْسِي كَبِير',exRu:'Моя голова большая',emoji:'👤'},
+  {ar:'عَيْن',tr:'ayn',ru:'глаз',cat:'тело',ex:'عَيْنَايَ جَمِيلَتَان',exRu:'Мои глаза красивые',emoji:'👁️'},
+  {ar:'أَنْف',tr:'anf',ru:'нос',cat:'тело',ex:'أَنْفِي صَغِير',exRu:'Мой нос маленький',emoji:'👃'},
+  {ar:'يَد',tr:'yad',ru:'рука',cat:'тело',ex:'يَدِي نَظِيفَة',exRu:'Моя рука чистая',emoji:'🤚'},
+  {ar:'قَدَم',tr:'qadam',ru:'нога',cat:'тело',ex:'أَمْشِي بِقَدَمَيّ',exRu:'Я хожу ногами',emoji:'🦶'},
+  // Цвета
+  {ar:'أَحْمَر',tr:'ahmar',ru:'красный',cat:'цвета',ex:'التُّفَّاحُ أَحْمَر',exRu:'Яблоко красное',emoji:'🔴'},
+  {ar:'أَزْرَق',tr:'azraq',ru:'синий',cat:'цвета',ex:'السَّمَاءُ زَرْقَاء',exRu:'Небо синее',emoji:'🔵'},
+  {ar:'أَخْضَر',tr:'akhdar',ru:'зелёный',cat:'цвета',ex:'الشَّجَرَةُ خَضْرَاء',exRu:'Дерево зелёное',emoji:'🟢'},
+  {ar:'أَصْفَر',tr:'asfar',ru:'жёлтый',cat:'цвета',ex:'الشَّمْسُ صَفْرَاء',exRu:'Солнце жёлтое',emoji:'🟡'},
+  {ar:'أَبْيَض',tr:'abyad',ru:'белый',cat:'цвета',ex:'الثَّلْجُ أَبْيَض',exRu:'Снег белый',emoji:'⚪'},
+  {ar:'أَسْوَد',tr:'aswad',ru:'чёрный',cat:'цвета',ex:'اللَّيْلُ أَسْوَد',exRu:'Ночь чёрная',emoji:'⚫'},
+  // Цифры
+  {ar:'وَاحِد',tr:'wahid',ru:'один',cat:'цифры',ex:'وَلَدٌ وَاحِد',exRu:'Один мальчик',emoji:'1️⃣'},
+  {ar:'اثْنَان',tr:'ithnan',ru:'два',cat:'цифры',ex:'عَيْنَانِ اثْنَتَان',exRu:'Два глаза',emoji:'2️⃣'},
+  {ar:'ثَلَاثَة',tr:'thalatha',ru:'три',cat:'цифры',ex:'ثَلَاثَةُ أَيَّام',exRu:'Три дня',emoji:'3️⃣'},
+  {ar:'أَرْبَعَة',tr:'arbaa',ru:'четыре',cat:'цифры',ex:'أَرْبَعَةُ فُصُول',exRu:'Четыре сезона',emoji:'4️⃣'},
+  {ar:'خَمْسَة',tr:'khamsa',ru:'пять',cat:'цифры',ex:'خَمْسَةُ أَصَابِع',exRu:'Пять пальцев',emoji:'5️⃣'},
+];
+
+// ── Emoji по категориям арабского детского режима ──
+const AR_CHILD_CAT_EMOJI={
+  'алфавит':'🔤','семья':'👨‍👩‍👧','еда':'🍎',
+  'животные':'🐾','тело':'👤','цвета':'🎨','цифры':'🔢'
+};
+
 function getLangProgress(lang){
   try{
     const s=JSON.parse(localStorage.getItem(lang.storeKey));
@@ -1958,35 +2047,46 @@ function drawQR(url){
 function selectLang(id){
   currentLang=id;
   localStorage.setItem('current_lang',id);
-  const lang=LANGUAGES.find(l=>l.id===id);
 
-  if(id==='en'){
-    // Показываем экран выбора возраста
+  if(id==='en'||id==='ar'){
+    const isAr=(id==='ar');
+    document.getElementById('age-screen-logo').textContent=isAr?'🕌':'🇬🇧';
+    document.getElementById('age-child-title').textContent='Ребёнок 6–10 лет';
+    document.getElementById('age-child-desc').textContent=isAr
+      ?'Алфавит, семья, еда, животные — '+AR_WORDS_CHILD.length+' слов. 3 новых в день, автопроизношение'
+      :'Тело, еда, животные, цвета, цифры — '+EN_WORDS_CHILD.length+' слов. 3 новых в день, игровой формат';
+    document.getElementById('age-adult-title').textContent='Взрослый';
+    document.getElementById('age-adult-desc').textContent=isAr
+      ?'100 слов Корана, огласовки, таджвид, аяты, имена Аллаха. Полная программа'
+      :'Топ-'+EN_WORDS.length+' слов, фонетика, тексты из жизни. 10 новых в день';
     document.getElementById('lang-screen').classList.add('hidden');
     document.getElementById('age-screen').classList.remove('hidden');
     return;
   }
 
-  // Обновляем логотип
+  const lang=LANGUAGES.find(l=>l.id===id);
   document.getElementById('appLogo').textContent=lang.logo;
   document.getElementById('appSub').textContent=lang.logoSub;
-  // Скрываем экран языков
   document.getElementById('lang-screen').classList.add('hidden');
   document.getElementById('main-app').classList.remove('hidden');
-  if(id==='ar'){
-    initArabic();
-  }
 }
 
 function selectAge(age){
   currentAge=age;
   localStorage.setItem('lingua_age',age);
-  const lang=LANGUAGES.find(l=>l.id==='en');
-  document.getElementById('appLogo').textContent=age==='child'?'English Kids':lang.logo;
-  document.getElementById('appSub').textContent=age==='child'?'для Вадима 🧒':lang.logoSub;
   document.getElementById('age-screen').classList.add('hidden');
   document.getElementById('main-app').classList.remove('hidden');
-  initEnglish();
+  if(currentLang==='ar'){
+    const isChild=(age==='child');
+    document.getElementById('appLogo').textContent=isChild?'عَرَبِي':'قرآني';
+    document.getElementById('appSub').textContent=isChild?'Арабский для детей':'Путь к Корану';
+    initArabic();
+  } else {
+    const lang=LANGUAGES.find(l=>l.id==='en');
+    document.getElementById('appLogo').textContent=age==='child'?'English Kids':lang.logo;
+    document.getElementById('appSub').textContent=age==='child'?'для Вадима 🧒':lang.logoSub;
+    initEnglish();
+  }
 }
 
 function showAgeBack(){
@@ -2002,33 +2102,244 @@ function goLangScreen(){
   renderLangScreen();
 }
 
-// ── Инициализация арабского (текущая логика) ──
+// ── Инициализация арабского ──
 function initArabic(){
-  // Прячем английские экраны, показываем арабские
+  const isChild=(currentAge==='child');
+
+  // Загружаем нужный state
+  if(isChild){
+    const saved=localStorage.getItem(getActiveArStore());
+    const words=getActiveArWords();
+    let st=null;
+    try{st=JSON.parse(saved);}catch(e){}
+    if(!st||st.cards.length!==words.length){
+      st={cards:words.map(()=>({interval:0,ef:2.5,nextReview:0,introduced:false})),
+          streak:1,xp:0,lastDay:todayStr(),newToday:0,newDayKey:todayStr(),
+          weekData:[0,0,0,0,0,0,0],harakatSeen:[],tjSeen:[],rasmSeen:[],
+          asmaKnown:[],asmaTestIdx:0,studiedAyahs:0,sexIdx:0,achUnlocked:[]};
+    }
+    if(st.newDayKey!==todayStr()){st.newDayKey=todayStr();st.newToday=0;}
+    Object.assign(S,st);
+    window._arChildSave=()=>localStorage.setItem(getActiveArStore(),JSON.stringify(S));
+  } else {
+    window._arChildSave=null;
+  }
+
+  // Прячем EN экраны
   document.querySelectorAll('.sc').forEach(s=>{
     const id=s.id||'';
-    if(id.startsWith('sc-en-')){
-      s.classList.remove('active');
-      s.style.display='none';
-    } else {
-      s.style.display='';
-      s.classList.remove('active');
-    }
-  });  document.querySelector('.bnav').innerHTML=`
-    <button class="bn active" onclick="goTab('home',0)"><span class="bni">🏠</span>Дом</button>
-    <button class="bn" onclick="goTab('sound',1)"><span class="bni">🔊</span>Звук</button>
-    <button class="bn" onclick="goTab('words',2)"><span class="bni">📖</span>Слова</button>
-    <button class="bn" onclick="goTab('quran',3)"><span class="bni">🕌</span>Коран</button>
-    <button class="bn" onclick="goTab('asma',4)"><span class="bni">✨</span>Имена</button>
-    <button class="bn" onclick="goTab('progress',5)"><span class="bni">📊</span>Итоги</button>`;
-  // Показываем арабские экраны
-  document.querySelectorAll('.sc').forEach(s=>s.style.display='');
-  document.getElementById('sc-home').classList.add('active');
-  renderSurahTabs();
-  renderSound();
-  initSex();
-  renderHome();
-  goTab('home',0);
+    if(id.startsWith('sc-en-')){s.classList.remove('active');s.style.display='none';}
+    else{s.style.display='';s.classList.remove('active');}
+  });
+
+  if(isChild){
+    document.querySelector('.bnav').innerHTML=`
+      <button class="bn active" onclick="goArChildTab('home',0)"><span class="bni">🏠</span>Главная</button>
+      <button class="bn" onclick="goArChildTab('words',1)"><span class="bni">📖</span>Слова</button>
+      <button class="bn" onclick="goArChildTab('progress',2)"><span class="bni">📊</span>Итоги</button>`;
+    document.getElementById('sc-home').classList.add('active');
+    renderArChildHome();
+  } else {
+    document.querySelector('.bnav').innerHTML=`
+      <button class="bn active" onclick="goTab('home',0)"><span class="bni">🏠</span>Дом</button>
+      <button class="bn" onclick="goTab('sound',1)"><span class="bni">🔊</span>Звук</button>
+      <button class="bn" onclick="goTab('words',2)"><span class="bni">📖</span>Слова</button>
+      <button class="bn" onclick="goTab('quran',3)"><span class="bni">🕌</span>Коран</button>
+      <button class="bn" onclick="goTab('asma',4)"><span class="bni">✨</span>Имена</button>
+      <button class="bn" onclick="goTab('progress',5)"><span class="bni">📊</span>Итоги</button>`;
+    document.getElementById('sc-home').classList.add('active');
+    renderSurahTabs();renderSound();initSex();renderHome();goTab('home',0);
+  }
+}
+
+// ── Сохранение AR (child или adult) ──
+function saveAr(){if(window._arChildSave)window._arChildSave();else save();}
+
+// ── Детская навигация арабского ──
+function goArChildTab(name,idx){
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.bn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  document.getElementById('sc-'+name)?.classList.add('active');
+  if(name==='home')renderArChildHome();
+  else if(name==='words')initArChildWords();
+  else if(name==='progress')renderArChildProgress();
+}
+
+// ══ AR CHILD: HOME ══
+function renderArChildHome(){
+  const words=getActiveArWords();
+  const learned=S.cards.filter(c=>c.introduced).length;
+  const pct=Math.round((learned/words.length)*100);
+  const g=id=>document.getElementById(id);
+  if(g('h-pf'))g('h-pf').style.width=pct+'%';
+  if(g('h-pl'))g('h-pl').textContent=learned+' / '+words.length;
+  if(g('h-w'))g('h-w').textContent=learned;
+  if(g('h-s'))g('h-s').textContent=S.streak;
+  // Для детского режима меняем подпись h-s с "знаков" на "стрик"
+  const hsEl=g('h-s');
+  if(hsEl){
+    const hsLabel=hsEl.parentElement?.querySelector('.hsl');
+    if(hsLabel)hsLabel.textContent='стрик';
+  }
+  if(g('h-a'))g('h-a').textContent=pct+'%';
+  if(g('h-d'))g('h-d').textContent=S.streak;
+  g('sv').textContent=S.streak;
+  g('xv').textContent=S.xp;
+  // Бисмилла вместо аята
+  if(g('aodAr'))g('aodAr').textContent='بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
+  if(g('aodRu'))g('aodRu').textContent='Именем Аллаха, Милостивого, Милосердного';
+  if(g('aodRef'))g('aodRef').textContent='— учим каждый день';
+  if(g('h-ws'))g('h-ws').textContent=Math.max(0,getActiveArNewPerDay()-S.newToday)+' новых слов сегодня';
+}
+
+// ══ AR CHILD: WORDS ══
+let arChildQ=[],arChildPos=0,arChildFlipped=false,arChildLocked=false,arChildTouchX=0;
+
+function buildArChildQueue(){
+  if(S.newDayKey!==todayStr()){S.newDayKey=todayStr();S.newToday=0;saveAr();}
+  const now=Date.now(),rev=[],nw=[],npd=getActiveArNewPerDay();
+  S.cards.forEach((c,i)=>{if(c.introduced){if(c.nextReview<=now)rev.push(i);}else nw.push(i);});
+  return[...rev,...nw.slice(0,Math.max(0,npd-S.newToday))];
+}
+
+function initArChildWords(){
+  arChildQ=buildArChildQueue();arChildPos=0;
+  updateArChildStats();renderArChildCard();
+}
+
+function updateArChildStats(){
+  const now=Date.now();
+  const intro=S.cards.filter(c=>c.introduced).length;
+  const due=S.cards.filter(c=>c.introduced&&c.nextReview<=now).length;
+  const canNew=Math.max(0,getActiveArNewPerDay()-S.newToday);
+  const g=id=>document.getElementById(id);
+  if(g('qN'))g('qN').textContent=canNew;
+  if(g('qR'))g('qR').textContent=due;
+  if(g('qD'))g('qD').textContent=intro;
+}
+
+function renderArChildCard(){
+  arChildQ=buildArChildQueue();
+  if(arChildQ.length===0){showArChildDone();return;}
+  if(arChildPos>=arChildQ.length)arChildPos=0;
+  const words=getActiveArWords();
+  const idx=arChildQ[arChildPos],w=words[idx],c=S.cards[idx],isNew=!c.introduced;
+  const catEmoji=AR_CHILD_CAT_EMOJI[w.cat]||'📖';
+  const fc=document.getElementById('fc');
+  if(!fc)return;
+  fc.classList.remove('flipped');
+  fc.innerHTML=`
+    <div class="fc-tag" id="fcTag">${arChildPos+1} / ${arChildQ.length}</div>
+    <div class="fc-type" id="fcType"
+      style="background:${isNew?'rgba(212,168,67,.14)':'rgba(52,211,153,.11)'};
+             color:${isNew?'var(--gold2)':'var(--green2)'}">
+      ${isNew?'🆕 новое':'🔁 повтор'}
+    </div>
+    <div class="fc-front">
+      <span class="child-emoji">${w.emoji||catEmoji}</span>
+      <div class="w-ar" id="wAr" style="font-size:${AGE_CONFIG.ar_child.wordFontSize}">${w.ar}</div>
+      <div class="child-ruphone" style="font-size:18px;margin-top:6px">${w.tr}</div>
+      <div class="tap-h">нажми — узнать перевод</div>
+    </div>
+    <div class="fc-back">
+      <div class="child-cat-badge" style="background:rgba(212,168,67,.13);color:var(--gold2)">
+        ${catEmoji} ${w.cat}
+      </div>
+      <div class="child-ru-big">${w.ru}</div>
+      <div class="child-ex" style="direction:rtl;font-family:'Scheherazade New',serif;font-size:18px">${w.ex}</div>
+      <div class="child-exru">${w.exRu}</div>
+      <button class="audio-btn" style="margin-top:10px"
+        onclick="speakText(document.getElementById('wAr').textContent,'ar-SA',this,'🔊 Слушать ещё')">
+        🔊 Послушать ещё раз
+      </button>
+    </div>`;
+  fc.onclick=arChildFlipCard;
+  fc.ontouchstart=e=>{arChildTouchX=e.touches[0].clientX;};
+  fc.ontouchend=e=>{
+    if(!arChildFlipped||arChildLocked)return;
+    const dx=e.changedTouches[0].clientX-arChildTouchX;
+    if(Math.abs(dx)>55)arChildAnswer(dx>0?'know':'again');
+  };
+  document.getElementById('ansRow')?.classList.add('hidden');
+  document.getElementById('ar-ansRow-child')?.classList.add('hidden');
+  document.getElementById('swHint')?.classList.add('hidden');
+  arChildFlipped=false;arChildLocked=false;
+  // Автоматический TTS
+  setTimeout(()=>speakText(w.ar,'ar-SA'),350);
+}
+
+function arChildFlipCard(){
+  if(arChildFlipped||arChildLocked)return;
+  document.getElementById('fc')?.classList.add('flipped');
+  document.getElementById('ar-ansRow-child')?.classList.remove('hidden');
+  document.getElementById('swHint')?.classList.remove('hidden');
+  // TTS при открытии
+  const txt=document.getElementById('wAr')?.textContent;
+  if(txt)speakText(txt,'ar-SA');
+  arChildFlipped=true;
+}
+
+function arChildAnswer(result){
+  if(!arChildFlipped||arChildLocked)return;arChildLocked=true;
+  const ok=(result==='know');
+  playChildSound(ok);
+  const fc=document.getElementById('fc');
+  if(fc){
+    fc.classList.add(ok?'child-answer-ok':'child-answer-no','answer-ok-flash');
+    setTimeout(()=>fc.classList.remove('child-answer-ok','child-answer-no','answer-ok-flash'),380);
+  }
+  const idx=arChildQ[arChildPos];
+  const wasNew=!S.cards[idx].introduced;
+  S.cards[idx].introduced=true;
+  if(wasNew)S.newToday++;
+  srsUpdate(idx,ok?4:1);
+  if(S.lastDay!==todayStr()){S.lastDay=todayStr();S.streak++;}
+  const sn=new Date(Date.now()-RESET_HOUR*3600000);
+  S.weekData[sn.getDay()]=(S.weekData[sn.getDay()]||0)+1;
+  S.xp+=ok?10:2;
+  saveAr();
+  document.getElementById('sv').textContent=S.streak;
+  document.getElementById('xv').textContent=S.xp;
+  fc?.classList.add(ok?'sr':'sl');
+  setTimeout(()=>{fc?.classList.remove('sl','sr');arChildPos++;renderArChildCard();},220);
+}
+
+function showArChildDone(){
+  const fc=document.getElementById('fc');
+  if(fc)fc.innerHTML=`<div class="done-wrap">
+    <div class="done-icon">🌙</div>
+    <div class="done-tl" style="color:var(--gold2)">Машаллах!</div>
+    <div class="done-sb">На сегодня всё! Новые слова завтра в 4:00</div>
+    <div class="done-dua">بَارَكَ اللَّهُ فِيكَ</div>
+  </div>`;
+  document.getElementById('ar-ansRow-child')?.classList.add('hidden');
+  document.getElementById('swHint')?.classList.add('hidden');
+  arChildFlipped=true;
+}
+
+// ══ AR CHILD: PROGRESS ══
+function renderArChildProgress(){
+  const words=getActiveArWords();
+  const learned=S.cards.filter(c=>c.introduced).length;
+  const pct=Math.round((learned/words.length)*100);
+  const g=id=>document.getElementById(id);
+  if(g('pPct'))g('pPct').textContent=pct+'%';
+  if(g('pBar'))g('pBar').style.width=pct+'%';
+  if(g('pSub'))g('pSub').textContent=learned+' из '+words.length+' слов';
+  const days=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  const dow=new Date(Date.now()-RESET_HOUR*3600000).getDay();
+  const mx=Math.max(...S.weekData,1);
+  if(g('wBars'))g('wBars').innerHTML=S.weekData.map((v,i)=>
+    `<div class="bc"><div class="bar${i===dow?' td':''}" style="height:${Math.max(4,Math.round((v/mx)*50))}px"></div></div>`).join('');
+  if(g('wDays'))g('wDays').innerHTML=days.map((d,i)=>
+    `<div style="flex:1;text-align:center;font-size:9px;color:${i===dow?'var(--gold2)':'var(--mu)'}">${d}</div>`).join('');
+  const kw=S.cards.map((c,i)=>c.introduced?words[i]:null).filter(Boolean);
+  if(g('kCnt'))g('kCnt').textContent=kw.length;
+  if(g('kChips'))g('kChips').innerHTML=kw.length
+    ?kw.map(w=>`<span class="kchip"><span class="kc-ar" style="font-size:18px">${w.ar}</span><span class="kc-ru">${w.ru}</span></span>`).join('')
+    :'<span style="font-size:12px;color:var(--bd2)">Начни учить слова!</span>';
+  if(g('achGrid'))g('achGrid').innerHTML=ACHIEV.map(a=>
+    `<div class="ach${S.achUnlocked.includes(a.id)?' unlocked':''}"><div class="ach-icon">${a.icon}</div><div class="ach-name">${a.name}</div></div>`).join('');
 }
 
 // ── Инициализация английского ──
@@ -2539,6 +2850,8 @@ const EN_WORDS_CHILD=[
 const AGE_CONFIG={
   child:{newPerDay:3,wordFontSize:'72px',storeKey:'english_child_v1',totalLabel:'60 слов',label:'Дети 6–10'},
   adult:{newPerDay:10,wordFontSize:'44px',storeKey:'english_v1',totalLabel:EN_WORDS.length+' слов',label:'Взрослый'},
+  ar_child:{newPerDay:3,wordFontSize:'80px',storeKey:'arabic_child_v1',totalLabel:'63 слова',label:'Дети 6–10'},
+  ar_adult:{newPerDay:10,wordFontSize:'64px',storeKey:'qurani_v2',totalLabel:'100 слов',label:'Взрослый'},
 };
 
 // ── Emoji по категориям (детский режим) ──
@@ -2566,10 +2879,16 @@ const CHILD_RUPHONE={
 // ── текущий возраст ──
 let currentAge=localStorage.getItem('lingua_age')||'adult';
 
-// ── активный словарь (зависит от возраста) ──
+// ── активный словарь EN (зависит от возраста) ──
 function getActiveEnWords(){return currentAge==='child'?EN_WORDS_CHILD:EN_WORDS;}
 function getActiveEnStore(){return AGE_CONFIG[currentAge].storeKey;}
 function getActiveNewPerDay(){return AGE_CONFIG[currentAge].newPerDay;}
+
+// ── арабский: активный словарь и config ──
+function getArConfigKey(){return currentAge==='child'?'ar_child':'ar_adult';}
+function getActiveArWords(){return currentAge==='child'?AR_WORDS_CHILD:WORDS;}
+function getActiveArStore(){return AGE_CONFIG[getArConfigKey()].storeKey;}
+function getActiveArNewPerDay(){return AGE_CONFIG[getArConfigKey()].newPerDay;}
 
 const EN_STORE='english_v1';
 let enState=null;
